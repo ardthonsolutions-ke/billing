@@ -1,0 +1,45 @@
+<div class="page-header with-action">
+  <div>
+    <h2><%= router.name %> — Active Sessions</h2>
+    <p class="text-muted">Live view of connected hotspot users</p>
+  </div>
+  <a href="/routers" class="btn">Back to Routers</a>
+</div>
+
+<% if (error) { %>
+  <div class="flash flash-error"><%= error %></div>
+<% } %>
+
+<% if (!sessions || sessions.length === 0) { %>
+  <div class="empty-state">
+    <h3>No active sessions</h3>
+    <p>Nobody is currently connected to this router's hotspot.</p>
+  </div>
+<% } else { %>
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>User</th>
+          <th>IP Address</th>
+          <th>MAC Address</th>
+          <th>Uptime</th>
+          <th>Bytes In</th>
+          <th>Bytes Out</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% sessions.forEach(function(s) { %>
+          <tr>
+            <td><strong><%= s.user || '—' %></strong></td>
+            <td><code><%= s.address || '—' %></code></td>
+            <td><code><%= s['mac-address'] || '—' %></code></td>
+            <td><%= s.uptime || '—' %></td>
+            <td><%= s['bytes-in'] ? Math.round(s['bytes-in']/1024/1024) + ' MB' : '—' %></td>
+            <td><%= s['bytes-out'] ? Math.round(s['bytes-out']/1024/1024) + ' MB' : '—' %></td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  </div>
+<% } %>

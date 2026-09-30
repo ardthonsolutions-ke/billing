@@ -1,0 +1,82 @@
+<div class="page-header with-action">
+  <div>
+    <h2><%= subscriber.full_name %></h2>
+    <p class="text-muted"><code><%= subscriber.account_number %></code> · <%= subscriber.phone %></p>
+  </div>
+  <div style="display:flex;gap:8px;">
+    <a href="/subscribers/<%= subscriber.id %>/edit" class="btn">Edit</a>
+    <% if (subscriber.status === 'active') { %>
+      <form method="POST" action="/subscribers/<%= subscriber.id %>/suspend" class="inline-form">
+        <button type="submit" class="btn">Suspend</button>
+      </form>
+    <% } else { %>
+      <form method="POST" action="/subscribers/<%= subscriber.id %>/activate" class="inline-form">
+        <button type="submit" class="btn btn-primary">Activate</button>
+      </form>
+    <% } %>
+  </div>
+</div>
+
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-label">Status</div>
+    <div class="stat-value" style="font-size:20px;text-transform:capitalize;"><%= subscriber.status %></div>
+    <div class="stat-hint">
+      <% if (subscriber.expires_at) { %>
+        Expires: <%= new Date(subscriber.expires_at).toLocaleString() %>
+      <% } else { %>No expiry set<% } %>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Plan</div>
+    <div class="stat-value" style="font-size:18px;"><%= subscriber.plan_name || 'None' %></div>
+    <div class="stat-hint"><%= subscriber.plan_price ? 'KSh ' + Number(subscriber.plan_price).toLocaleString() : '' %></div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Type</div>
+    <div class="stat-value" style="font-size:18px;text-transform:capitalize;"><%= subscriber.type %></div>
+    <div class="stat-hint">Router: <%= subscriber.router_name || 'None' %></div>
+  </div>
+</div>
+
+<div class="detail-grid">
+  <div class="detail-card">
+    <h3>Credentials</h3>
+    <table class="kv-table">
+      <tr><td>Username</td><td><code><%= subscriber.username %></code></td></tr>
+      <tr><td>Password</td><td><code><%= subscriber.password_plain || '—' %></code></td></tr>
+      <tr><td>MAC Address</td><td><%= subscriber.mac_address || '—' %></td></tr>
+      <tr><td>IP Address</td><td><%= subscriber.ip_address || '—' %></td></tr>
+    </table>
+  </div>
+
+  <div class="detail-card">
+    <h3>Contact</h3>
+    <table class="kv-table">
+      <tr><td>Phone</td><td><%= subscriber.phone %></td></tr>
+      <tr><td>Email</td><td><%= subscriber.email || '—' %></td></tr>
+      <tr><td>Created</td><td><%= new Date(subscriber.created_at).toLocaleString() %></td></tr>
+      <tr><td>Activated</td><td><%= subscriber.activated_at ? new Date(subscriber.activated_at).toLocaleString() : '—' %></td></tr>
+    </table>
+  </div>
+</div>
+
+<% if (events && events.length > 0) { %>
+<div class="detail-card">
+  <h3>Recent Activity</h3>
+  <table class="data-table">
+    <thead>
+      <tr><th>Event</th><th>Details</th><th>When</th></tr>
+    </thead>
+    <tbody>
+      <% events.forEach(function(e) { %>
+        <tr>
+          <td><span class="badge badge-role"><%= e.event_type %></span></td>
+          <td class="text-muted"><%= e.details || '—' %></td>
+          <td class="text-muted"><%= new Date(e.created_at).toLocaleString() %></td>
+        </tr>
+      <% }); %>
+    </tbody>
+  </table>
+</div>
+<% } %>

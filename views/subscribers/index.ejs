@@ -1,0 +1,68 @@
+<div class="page-header with-action">
+  <div>
+    <h2>Subscribers</h2>
+    <p class="text-muted">Manage your customer base</p>
+  </div>
+  <a href="/subscribers/new" class="btn btn-primary">+ New Subscriber</a>
+</div>
+
+<form method="GET" action="/subscribers" class="filter-bar">
+  <input type="text" name="q" value="<%= search %>" placeholder="Search by name, phone, username...">
+  <select name="status">
+    <option value="">All Statuses</option>
+    <option value="active" <%= filterStatus === 'active' ? 'selected' : '' %>>Active</option>
+    <option value="pending" <%= filterStatus === 'pending' ? 'selected' : '' %>>Pending</option>
+    <option value="expired" <%= filterStatus === 'expired' ? 'selected' : '' %>>Expired</option>
+    <option value="suspended" <%= filterStatus === 'suspended' ? 'selected' : '' %>>Suspended</option>
+  </select>
+  <select name="type">
+    <option value="">All Types</option>
+    <option value="hotspot" <%= filterType === 'hotspot' ? 'selected' : '' %>>Hotspot</option>
+    <option value="pppoe" <%= filterType === 'pppoe' ? 'selected' : '' %>>PPPoE</option>
+  </select>
+  <button type="submit" class="btn btn-primary">Filter</button>
+  <a href="/subscribers" class="btn">Clear</a>
+</form>
+
+<% if (subscribers.length === 0) { %>
+  <div class="empty-state">
+    <h3>No subscribers found</h3>
+    <p>Add your first subscriber or clear your filters.</p>
+    <a href="/subscribers/new" class="btn btn-primary">Add Subscriber</a>
+  </div>
+<% } else { %>
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Account</th>
+          <th>Name</th>
+          <th>Phone</th>
+          <th>Username</th>
+          <th>Plan</th>
+          <th>Type</th>
+          <th>Status</th>
+          <th>Expires</th>
+          <th class="actions-col">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% subscribers.forEach(function(s) { %>
+          <tr>
+            <td><code><%= s.account_number %></code></td>
+            <td><strong><%= s.full_name %></strong></td>
+            <td><%= s.phone %></td>
+            <td><%= s.username %></td>
+            <td><%= s.plan_name || '—' %></td>
+            <td><span class="badge badge-role"><%= s.type %></span></td>
+            <td><span class="badge badge-<%= s.status === 'active' ? 'success' : (s.status === 'suspended' ? 'muted' : 'warn') %>"><%= s.status %></span></td>
+            <td class="text-muted"><%= s.expires_at ? new Date(s.expires_at).toLocaleDateString() : '—' %></td>
+            <td class="actions-col">
+              <a href="/subscribers/<%= s.id %>" class="btn btn-sm">View</a>
+            </td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  </div>
+<% } %>

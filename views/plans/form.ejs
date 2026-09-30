@@ -1,0 +1,66 @@
+<div class="page-header">
+  <h2><%= plan ? 'Edit Plan: ' + plan.name : 'New Plan' %></h2>
+  <p class="text-muted"><%= plan ? 'Update plan details' : 'Create a hotspot or PPPoE package' %></p>
+</div>
+
+<form method="POST" action="<%= plan ? '/plans/' + plan.id : '/plans' %>" class="form-card">
+  <div class="form-row">
+    <div class="form-group">
+      <label for="name">Plan Name *</label>
+      <input type="text" id="name" name="name" required value="<%= plan ? plan.name : '' %>" placeholder="e.g. Daily 1GB, Monthly 10Mbps">
+    </div>
+    <div class="form-group">
+      <label for="type">Type *</label>
+      <select id="type" name="type" required>
+        <option value="hotspot" <%= plan && plan.type === 'hotspot' ? 'selected' : '' %>>Hotspot</option>
+        <option value="pppoe" <%= plan && plan.type === 'pppoe' ? 'selected' : '' %>>PPPoE</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="form-group">
+      <label for="price">Price (KSh) *</label>
+      <input type="number" id="price" name="price" required min="0" step="1" value="<%= plan ? plan.price : '' %>" placeholder="e.g. 50">
+    </div>
+    <div class="form-group">
+      <label for="duration_hours">Duration (hours)</label>
+      <input type="number" id="duration_hours" name="duration_hours" min="1" value="<%= plan && plan.duration_hours ? plan.duration_hours : '' %>" placeholder="Leave blank for unlimited">
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="form-group">
+      <label for="speed_down_kbps">Download Speed (kbps)</label>
+      <input type="number" id="speed_down_kbps" name="speed_down_kbps" min="0" value="<%= plan && plan.speed_down_kbps ? plan.speed_down_kbps : '' %>" placeholder="e.g. 10240 for 10 Mbps">
+    </div>
+    <div class="form-group">
+      <label for="speed_up_kbps">Upload Speed (kbps)</label>
+      <input type="number" id="speed_up_kbps" name="speed_up_kbps" min="0" value="<%= plan && plan.speed_up_kbps ? plan.speed_up_kbps : '' %>" placeholder="e.g. 5120 for 5 Mbps">
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label for="data_cap_mb">Data Cap (MB) <span class="hint">Leave blank for unlimited</span></label>
+    <input type="number" id="data_cap_mb" name="data_cap_mb" min="0" value="<%= plan && plan.data_cap_mb ? plan.data_cap_mb : '' %>" placeholder="e.g. 1024 for 1 GB">
+  </div>
+
+  <div class="form-group">
+    <label for="description">Description</label>
+    <input type="text" id="description" name="description" value="<%= plan && plan.description ? plan.description : '' %>" placeholder="Optional short description">
+  </div>
+
+  <% if (plan) { %>
+  <div class="form-group">
+    <label class="checkbox-label">
+      <input type="checkbox" name="is_active" value="1" <%= plan.is_active ? 'checked' : '' %>>
+      Active (available for purchase)
+    </label>
+  </div>
+  <% } %>
+
+  <div class="form-actions">
+    <a href="/plans" class="btn">Cancel</a>
+    <button type="submit" class="btn btn-primary"><%= plan ? 'Save Changes' : 'Create Plan' %></button>
+  </div>
+</form>

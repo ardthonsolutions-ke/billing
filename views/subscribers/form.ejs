@@ -1,0 +1,85 @@
+<div class="page-header">
+  <h2><%= subscriber ? 'Edit: ' + subscriber.full_name : 'New Subscriber' %></h2>
+  <p class="text-muted"><%= subscriber ? 'Update subscriber details' : 'Add a new customer' %></p>
+</div>
+
+<form method="POST" action="<%= subscriber ? '/subscribers/' + subscriber.id : '/subscribers' %>" class="form-card">
+  <div class="form-row">
+    <div class="form-group">
+      <label for="full_name">Full Name *</label>
+      <input type="text" id="full_name" name="full_name" required value="<%= subscriber ? subscriber.full_name : '' %>" placeholder="e.g. John Kamau">
+    </div>
+    <div class="form-group">
+      <label for="phone">Phone *</label>
+      <input type="text" id="phone" name="phone" required value="<%= subscriber ? subscriber.phone : '' %>" placeholder="e.g. 0712345678">
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" value="<%= subscriber && subscriber.email ? subscriber.email : '' %>" placeholder="optional">
+    </div>
+    <div class="form-group">
+      <label for="type">Type *</label>
+      <select id="type" name="type" required>
+        <option value="hotspot" <%= subscriber && subscriber.type === 'hotspot' ? 'selected' : '' %>>Hotspot</option>
+        <option value="pppoe" <%= subscriber && subscriber.type === 'pppoe' ? 'selected' : '' %>>PPPoE</option>
+        <option value="static" <%= subscriber && subscriber.type === 'static' ? 'selected' : '' %>>Static</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="form-group">
+      <label for="plan_id">Plan</label>
+      <select id="plan_id" name="plan_id">
+        <option value="">— None —</option>
+        <% plans.forEach(function(p) { %>
+          <option value="<%= p.id %>" <%= subscriber && subscriber.plan_id == p.id ? 'selected' : '' %>><%= p.name %> (KSh <%= p.price %>)</option>
+        <% }); %>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="router_id">Router</label>
+      <select id="router_id" name="router_id">
+        <option value="">— None —</option>
+        <% routers.forEach(function(r) { %>
+          <option value="<%= r.id %>" <%= subscriber && subscriber.router_id == r.id ? 'selected' : '' %>><%= r.name %></option>
+        <% }); %>
+      </select>
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="form-group">
+      <label for="username">Username *</label>
+      <input type="text" id="username" name="username" required value="<%= subscriber ? subscriber.username : '' %>" placeholder="hotspot or PPPoE username">
+    </div>
+    <div class="form-group">
+      <label for="password_plain">Password</label>
+      <input type="text" id="password_plain" name="password_plain" value="<%= subscriber && subscriber.password_plain ? subscriber.password_plain : '' %>" placeholder="Leave blank to auto-generate">
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="form-group">
+      <label for="account_number">Account Number</label>
+      <input type="text" id="account_number" name="account_number" value="<%= subscriber ? subscriber.account_number : '' %>" placeholder="Auto-generated if blank" <%= subscriber ? 'readonly' : '' %>>
+    </div>
+    <div class="form-group">
+      <label for="mac_address">MAC Address <span class="hint">(optional, for auto-login)</span></label>
+      <input type="text" id="mac_address" name="mac_address" value="<%= subscriber && subscriber.mac_address ? subscriber.mac_address : '' %>" placeholder="XX:XX:XX:XX:XX:XX">
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label for="notes">Notes</label>
+    <textarea id="notes" name="notes" rows="3" placeholder="Internal notes"><%= subscriber && subscriber.notes ? subscriber.notes : '' %></textarea>
+  </div>
+
+  <div class="form-actions">
+    <a href="/subscribers" class="btn">Cancel</a>
+    <button type="submit" class="btn btn-primary"><%= subscriber ? 'Save Changes' : 'Create Subscriber' %></button>
+  </div>
+</form>

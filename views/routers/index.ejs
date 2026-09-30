@@ -1,0 +1,51 @@
+<div class="page-header with-action">
+  <div>
+    <h2>Routers</h2>
+    <p class="text-muted">MikroTik devices connected to this account</p>
+  </div>
+  <a href="/routers/new" class="btn btn-primary">+ Add Router</a>
+</div>
+
+<% if (routers.length === 0) { %>
+  <div class="empty-state">
+    <h3>No routers yet</h3>
+    <p>Add your first MikroTik router to start managing subscribers.</p>
+    <a href="/routers/new" class="btn btn-primary">Add Router</a>
+  </div>
+<% } else { %>
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Host</th>
+          <th>Model / OS</th>
+          <th>Status</th>
+          <th>Last Seen</th>
+          <th class="actions-col">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% routers.forEach(function(r) { %>
+          <tr>
+            <td><strong><%= r.name %></strong><% if (r.site_name) { %><div class="text-muted" style="font-size:12px"><%= r.site_name %></div><% } %></td>
+            <td><code><%= r.host %>:<%= r.port %></code></td>
+            <td>
+              <%= r.model || '—' %>
+              <% if (r.routeros_version) { %><div class="text-muted" style="font-size:12px">RouterOS <%= r.routeros_version %></div><% } %>
+            </td>
+            <td><span class="badge badge-<%= r.status === 'online' ? 'success' : 'muted' %>"><%= r.status %></span></td>
+            <td class="text-muted"><%= r.last_seen ? new Date(r.last_seen).toLocaleString() : 'Never' %></td>
+            <td class="actions-col">
+              <form method="POST" action="/routers/<%= r.id %>/test" class="inline-form">
+                <button type="submit" class="btn btn-sm">Test</button>
+              </form>
+              <a href="/routers/<%= r.id %>/sessions" class="btn btn-sm">Sessions</a>
+              <a href="/routers/<%= r.id %>/edit" class="btn btn-sm">Edit</a>
+            </td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  </div>
+<% } %>

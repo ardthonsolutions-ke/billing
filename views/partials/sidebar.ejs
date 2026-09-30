@@ -14,6 +14,19 @@
       </a>
     </div>
 
+    <div class="nav-section">
+      <div class="nav-section-title">Network</div>
+      <a href="/plans" class="nav-link <%= currentPath.startsWith('/plans') ? 'active' : '' %>">
+        <span class="nav-icon">◇</span> Plans
+      </a>
+      <a href="/subscribers" class="nav-link <%= currentPath.startsWith('/subscribers') ? 'active' : '' %>">
+        <span class="nav-icon">☷</span> Subscribers
+      </a>
+      <a href="/routers" class="nav-link <%= currentPath.startsWith('/routers') ? 'active' : '' %>">
+        <span class="nav-icon">◈</span> Routers
+      </a>
+    </div>
+
     <% if (currentUser && currentUser.role === 'super_admin') { %>
     <div class="nav-section">
       <div class="nav-section-title">Administration</div>
@@ -35,15 +48,6 @@
 
     <div class="nav-section">
       <div class="nav-section-title">Coming Soon</div>
-      <a href="#" class="nav-link disabled" title="Phase 3">
-        <span class="nav-icon">☷</span> Subscribers
-      </a>
-      <a href="#" class="nav-link disabled" title="Phase 3">
-        <span class="nav-icon">◇</span> Plans
-      </a>
-      <a href="#" class="nav-link disabled" title="Phase 3">
-        <span class="nav-icon">◈</span> Routers
-      </a>
       <a href="#" class="nav-link disabled" title="Phase 4">
         <span class="nav-icon">₭</span> Payments
       </a>

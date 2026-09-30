@@ -1,0 +1,55 @@
+<div class="page-header with-action">
+  <div>
+    <h2>Plans</h2>
+    <p class="text-muted">Hotspot and PPPoE packages</p>
+  </div>
+  <a href="/plans/new" class="btn btn-primary">+ New Plan</a>
+</div>
+
+<% if (plans.length === 0) { %>
+  <div class="empty-state">
+    <h3>No plans yet</h3>
+    <p>Create your first plan to start selling internet packages.</p>
+    <a href="/plans/new" class="btn btn-primary">Create Plan</a>
+  </div>
+<% } else { %>
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Price</th>
+          <th>Duration</th>
+          <th>Speed</th>
+          <th>Data</th>
+          <th>Status</th>
+          <th class="actions-col">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% plans.forEach(function(p) { %>
+          <tr>
+            <td><strong><%= p.name %></strong><% if (p.description) { %><div class="text-muted" style="font-size:12px"><%= p.description %></div><% } %></td>
+            <td><span class="badge badge-role"><%= p.type %></span></td>
+            <td><strong>KSh <%= Number(p.price).toLocaleString() %></strong></td>
+            <td><%= p.duration_hours ? p.duration_hours + ' hr' : '—' %></td>
+            <td>
+              <% if (p.speed_down_kbps) { %>
+                <%= Math.round(p.speed_down_kbps/1024) %>/<%= Math.round(p.speed_up_kbps/1024) %> Mbps
+              <% } else { %>—<% } %>
+            </td>
+            <td><%= p.data_cap_mb ? (p.data_cap_mb >= 1024 ? Math.round(p.data_cap_mb/1024) + ' GB' : p.data_cap_mb + ' MB') : 'Unlimited' %></td>
+            <td><span class="badge badge-<%= p.is_active ? 'success' : 'muted' %>"><%= p.is_active ? 'Active' : 'Disabled' %></span></td>
+            <td class="actions-col">
+              <a href="/plans/<%= p.id %>/edit" class="btn btn-sm">Edit</a>
+              <form method="POST" action="/plans/<%= p.id %>/toggle" class="inline-form">
+                <button type="submit" class="btn btn-sm"><%= p.is_active ? 'Disable' : 'Enable' %></button>
+              </form>
+            </td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  </div>
+<% } %>

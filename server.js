@@ -94,6 +94,9 @@ app.use('/', require('./routes/auth'));
 app.use('/', require('./routes/dashboard'));
 app.use('/', require('./routes/tenants'));
 app.use('/', require('./routes/users'));
+app.use('/', require('./routes/plans'));
+app.use('/', require('./routes/subscribers'));
+app.use('/', require('./routes/routers'));
 
 // ── Root redirect ──
 app.get('/', (req, res) => {

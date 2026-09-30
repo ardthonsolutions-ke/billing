@@ -1,0 +1,90 @@
+<div class="page-header">
+  <h2><%= router ? 'Edit Router: ' + router.name : 'Add Router' %></h2>
+  <p class="text-muted">Connect a MikroTik device via RouterOS API</p>
+</div>
+
+<form method="POST" action="<%= router ? '/routers/' + router.id : '/routers' %>" class="form-card">
+  <div class="form-row">
+    <div class="form-group">
+      <label for="name">Router Name *</label>
+      <input type="text" id="name" name="name" required value="<%= router ? router.name : '' %>" placeholder="e.g. Main Router — Westlands">
+    </div>
+    <div class="form-group">
+      <label for="model">Model</label>
+      <input type="text" id="model" name="model" value="<%= router && router.model ? router.model : '' %>" placeholder="e.g. hEX S, RB4011">
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="form-group">
+      <label for="host">Host / IP *</label>
+      <input type="text" id="host" name="host" required value="<%= router ? router.host : '' %>" placeholder="e.g. 192.168.88.1 or router.example.com">
+    </div>
+    <div class="form-group">
+      <label for="port">API Port *</label>
+      <input type="number" id="port" name="port" required value="<%= router ? router.port : 8728 %>" placeholder="8728">
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="form-group">
+      <label for="username">API Username *</label>
+      <input type="text" id="username" name="username" required value="<%= router ? router.username : '' %>" placeholder="API user with full access">
+    </div>
+    <div class="form-group">
+      <label for="password">API Password <%= router ? '(leave blank to keep)' : '*' %></label>
+      <input type="password" id="password" name="password" <%= router ? '' : 'required' %> placeholder="password">
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="form-group">
+      <label for="api_type">API Type</label>
+      <select id="api_type" name="api_type">
+        <option value="api" <%= router && router.api_type === 'api' ? 'selected' : '' %>>API (port 8728)</option>
+        <option value="api_ssl" <%= router && router.api_type === 'api_ssl' ? 'selected' : '' %>>API-SSL (port 8729)</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="site_name">Site Name</label>
+      <input type="text" id="site_name" name="site_name" value="<%= router && router.site_name ? router.site_name : '' %>" placeholder="e.g. Westlands Tower">
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="form-group">
+      <label for="location">Location</label>
+      <input type="text" id="location" name="location" value="<%= router && router.location ? router.location : '' %>" placeholder="Physical location">
+    </div>
+    <div class="form-group">
+      <label for="wireguard_ip">WireGuard IP</label>
+      <input type="text" id="wireguard_ip" name="wireguard_ip" value="<%= router && router.wireguard_ip ? router.wireguard_ip : '' %>" placeholder="10.0.0.X">
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label class="checkbox-label">
+      <input type="checkbox" name="wireguard_enabled" value="1" <%= router && router.wireguard_enabled ? 'checked' : '' %>>
+      WireGuard tunnel enabled
+    </label>
+  </div>
+
+  <div class="form-group">
+    <label for="notes">Notes</label>
+    <textarea id="notes" name="notes" rows="3"><%= router && router.notes ? router.notes : '' %></textarea>
+  </div>
+
+  <div class="form-actions">
+    <a href="/routers" class="btn">Cancel</a>
+    <button type="submit" class="btn btn-primary"><%= router ? 'Save Changes' : 'Add Router' %></button>
+  </div>
+</form>
+
+<div class="info-box">
+  <h4>MikroTik Setup</h4>
+  <p>On your MikroTik router, enable the API service and create a user:</p>
+  <pre>/ip service enable api
+/user add name=abs-api password=YOUR_PASSWORD group=full
+/ip service print</pre>
+  <p>Then paste the router's IP address and the API user's credentials above.</p>
+</div>
