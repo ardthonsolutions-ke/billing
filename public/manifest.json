@@ -1,0 +1,17 @@
+{
+  "name": "Ardthon Billing System",
+  "short_name": "ABS Billing",
+  "description": "ISP billing + hotspot management + MikroTik control",
+  "start_url": "/?utm_source=pwa",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#ffffff",
+  "theme_color": "#1a4a8a",
+  "lang": "en-KE",
+  "icons": [
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

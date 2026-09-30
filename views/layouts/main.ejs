@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#1a4a8a">
+  <title><%= typeof title !== 'undefined' ? title : 'Ardthon Billing' %></title>
+  <link rel="manifest" href="/manifest.json">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header class="abs-header">
+    <div class="abs-brand">
+      <a href="/"><%= APP_NAME %></a>
+    </div>
+    <nav class="abs-nav">
+      <% if (currentUser) { %>
+        <span><%= currentUser.full_name %></span>
+        <a href="/logout">Logout</a>
+      <% } %>
+    </nav>
+  </header>
+
+  <main class="abs-main">
+    <% if (flash.success && flash.success.length) { %>
+      <div class="alert alert-success"><%= flash.success[0] %></div>
+    <% } %>
+    <% if (flash.error && flash.error.length) { %>
+      <div class="alert alert-error"><%= flash.error[0] %></div>
+    <% } %>
+    <% if (flash.info && flash.info.length) { %>
+      <div class="alert alert-info"><%= flash.info[0] %></div>
+    <% } %>
+
+    <%- body %>
+  </main>
+
+  <footer class="abs-footer">
+    <p>&copy; <%= new Date().getFullYear() %> Ardthon Solutions</p>
+  </footer>
+
+  <script src="/js/main.js"></script>
+</body>
+</html>
