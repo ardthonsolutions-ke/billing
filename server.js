@@ -46,7 +46,7 @@ app.use(express.urlencoded({ extended: true, limit: '5mb' }));
 app.use(cookieParser());
 
 // ── Session ──
-app.use(session(sessionConfig));
+app.use(session(sessionConfig()));
 app.use(flash());
 
 // ── Static ──
