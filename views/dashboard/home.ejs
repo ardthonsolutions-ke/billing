@@ -1,0 +1,61 @@
+<div class="page-header">
+  <h2>Welcome, <%= currentUser.full_name %></h2>
+  <p class="text-muted">
+    <% if (currentUser.role === 'super_admin') { %>
+      You're signed in as Super Admin. <%= tenantCount %> active tenants.
+    <% } else { %>
+      Manage your ISP from here.
+    <% } %>
+  </p>
+</div>
+
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-label">Total Subscribers</div>
+    <div class="stat-value"><%= stats.totalSubscribers %></div>
+    <div class="stat-hint">Phase 3 will populate</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Active Subscribers</div>
+    <div class="stat-value"><%= stats.activeSubscribers %></div>
+    <div class="stat-hint">Currently online</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Routers</div>
+    <div class="stat-value"><%= stats.totalRouters %></div>
+    <div class="stat-hint">MikroTik devices</div>
+  </div>
+  <div class="stat-card stat-accent">
+    <div class="stat-label">Revenue Today</div>
+    <div class="stat-value">KSh <%= Number(stats.revenueToday).toLocaleString() %></div>
+    <div class="stat-hint">From completed payments</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Open Tickets</div>
+    <div class="stat-value"><%= stats.openTickets %></div>
+    <div class="stat-hint">Pending support</div>
+  </div>
+</div>
+
+<div class="quick-actions">
+  <h3>Quick Actions</h3>
+  <div class="actions-row">
+    <% if (currentUser.role === 'super_admin') { %>
+      <a href="/tenants/new" class="action-card">
+        <div class="action-icon">+</div>
+        <div class="action-label">New Tenant</div>
+        <div class="action-desc">Onboard a new ISP</div>
+      </a>
+    <% } %>
+    <a href="/users/new" class="action-card">
+      <div class="action-icon">+</div>
+      <div class="action-label">Add User</div>
+      <div class="action-desc">Invite staff member</div>
+    </a>
+    <a href="/users" class="action-card">
+      <div class="action-icon">◉</div>
+      <div class="action-label">Manage Users</div>
+      <div class="action-desc">Roles and access</div>
+    </a>
+  </div>
+</div>

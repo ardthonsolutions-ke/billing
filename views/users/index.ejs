@@ -1,0 +1,55 @@
+<div class="page-header with-action">
+  <div>
+    <h2>Users</h2>
+    <p class="text-muted"><%= currentUser.role === 'super_admin' ? 'All users across all tenants' : 'Users in your tenant' %></p>
+  </div>
+  <a href="/users/new" class="btn btn-primary">+ New User</a>
+</div>
+
+<% if (users.length === 0) { %>
+  <div class="empty-state">
+    <h3>No users yet</h3>
+    <p>Add a user to get started.</p>
+    <a href="/users/new" class="btn btn-primary">Add User</a>
+  </div>
+<% } else { %>
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Role</th>
+          <% if (currentUser.role === 'super_admin') { %><th>Tenant</th><% } %>
+          <th>Status</th>
+          <th>Last Login</th>
+          <th class="actions-col">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% users.forEach(function(u) { %>
+          <tr>
+            <td><strong><%= u.full_name %></strong></td>
+            <td><%= u.email %></td>
+            <td><span class="badge badge-role"><%= u.role.replace('_',' ') %></span></td>
+            <% if (currentUser.role === 'super_admin') { %>
+              <td><%= u.tenant_name || '—' %></td>
+            <% } %>
+            <td>
+              <span class="badge badge-<%= u.is_active ? 'success' : 'muted' %>">
+                <%= u.is_active ? 'Active' : 'Disabled' %>
+              </span>
+            </td>
+            <td class="text-muted"><%= u.last_login ? new Date(u.last_login).toLocaleDateString() : 'Never' %></td>
+            <td class="actions-col">
+              <a href="/users/<%= u.id %>/edit" class="btn btn-sm">Edit</a>
+              <form method="POST" action="/users/<%= u.id %>/toggle" class="inline-form">
+                <button type="submit" class="btn btn-sm"><%= u.is_active ? 'Disable' : 'Enable' %></button>
+              </form>
+            </td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  </div>
+<% } %>

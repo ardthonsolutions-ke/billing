@@ -1,0 +1,11 @@
+<header class="abs-topbar">
+  <button type="button" class="sidebar-toggle" onclick="document.body.classList.toggle('sidebar-open')">☰</button>
+  <h1 class="page-title"><%= typeof title !== 'undefined' ? title : 'Dashboard' %></h1>
+  <div class="topbar-right">
+    <% if (currentTenant) { %>
+      <span class="tenant-badge"><%= currentTenant.name %></span>
+    <% } else if (currentUser && currentUser.role === 'super_admin') { %>
+      <span class="tenant-badge super">Super Admin</span>
+    <% } %>
+  </div>
+</header>

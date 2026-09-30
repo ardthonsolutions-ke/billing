@@ -10,7 +10,16 @@
   <link rel="stylesheet" href="/css/dashboard.css">
 </head>
 <body class="abs-app">
-  <%- body %>
+  <div class="app-shell">
+    <%- include('../partials/sidebar', { currentPath: currentPath || '/dashboard' }) %>
+    <div class="app-content">
+      <%- include('../partials/topbar') %>
+      <main class="app-main">
+        <%- include('../partials/flash') %>
+        <%- body %>
+      </main>
+    </div>
+  </div>
   <script src="/js/main.js"></script>
 </body>
 </html>

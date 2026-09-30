@@ -6,6 +6,7 @@ const flash = require('connect-flash');
 const cookieParser = require('cookie-parser');
 const helmet = require('helmet');
 const path = require('path');
+const expressLayouts = require("express-ejs-layouts");
 const rateLimit = require('express-rate-limit');
 
 // ── Config ──
@@ -15,6 +16,7 @@ const CONSTANTS = require('./config/constants');
 
 // ── App ──
 const app = express();
+app.set('trust proxy', 1);
 const PORT = process.env.PORT || 3001;
 
 // ── Security ──
@@ -54,6 +56,12 @@ app.use(express.static(path.join(__dirname, 'public'), { maxAge: '7d' }));
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
+// ── Layout engine ──
+app.use(expressLayouts);
+app.set('layout', 'layouts/main');
+app.set('layout extractScripts', true);
+app.set('layout extractStyles', true);
+
 // ── Inject common locals ──
 app.use((req, res, next) => {
   req.db = db;
@@ -66,6 +74,7 @@ app.use((req, res, next) => {
   };
   res.locals.APP_NAME = process.env.APP_NAME || 'Ardthon Billing System';
   res.locals.APP_URL = process.env.APP_URL || '';
+  res.locals.currentPath = req.path;
   next();
 });
 
@@ -79,28 +88,17 @@ app.get('/health', (req, res) => {
   });
 });
 
-// ── Root redirect (placeholder until auth is built) ──
+
+// ── Routes ──
+app.use('/', require('./routes/auth'));
+app.use('/', require('./routes/dashboard'));
+app.use('/', require('./routes/tenants'));
+app.use('/', require('./routes/users'));
+
+// ── Root redirect ──
 app.get('/', (req, res) => {
-  res.send(`
-    <!DOCTYPE html>
-    <html><head><title>Ardthon Billing System</title>
-    <style>body{font-family:system-ui;max-width:700px;margin:60px auto;padding:20px;color:#14171f;}
-    h1{color:#1a4a8a;}code{background:#f1efea;padding:2px 6px;border-radius:4px;}
-    .card{background:#f8f7f4;padding:24px;border-radius:12px;border:1px solid #e4e1d8;margin:20px 0;}</style>
-    </head><body>
-    <h1>Ardthon Billing System</h1>
-    <p>Foundation is running. Modules are being built in phases.</p>
-    <div class="card">
-      <h3>Status</h3>
-      <ul>
-        <li>App: <strong>online</strong> at port ${PORT}</li>
-        <li>Health check: <a href="/health">/health</a></li>
-        <li>Environment: <code>${process.env.NODE_ENV || 'development'}</code></li>
-      </ul>
-    </div>
-    <p>Next up: authentication, tenants, and dashboard.</p>
-    </body></html>
-  `);
+  if (req.session && req.session.user) return res.redirect('/dashboard');
+  res.redirect('/login');
 });
 
 // ── 404 ──

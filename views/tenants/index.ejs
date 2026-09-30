@@ -1,0 +1,56 @@
+<div class="page-header with-action">
+  <div>
+    <h2>Tenants</h2>
+    <p class="text-muted">ISP accounts using this platform</p>
+  </div>
+  <a href="/tenants/new" class="btn btn-primary">+ New Tenant</a>
+</div>
+
+<% if (tenants.length === 0) { %>
+  <div class="empty-state">
+    <h3>No tenants yet</h3>
+    <p>Create your first ISP tenant to get started.</p>
+    <a href="/tenants/new" class="btn btn-primary">Create Tenant</a>
+  </div>
+<% } else { %>
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Slug</th>
+          <th>Contact</th>
+          <th>Users</th>
+          <th>Status</th>
+          <th>Created</th>
+          <th class="actions-col">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% tenants.forEach(function(t) { %>
+          <tr>
+            <td><strong><%= t.name %></strong></td>
+            <td><code><%= t.slug %></code></td>
+            <td>
+              <% if (t.contact_email) { %><div><%= t.contact_email %></div><% } %>
+              <% if (t.contact_phone) { %><div class="text-muted"><%= t.contact_phone %></div><% } %>
+            </td>
+            <td><%= t.user_count %></td>
+            <td>
+              <span class="badge badge-<%= t.is_active ? 'success' : 'muted' %>">
+                <%= t.is_active ? 'Active' : 'Disabled' %>
+              </span>
+            </td>
+            <td class="text-muted"><%= new Date(t.created_at).toLocaleDateString() %></td>
+            <td class="actions-col">
+              <a href="/tenants/<%= t.id %>/edit" class="btn btn-sm">Edit</a>
+              <form method="POST" action="/tenants/<%= t.id %>/toggle" class="inline-form">
+                <button type="submit" class="btn btn-sm"><%= t.is_active ? 'Disable' : 'Enable' %></button>
+              </form>
+            </td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  </div>
+<% } %>

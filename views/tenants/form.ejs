@@ -1,0 +1,53 @@
+<div class="page-header">
+  <h2><%= tenant ? 'Edit Tenant: ' + tenant.name : 'New Tenant' %></h2>
+  <p class="text-muted"><%= tenant ? 'Update tenant details' : 'Onboard a new ISP onto the platform' %></p>
+</div>
+
+<form method="POST" action="<%= tenant ? '/tenants/' + tenant.id : '/tenants' %>" class="form-card">
+  <div class="form-row">
+    <div class="form-group">
+      <label for="name">ISP Name *</label>
+      <input type="text" id="name" name="name" required value="<%= tenant ? tenant.name : '' %>" placeholder="e.g. FastNet Kenya">
+    </div>
+    <div class="form-group">
+      <label for="slug">Slug * <span class="hint">(URL-safe identifier)</span></label>
+      <input type="text" id="slug" name="slug" required value="<%= tenant ? tenant.slug : '' %>" placeholder="e.g. fastnet-kenya">
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="form-group">
+      <label for="contact_email">Contact Email</label>
+      <input type="email" id="contact_email" name="contact_email" value="<%= tenant && tenant.contact_email ? tenant.contact_email : '' %>" placeholder="admin@isp.example">
+    </div>
+    <div class="form-group">
+      <label for="contact_phone">Contact Phone</label>
+      <input type="text" id="contact_phone" name="contact_phone" value="<%= tenant && tenant.contact_phone ? tenant.contact_phone : '' %>" placeholder="+254 7XX XXX XXX">
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="form-group">
+      <label for="primary_color">Primary Color</label>
+      <input type="color" id="primary_color" name="primary_color" value="<%= tenant && tenant.primary_color ? tenant.primary_color : '#1a4a8a' %>">
+    </div>
+    <div class="form-group">
+      <label for="accent_color">Accent Color</label>
+      <input type="color" id="accent_color" name="accent_color" value="<%= tenant && tenant.accent_color ? tenant.accent_color : '#e85d2c' %>">
+    </div>
+  </div>
+
+  <% if (tenant) { %>
+  <div class="form-group">
+    <label class="checkbox-label">
+      <input type="checkbox" name="is_active" value="1" <%= tenant.is_active ? 'checked' : '' %>>
+      Active (users can log in)
+    </label>
+  </div>
+  <% } %>
+
+  <div class="form-actions">
+    <a href="/tenants" class="btn">Cancel</a>
+    <button type="submit" class="btn btn-primary"><%= tenant ? 'Save Changes' : 'Create Tenant' %></button>
+  </div>
+</form>
