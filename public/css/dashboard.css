@@ -997,3 +997,54 @@
     justify-content: center;
   }
 }
+
+/* ═══════════════════════════════════════════
+   Tickets thread
+   ═══════════════════════════════════════════ */
+.ticket-thread {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ticket-msg {
+  padding: 14px 16px;
+  border-radius: 10px;
+  background: var(--paper-2);
+  border-left: 4px solid var(--muted);
+}
+
+.ticket-msg-subscriber {
+  background: #eff6ff;
+  border-left-color: var(--brand);
+}
+
+.ticket-msg-staff {
+  background: #ecfdf5;
+  border-left-color: var(--success);
+}
+
+.ticket-msg-system {
+  background: #f3f4f6;
+  border-left-color: var(--muted);
+}
+
+.ticket-msg-internal {
+  background: #fef3c7;
+  border-left-color: var(--warning);
+}
+
+.ticket-msg-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+.ticket-msg-body {
+  font-size: 14px;
+  color: var(--ink-soft);
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}

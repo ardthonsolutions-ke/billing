@@ -103,6 +103,8 @@ app.use('/', require('./routes/plans'));
 app.use('/', require('./routes/subscribers'));
 app.use('/', require('./routes/payments'));
 app.use('/', require('./routes/reports'));
+app.use('/', require('./routes/tickets'));
+app.use('/', require('./routes/leads'));
 app.use('/', require('./routes/routers'));
 
 // ── Root redirect ──

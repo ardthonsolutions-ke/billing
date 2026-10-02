@@ -1,0 +1,91 @@
+<div class="page-header with-action">
+  <div>
+    <h2>Support Tickets</h2>
+    <p class="text-muted">Manage subscriber issues and requests</p>
+  </div>
+  <a href="/tickets/new" class="btn btn-primary">+ New Ticket</a>
+</div>
+
+<div class="stats-grid">
+  <div class="stat-card stat-accent">
+    <div class="stat-label">Open</div>
+    <div class="stat-value"><%= counts.open_count || 0 %></div>
+    <div class="stat-hint">Need action</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Pending</div>
+    <div class="stat-value"><%= counts.pending_count || 0 %></div>
+    <div class="stat-hint">Waiting on subscriber</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Resolved</div>
+    <div class="stat-value"><%= counts.resolved_count || 0 %></div>
+    <div class="stat-hint">Total resolved</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Urgent</div>
+    <div class="stat-value"><%= counts.urgent_count || 0 %></div>
+    <div class="stat-hint">High priority open</div>
+  </div>
+</div>
+
+<form method="GET" action="/tickets" class="filter-bar">
+  <input type="text" name="q" value="<%= search %>" placeholder="Search subject, ticket #, name...">
+  <select name="status">
+    <option value="open" <%= filterStatus === 'open' ? 'selected' : '' %>>Open</option>
+    <option value="pending" <%= filterStatus === 'pending' ? 'selected' : '' %>>Pending</option>
+    <option value="resolved" <%= filterStatus === 'resolved' ? 'selected' : '' %>>Resolved</option>
+    <option value="closed" <%= filterStatus === 'closed' ? 'selected' : '' %>>Closed</option>
+    <option value="all" <%= filterStatus === 'all' ? 'selected' : '' %>>All</option>
+  </select>
+  <select name="priority">
+    <option value="">All Priorities</option>
+    <option value="urgent" <%= filterPriority === 'urgent' ? 'selected' : '' %>>Urgent</option>
+    <option value="high" <%= filterPriority === 'high' ? 'selected' : '' %>>High</option>
+    <option value="normal" <%= filterPriority === 'normal' ? 'selected' : '' %>>Normal</option>
+    <option value="low" <%= filterPriority === 'low' ? 'selected' : '' %>>Low</option>
+  </select>
+  <button type="submit" class="btn btn-primary">Filter</button>
+  <a href="/tickets" class="btn">Clear</a>
+</form>
+
+<% if (tickets.length === 0) { %>
+  <div class="empty-state">
+    <h3>No tickets found</h3>
+    <p>Try a different filter, or create a new ticket.</p>
+  </div>
+<% } else { %>
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Ticket</th>
+          <th>Subject</th>
+          <th>Subscriber</th>
+          <th>Priority</th>
+          <th>Status</th>
+          <th>Updated</th>
+          <th class="actions-col">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% tickets.forEach(function(t) { %>
+          <tr>
+            <td data-label="Ticket"><code><%= t.ticket_number %></code></td>
+            <td data-label="Subject"><strong><%= t.subject %></strong></td>
+            <td data-label="Subscriber">
+              <%= t.subscriber_name || '—' %>
+              <% if (t.subscriber_phone) { %><div class="text-muted" style="font-size:12px;"><%= t.subscriber_phone %></div><% } %>
+            </td>
+            <td data-label="Priority"><span class="badge badge-<%= t.priority === 'urgent' ? 'muted' : (t.priority === 'high' ? 'warn' : 'role') %>"><%= t.priority %></span></td>
+            <td data-label="Status"><span class="badge badge-<%= t.status === 'open' ? 'success' : (t.status === 'pending' ? 'warn' : 'muted') %>"><%= t.status %></span></td>
+            <td data-label="Updated" class="text-muted"><%= new Date(t.updated_at).toLocaleString() %></td>
+            <td class="actions-col">
+              <a href="/tickets/<%= t.id %>" class="btn btn-sm">Open</a>
+            </td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  </div>
+<% } %>

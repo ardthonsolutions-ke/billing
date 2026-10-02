@@ -1,0 +1,64 @@
+<div class="page-header">
+  <h2>New Ticket</h2>
+  <p class="text-muted">Log a support request on behalf of a subscriber</p>
+</div>
+
+<form method="POST" action="/tickets" class="form-card">
+  <div class="form-group">
+    <label for="subscriber_id">Subscriber <span class="hint">(optional — leave blank for general inquiries)</span></label>
+    <select id="subscriber_id" name="subscriber_id">
+      <option value="">— None —</option>
+      <% subscribers.forEach(function(s) { %>
+        <option value="<%= s.id %>"><%= s.full_name %> · <%= s.phone %> · <%= s.account_number %></option>
+      <% }); %>
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label for="subject">Subject *</label>
+    <input type="text" id="subject" name="subject" required placeholder="e.g. Internet not working since morning">
+  </div>
+
+  <div class="form-row">
+    <div class="form-group">
+      <label for="category">Category</label>
+      <select id="category" name="category">
+        <option value="general">General</option>
+        <option value="technical">Technical</option>
+        <option value="billing">Billing</option>
+        <option value="installation">Installation</option>
+        <option value="complaint">Complaint</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="priority">Priority</label>
+      <select id="priority" name="priority">
+        <option value="normal">Normal</option>
+        <option value="low">Low</option>
+        <option value="high">High</option>
+        <option value="urgent">Urgent</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="form-group">
+      <label for="contact_name">Contact Name</label>
+      <input type="text" id="contact_name" name="contact_name" placeholder="Optional">
+    </div>
+    <div class="form-group">
+      <label for="contact_phone">Contact Phone</label>
+      <input type="text" id="contact_phone" name="contact_phone" placeholder="Optional">
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label for="message">Initial Message</label>
+    <textarea id="message" name="message" rows="5" placeholder="Describe the issue or request..."></textarea>
+  </div>
+
+  <div class="form-actions">
+    <a href="/tickets" class="btn">Cancel</a>
+    <button type="submit" class="btn btn-primary">Create Ticket</button>
+  </div>
+</form>

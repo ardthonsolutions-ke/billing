@@ -1,0 +1,83 @@
+<div class="page-header with-action">
+  <div>
+    <h2>Leads</h2>
+    <p class="text-muted">Pre-sales prospects</p>
+  </div>
+  <a href="/leads/new" class="btn btn-primary">+ New Lead</a>
+</div>
+
+<div class="stats-grid">
+  <div class="stat-card stat-accent">
+    <div class="stat-label">New</div>
+    <div class="stat-value"><%= counts.new_count || 0 %></div>
+    <div class="stat-hint">Not contacted yet</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Contacted</div>
+    <div class="stat-value"><%= counts.contacted_count || 0 %></div>
+    <div class="stat-hint">In progress</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Qualified</div>
+    <div class="stat-value"><%= counts.qualified_count || 0 %></div>
+    <div class="stat-hint">Ready to convert</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Converted</div>
+    <div class="stat-value"><%= counts.converted_count || 0 %></div>
+    <div class="stat-hint">Became subscribers</div>
+  </div>
+</div>
+
+<form method="GET" action="/leads" class="filter-bar">
+  <input type="text" name="q" value="<%= search %>" placeholder="Search name, phone, email...">
+  <select name="status">
+    <option value="all" <%= filterStatus === 'all' ? 'selected' : '' %>>All</option>
+    <option value="new" <%= filterStatus === 'new' ? 'selected' : '' %>>New</option>
+    <option value="contacted" <%= filterStatus === 'contacted' ? 'selected' : '' %>>Contacted</option>
+    <option value="qualified" <%= filterStatus === 'qualified' ? 'selected' : '' %>>Qualified</option>
+    <option value="converted" <%= filterStatus === 'converted' ? 'selected' : '' %>>Converted</option>
+    <option value="lost" <%= filterStatus === 'lost' ? 'selected' : '' %>>Lost</option>
+  </select>
+  <button type="submit" class="btn btn-primary">Filter</button>
+  <a href="/leads" class="btn">Clear</a>
+</form>
+
+<% if (leads.length === 0) { %>
+  <div class="empty-state">
+    <h3>No leads yet</h3>
+    <p>Add your first prospect to start building a pipeline.</p>
+    <a href="/leads/new" class="btn btn-primary">Add Lead</a>
+  </div>
+<% } else { %>
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Phone</th>
+          <th>Interest</th>
+          <th>Source</th>
+          <th>Status</th>
+          <th>Updated</th>
+          <th class="actions-col">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% leads.forEach(function(l) { %>
+          <tr>
+            <td data-label="Name"><strong><%= l.full_name %></strong></td>
+            <td data-label="Phone"><%= l.phone %></td>
+            <td data-label="Interest"><%= l.interest || '—' %></td>
+            <td data-label="Source"><%= l.source %></td>
+            <td data-label="Status"><span class="badge badge-<%= l.status === 'converted' ? 'success' : (l.status === 'lost' ? 'muted' : (l.status === 'qualified' ? 'role' : 'warn')) %>"><%= l.status %></span></td>
+            <td data-label="Updated" class="text-muted"><%= new Date(l.updated_at).toLocaleDateString() %></td>
+            <td class="actions-col">
+              <a href="/leads/<%= l.id %>" class="btn btn-sm">Open</a>
+            </td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  </div>
+<% } %>

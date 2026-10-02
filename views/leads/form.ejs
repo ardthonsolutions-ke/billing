@@ -1,0 +1,70 @@
+<div class="page-header">
+  <h2>New Lead</h2>
+  <p class="text-muted">Capture a prospect's details</p>
+</div>
+
+<form method="POST" action="/leads" class="form-card">
+  <div class="form-row">
+    <div class="form-group">
+      <label for="full_name">Full Name *</label>
+      <input type="text" id="full_name" name="full_name" required placeholder="e.g. John Kamau">
+    </div>
+    <div class="form-group">
+      <label for="phone">Phone *</label>
+      <input type="text" id="phone" name="phone" required placeholder="0712345678">
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" placeholder="Optional">
+    </div>
+    <div class="form-group">
+      <label for="location">Location</label>
+      <input type="text" id="location" name="location" placeholder="e.g. Westlands">
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="form-group">
+      <label for="source">Source</label>
+      <select id="source" name="source">
+        <option value="walk-in">Walk-in</option>
+        <option value="referral">Referral</option>
+        <option value="phone">Phone inquiry</option>
+        <option value="social">Social media</option>
+        <option value="website">Website</option>
+        <option value="other">Other</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="priority">Priority</label>
+      <select id="priority" name="priority">
+        <option value="normal">Normal</option>
+        <option value="low">Low</option>
+        <option value="high">High</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label for="interest">Interest</label>
+    <input type="text" id="interest" name="interest" placeholder="e.g. Monthly home plan, 10 Mbps">
+  </div>
+
+  <div class="form-group">
+    <label for="follow_up_at">Follow-up Date</label>
+    <input type="datetime-local" id="follow_up_at" name="follow_up_at">
+  </div>
+
+  <div class="form-group">
+    <label for="notes">Notes</label>
+    <textarea id="notes" name="notes" rows="4" placeholder="Any additional context..."></textarea>
+  </div>
+
+  <div class="form-actions">
+    <a href="/leads" class="btn">Cancel</a>
+    <button type="submit" class="btn btn-primary">Save Lead</button>
+  </div>
+</form>
