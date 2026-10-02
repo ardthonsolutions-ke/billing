@@ -1,0 +1,278 @@
+<div class="page-header">
+  <h2>Settings</h2>
+  <p class="text-muted">Configure your ISP profile, portal, SMS, and payments</p>
+</div>
+
+<!-- Tab navigation -->
+<div class="settings-tabs">
+  <button type="button" class="settings-tab active" data-tab="general">General</button>
+  <button type="button" class="settings-tab" data-tab="branding">Branding</button>
+  <button type="button" class="settings-tab" data-tab="sms">SMS</button>
+  <button type="button" class="settings-tab" data-tab="payment">Payments</button>
+  <button type="button" class="settings-tab" data-tab="password">Password</button>
+</div>
+
+<!-- ═══ GENERAL ═══ -->
+<div class="settings-panel active" data-panel="general">
+  <form method="POST" action="/settings/general" enctype="multipart/form-data" class="form-card">
+    <h3 class="form-section">Support Contact</h3>
+    <p class="text-muted" style="font-size:13px;margin-bottom:16px;">Shown on the captive portal, receipts, and to subscribers who need help.</p>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="support_phone">Support Phone</label>
+        <input type="text" id="support_phone" name="support_phone" value="<%= tenant.support_phone || '' %>" placeholder="+254 7XX XXX XXX">
+      </div>
+      <div class="form-group">
+        <label for="support_whatsapp">Support WhatsApp</label>
+        <input type="text" id="support_whatsapp" name="support_whatsapp" value="<%= tenant.support_whatsapp || '' %>" placeholder="2547XXXXXXXX">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="support_email">Support Email</label>
+      <input type="email" id="support_email" name="support_email" value="<%= tenant.support_email || '' %>" placeholder="support@isp.example">
+    </div>
+
+    <h3 class="form-section">Business Contact</h3>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="contact_email">Public Email</label>
+        <input type="email" id="contact_email" name="contact_email" value="<%= tenant.contact_email || '' %>">
+      </div>
+      <div class="form-group">
+        <label for="contact_phone">Public Phone</label>
+        <input type="text" id="contact_phone" name="contact_phone" value="<%= tenant.contact_phone || '' %>">
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="website">Website</label>
+        <input type="url" id="website" name="website" value="<%= tenant.website || '' %>">
+      </div>
+      <div class="form-group">
+        <label for="whatsapp_number">Business WhatsApp</label>
+        <input type="text" id="whatsapp_number" name="whatsapp_number" value="<%= tenant.whatsapp_number || '' %>">
+      </div>
+    </div>
+
+    <h3 class="form-section">Captive Portal</h3>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="portal_template">Portal Template</label>
+        <select id="portal_template" name="portal_template">
+          <option value="classic" <%= tenant.portal_template === 'classic' ? 'selected' : '' %>>Classic — light, clean</option>
+          <option value="modern" <%= tenant.portal_template === 'modern' ? 'selected' : '' %>>Modern — bold, colorful</option>
+          <option value="minimal" <%= tenant.portal_template === 'minimal' ? 'selected' : '' %>>Minimal — fast, text-only</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="portal_font">Font</label>
+        <select id="portal_font" name="portal_font">
+          <option value="system" <%= tenant.portal_font === 'system' ? 'selected' : '' %>>System (fast)</option>
+          <option value="inter" <%= tenant.portal_font === 'inter' ? 'selected' : '' %>>Inter</option>
+          <option value="roboto" <%= tenant.portal_font === 'roboto' ? 'selected' : '' %>>Roboto</option>
+          <option value="poppins" <%= tenant.portal_font === 'poppins' ? 'selected' : '' %>>Poppins</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="portal_welcome">Welcome Message</label>
+      <input type="text" id="portal_welcome" name="portal_welcome" value="<%= tenant.portal_welcome || '' %>" placeholder="e.g. Welcome to FastNet! Get online in seconds." maxlength="300">
+    </div>
+
+    <div class="form-group">
+      <label for="portal_terms">Terms & Conditions <span class="hint">(shown as a link on portal)</span></label>
+      <textarea id="portal_terms" name="portal_terms" rows="4" placeholder="Optional terms text..."><%= tenant.portal_terms || '' %></textarea>
+    </div>
+
+    <h3 class="form-section">Advertisement Banner</h3>
+    <p class="text-muted" style="font-size:13px;margin-bottom:16px;">Optional. Shown at the top of the portal. Max 3 MB — recommended 800×200 px.</p>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="advert_image">Advert Image</label>
+        <input type="file" id="advert_image" name="advert_image" accept="image/*">
+        <% if (tenant.advert_image_url) { %>
+          <div class="file-preview">
+            <img src="<%= tenant.advert_image_url %>" alt="Current advert">
+            <label class="checkbox-label" style="margin-top:8px;">
+              <input type="checkbox" name="remove_advert" value="1"> Remove advert
+            </label>
+          </div>
+        <% } %>
+      </div>
+      <div class="form-group">
+        <label for="advert_link">Advert Link (click-through URL)</label>
+        <input type="url" id="advert_link" name="advert_link" value="<%= tenant.advert_link || '' %>" placeholder="https://example.com">
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">Save General Settings</button>
+    </div>
+  </form>
+</div>
+
+<!-- ═══ BRANDING ═══ -->
+<div class="settings-panel" data-panel="branding">
+  <form method="POST" action="/settings/branding" enctype="multipart/form-data" class="form-card">
+    <h3 class="form-section">Colors</h3>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="primary_color">Primary Color</label>
+        <input type="color" id="primary_color" name="primary_color" value="<%= tenant.primary_color || '#1a4a8a' %>">
+      </div>
+      <div class="form-group">
+        <label for="accent_color">Accent Color</label>
+        <input type="color" id="accent_color" name="accent_color" value="<%= tenant.accent_color || '#e85d2c' %>">
+      </div>
+    </div>
+
+    <h3 class="form-section">Logo</h3>
+    <div class="form-group">
+      <label for="logo">Upload Logo <span class="hint">(PNG/JPG/SVG, max 3 MB)</span></label>
+      <input type="file" id="logo" name="logo" accept="image/*">
+      <% if (tenant.logo_url) { %>
+        <div class="file-preview">
+          <img src="<%= tenant.logo_url %>" alt="Current logo">
+        </div>
+      <% } %>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">Save Branding</button>
+    </div>
+  </form>
+</div>
+
+<!-- ═══ SMS ═══ -->
+<div class="settings-panel" data-panel="sms">
+  <form method="POST" action="/settings/sms" class="form-card">
+    <h3 class="form-section">SMS Gateway</h3>
+    <p class="text-muted" style="font-size:13px;margin-bottom:16px;">Send automated SMS when subscribers are activated or their plan is about to expire.</p>
+
+    <div class="form-group">
+      <label for="sms_gateway">Provider</label>
+      <select id="sms_gateway" name="sms_gateway">
+        <option value="none" <%= tenant.sms_gateway === 'none' ? 'selected' : '' %>>None (disabled)</option>
+        <option value="africastalking" <%= tenant.sms_gateway === 'africastalking' ? 'selected' : '' %>>Africa's Talking</option>
+        <option value="safaricom" <%= tenant.sms_gateway === 'safaricom' ? 'selected' : '' %>>Safaricom Bulk SMS</option>
+        <option value="twilio" <%= tenant.sms_gateway === 'twilio' ? 'selected' : '' %>>Twilio</option>
+      </select>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="sms_username">API Username</label>
+        <input type="text" id="sms_username" name="sms_username" value="<%= tenant.sms_username || '' %>" placeholder="e.g. fastnet">
+      </div>
+      <div class="form-group">
+        <label for="sms_api_key">API Key</label>
+        <input type="password" id="sms_api_key" name="sms_api_key" value="<%= tenant.sms_api_key || '' %>" placeholder="Your API key">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="sms_sender_id">Sender ID <span class="hint">(max 11 chars, alphanumeric)</span></label>
+      <input type="text" id="sms_sender_id" name="sms_sender_id" value="<%= tenant.sms_sender_id || '' %>" maxlength="11" placeholder="e.g. FASTNET">
+    </div>
+
+    <div class="info-box">
+      <h4>Africa's Talking</h4>
+      <p>1. Sign up at <a href="https://africastalking.com" target="_blank">africastalking.com</a><br>
+         2. Get your API Key from the dashboard<br>
+         3. Request a Sender ID (takes ~2 days to approve)</p>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">Save SMS Settings</button>
+    </div>
+  </form>
+</div>
+
+<!-- ═══ PAYMENT ═══ -->
+<div class="settings-panel" data-panel="payment">
+  <form method="POST" action="/settings/payment" class="form-card">
+    <h3 class="form-section">Payment Gateway</h3>
+    <p class="text-muted" style="font-size:13px;margin-bottom:16px;">Configure how subscribers pay. M-PESA integration is coming soon — for now, admins mark payments complete manually.</p>
+
+    <div class="form-group">
+      <label for="payment_gateway">Payment Method</label>
+      <select id="payment_gateway" name="payment_gateway">
+        <option value="none" <%= tenant.payment_gateway === 'none' ? 'selected' : '' %>>None (manual)</option>
+        <option value="paybill" <%= tenant.payment_gateway === 'paybill' ? 'selected' : '' %>>M-PESA Paybill</option>
+        <option value="till" <%= tenant.payment_gateway === 'till' ? 'selected' : '' %>>M-PESA Buy Goods (Till)</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="payment_shortcode">Shortcode <span class="hint">(Paybill or Till number)</span></label>
+      <input type="text" id="payment_shortcode" name="payment_shortcode" value="<%= tenant.payment_shortcode || '' %>" placeholder="e.g. 123456">
+    </div>
+
+    <div class="info-box">
+      <h4>M-PESA Daraja Integration</h4>
+      <p>The full M-PESA STK Push (auto-activation) will be added in Phase 4.7. Until then, subscribers create payment requests and admins mark them complete from the <a href="/payments">Payments</a> page.</p>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">Save Payment Settings</button>
+    </div>
+  </form>
+</div>
+
+<!-- ═══ PASSWORD ═══ -->
+<div class="settings-panel" data-panel="password">
+  <form method="POST" action="/settings/password" class="form-card">
+    <h3 class="form-section">Change Password</h3>
+
+    <div class="form-group">
+      <label for="current_password">Current Password *</label>
+      <input type="password" id="current_password" name="current_password" required>
+    </div>
+
+    <div class="form-group">
+      <label for="new_password">New Password *</label>
+      <input type="password" id="new_password" name="new_password" required minlength="6" placeholder="At least 6 characters">
+    </div>
+
+    <div class="form-group">
+      <label for="confirm_password">Confirm New Password *</label>
+      <input type="password" id="confirm_password" name="confirm_password" required minlength="6">
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">Update Password</button>
+    </div>
+  </form>
+</div>
+
+<script>
+(function() {
+  var tabs = document.querySelectorAll('.settings-tab');
+  var panels = document.querySelectorAll('.settings-panel');
+
+  tabs.forEach(function(tab) {
+    tab.addEventListener('click', function() {
+      var name = tab.getAttribute('data-tab');
+      tabs.forEach(function(t) { t.classList.toggle('active', t === tab); });
+      panels.forEach(function(p) { p.classList.toggle('active', p.getAttribute('data-panel') === name); });
+      // Persist in URL hash
+      history.replaceState(null, '', '#' + name);
+    });
+  });
+
+  // Restore from hash
+  var hash = (location.hash || '').replace('#', '');
+  if (hash) {
+    var target = document.querySelector('.settings-tab[data-tab="' + hash + '"]');
+    if (target) target.click();
+  }
+})();
+</script>

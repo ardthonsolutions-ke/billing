@@ -1048,3 +1048,63 @@
   white-space: pre-wrap;
   word-wrap: break-word;
 }
+
+/* ═══════════════════════════════════════════
+   Settings tabs
+   ═══════════════════════════════════════════ */
+.settings-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 20px;
+  background: var(--white);
+  padding: 6px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.settings-tab {
+  flex: 1;
+  min-width: 90px;
+  padding: 10px 14px;
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.settings-tab:hover {
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.settings-tab.active {
+  background: var(--brand);
+  color: #fff;
+}
+
+.settings-panel {
+  display: none;
+}
+
+.settings-panel.active {
+  display: block;
+}
+
+@media (max-width: 640px) {
+  .settings-tabs {
+    gap: 2px;
+  }
+  .settings-tab {
+    padding: 10px 8px;
+    font-size: 12px;
+    min-width: 70px;
+  }
+}

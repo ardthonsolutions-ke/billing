@@ -57,14 +57,14 @@
         <span class="nav-icon">◉</span> Users
       </a>
     </div>
-    <% } else if (currentUser) { %>
+    <% } %>
+
     <div class="nav-section">
-      <div class="nav-section-title">Management</div>
-      <a href="/users" class="nav-link <%= currentPath.startsWith('/users') ? 'active' : '' %>">
-        <span class="nav-icon">◉</span> Users
+      <div class="nav-section-title">System</div>
+      <a href="/settings" class="nav-link <%= currentPath.startsWith('/settings') ? 'active' : '' %>">
+        <span class="nav-icon">⚙</span> Settings
       </a>
     </div>
-    <% } %>
   </nav>
 
   <div class="sidebar-footer">

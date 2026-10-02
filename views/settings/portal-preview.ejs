@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portal Preview — <%= tenant.name %></title>
+  <link rel="stylesheet" href="/css/portal.css">
+  <style>
+    :root {
+      --p-brand: <%= tenant.primary_color || '#1a4a8a' %>;
+      --p-accent: <%= tenant.accent_color || '#e85d2c' %>;
+    }
+    body { background: var(--p-bg); }
+    .preview-banner {
+      background: #1a4a8a;
+      color: #fff;
+      text-align: center;
+      padding: 10px;
+      font-size: 13px;
+    }
+    .preview-banner a { color: #fff; text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <div class="preview-banner">
+    Portal preview — this is what subscribers will see
+    <a href="/settings" style="margin-left:16px;">← Back to settings</a>
+  </div>
+
+  <div class="portal-shell">
+    <header class="portal-header">
+      <a href="#" class="portal-brand">
+        <div class="portal-brand-logo">
+          <% if (tenant.logo_url) { %>
+            <img src="<%= tenant.logo_url %>" alt="">
+          <% } else { %>
+            <%= tenant.name.substring(0,2).toUpperCase() %>
+          <% } %>
+        </div>
+        <div class="portal-brand-text">
+          <h1><%= tenant.name %></h1>
+          <% if (tenant.tagline) { %>
+            <div class="tagline"><%= tenant.tagline %></div>
+          <% } %>
+        </div>
+      </a>
+    </header>
+
+    <% if (tenant.advert_image_url) { %>
+      <a href="<%= tenant.advert_link || '#' %>" style="display:block;margin-bottom:20px;border-radius:12px;overflow:hidden;">
+        <img src="<%= tenant.advert_image_url %>" alt="Advert" style="width:100%;display:block;">
+      </a>
+    <% } %>
+
+    <div class="p-card">
+      <h2>Welcome</h2>
+      <% if (tenant.portal_welcome) { %>
+        <p class="subtitle"><%= tenant.portal_welcome %></p>
+      <% } else { %>
+        <p class="subtitle">Get online in seconds. Choose a plan below.</p>
+      <% } %>
+
+      <div class="plans-grid" style="margin-top:20px;">
+        <div class="plan-card">
+          <div class="plan-name">Hourly Plan</div>
+          <div class="plan-price">KSh 20 <small>/ hour</small></div>
+          <ul class="plan-details">
+            <li>1 hour access</li>
+            <li>100 MB data</li>
+            <li>Fast speed</li>
+          </ul>
+          <a href="#" class="p-btn p-btn-accent p-btn-block">Buy Now</a>
+        </div>
+        <div class="plan-card">
+          <div class="plan-name">Daily Plan</div>
+          <div class="plan-price">KSh 50 <small>/ day</small></div>
+          <ul class="plan-details">
+            <li>24 hours access</li>
+            <li>1 GB data</li>
+            <li>Fast speed</li>
+          </ul>
+          <a href="#" class="p-btn p-btn-accent p-btn-block">Buy Now</a>
+        </div>
+        <div class="plan-card">
+          <div class="plan-name">Weekly Plan</div>
+          <div class="plan-price">KSh 250 <small>/ week</small></div>
+          <ul class="plan-details">
+            <li>7 days access</li>
+            <li>5 GB data</li>
+            <li>Fast speed</li>
+          </ul>
+          <a href="#" class="p-btn p-btn-accent p-btn-block">Buy Now</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="p-card">
+      <h3 style="margin:0 0 12px;">Need help?</h3>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;font-size:14px;">
+        <% if (tenant.support_phone) { %>
+          <a href="tel:<%= tenant.support_phone %>" class="p-btn">📞 <%= tenant.support_phone %></a>
+        <% } %>
+        <% if (tenant.support_whatsapp) { %>
+          <a href="https://wa.me/<%= tenant.support_whatsapp.replace(/[^0-9]/g,'') %>" class="p-btn" target="_blank">💬 WhatsApp</a>
+        <% } %>
+        <% if (tenant.support_email) { %>
+          <a href="mailto:<%= tenant.support_email %>" class="p-btn">✉ Email</a>
+        <% } %>
+      </div>
+    </div>
+
+    <footer class="portal-footer">
+      &copy; <%= new Date().getFullYear() %> <%= tenant.name %>
+      <% if (tenant.portal_terms) { %>
+        · <a href="#">Terms</a>
+      <% } %>
+    </footer>
+  </div>
+</body>
+</html>

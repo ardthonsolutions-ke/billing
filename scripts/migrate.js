@@ -15,7 +15,6 @@ const mysql = require('mysql2/promise');
 
   console.log('[Migrate] Connected to', process.env.DB_NAME);
 
-  // Ensure migration tracking table exists
   await conn.query(`
     CREATE TABLE IF NOT EXISTS _migrations (
       id INT AUTO_INCREMENT PRIMARY KEY,
@@ -28,7 +27,9 @@ const mysql = require('mysql2/promise');
   const appliedSet = new Set(applied.map(r => r.filename));
 
   const dir = path.join(__dirname, '..', 'migrations');
-  const files = fs.readdirSync(dir).filter(f => f.endsWith('.sql')).sort();
+  const files = fs.readdirSync(dir)
+    .filter(f => f.endsWith('.sql') || f.endsWith('.js'))
+    .sort();
 
   let count = 0;
   for (const file of files) {
@@ -37,10 +38,21 @@ const mysql = require('mysql2/promise');
       continue;
     }
     console.log('[Migrate] Applying:', file);
-    const sql = fs.readFileSync(path.join(dir, file), 'utf8');
-    await conn.query(sql);
-    await conn.query('INSERT INTO _migrations (filename) VALUES (?)', [file]);
-    count++;
+    try {
+      if (file.endsWith('.sql')) {
+        const sql = fs.readFileSync(path.join(dir, file), 'utf8');
+        await conn.query(sql);
+      } else {
+        const mod = require(path.join(dir, file));
+        await mod(conn);
+      }
+      await conn.query('INSERT INTO _migrations (filename) VALUES (?)', [file]);
+      count++;
+    } catch (err) {
+      console.error('[Migrate] FAILED on', file, ':', err.message);
+      await conn.end();
+      process.exit(1);
+    }
   }
 
   console.log(`[Migrate] Done. ${count} new migration(s) applied.`);
