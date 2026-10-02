@@ -59,8 +59,6 @@ app.set('views', path.join(__dirname, 'views'));
 // ── Layout engine ──
 app.use(expressLayouts);
 app.set('layout', 'layouts/main');
-app.set('layout extractScripts', true);
-app.set('layout extractStyles', true);
 
 // ── Inject common locals ──
 app.use((req, res, next) => {
