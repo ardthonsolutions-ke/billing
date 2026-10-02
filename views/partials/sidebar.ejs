@@ -32,6 +32,9 @@
       <a href="/payments" class="nav-link <%= currentPath.startsWith('/payments') ? 'active' : '' %>">
         <span class="nav-icon">₭</span> Payments
       </a>
+      <a href="/reports" class="nav-link <%= currentPath.startsWith('/reports') ? 'active' : '' %>">
+        <span class="nav-icon">▩</span> Reports
+      </a>
     </div>
 
     <% if (currentUser && currentUser.role === 'super_admin') { %>

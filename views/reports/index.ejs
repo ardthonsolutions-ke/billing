@@ -1,0 +1,218 @@
+<div class="page-header">
+  <h2>Reports & Analytics</h2>
+  <p class="text-muted">Business insights for your ISP</p>
+</div>
+
+<!-- KPI Cards -->
+<div class="kpi-grid">
+  <div class="kpi-card kpi-highlight">
+    <div class="kpi-label">Revenue Today</div>
+    <div class="kpi-value">KSh <%= Number(revenue.today).toLocaleString() %></div>
+    <div class="kpi-sub">Completed payments</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">Last 7 Days</div>
+    <div class="kpi-value">KSh <%= Number(revenue.week).toLocaleString() %></div>
+    <div class="kpi-sub">Rolling week</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">Last 30 Days</div>
+    <div class="kpi-value">KSh <%= Number(revenue.month).toLocaleString() %></div>
+    <div class="kpi-sub">Rolling month</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">All Time</div>
+    <div class="kpi-value">KSh <%= Number(revenue.all_time).toLocaleString() %></div>
+    <div class="kpi-sub">Since first payment</div>
+  </div>
+</div>
+
+<!-- Subscriber snapshot -->
+<div class="kpi-grid">
+  <div class="kpi-card">
+    <div class="kpi-label">Active Subscribers</div>
+    <div class="kpi-value"><%= subCounts.active || 0 %></div>
+    <div class="kpi-sub">Currently online</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">Pending</div>
+    <div class="kpi-value"><%= subCounts.pending || 0 %></div>
+    <div class="kpi-sub">Awaiting activation</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">Expired</div>
+    <div class="kpi-value"><%= subCounts.expired || 0 %></div>
+    <div class="kpi-sub">Need renewal</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">Total Subscribers</div>
+    <div class="kpi-value"><%= subCounts.total || 0 %></div>
+    <div class="kpi-sub">All time</div>
+  </div>
+</div>
+
+<!-- Daily Revenue Chart -->
+<div class="report-section">
+  <h3>Daily Revenue — Last 14 Days</h3>
+  <% if (dailyRevenue && dailyRevenue.length > 0) { %>
+    <%
+      // Fill missing days with 0
+      var revenueByDay = {};
+      dailyRevenue.forEach(function(r) {
+        var key = new Date(r.day).toISOString().slice(0,10);
+        revenueByDay[key] = Number(r.total);
+      });
+      var days = [];
+      var maxRevenue = 1;
+      for (var i = 13; i >= 0; i--) {
+        var d = new Date();
+        d.setDate(d.getDate() - i);
+        var key = d.toISOString().slice(0,10);
+        var v = revenueByDay[key] || 0;
+        if (v > maxRevenue) maxRevenue = v;
+        days.push({ key: key, label: d.toLocaleDateString('en', {day:'numeric', month:'short'}), value: v });
+      }
+    %>
+    <div class="chart-bars">
+      <% days.forEach(function(day) { %>
+        <div class="bar-wrap">
+          <div class="bar-value"><%= day.value > 0 ? day.value : '' %></div>
+          <div class="bar" style="height: <%= Math.max(2, (day.value / maxRevenue) * 100) %>%" title="<%= day.label %>: KSh <%= day.value %>"></div>
+        </div>
+      <% }); %>
+    </div>
+    <div class="chart-labels">
+      <% days.forEach(function(day) { %>
+        <div style="flex:1;text-align:center;font-size:9px;"><%= day.label.split(' ')[0] %></div>
+      <% }); %>
+    </div>
+  <% } else { %>
+    <div class="chart-empty">No revenue data yet. Charts will appear once subscribers pay.</div>
+  <% } %>
+</div>
+
+<!-- Two-column: subscribers + payments donut -->
+<div class="report-grid-2">
+  <div class="report-section">
+    <h3>New Subscribers — Last 14 Days</h3>
+    <% if (dailySubs && dailySubs.length > 0) { %>
+      <%
+        var subsByDay = {};
+        dailySubs.forEach(function(r) {
+          var key = new Date(r.day).toISOString().slice(0,10);
+          subsByDay[key] = Number(r.count);
+        });
+        var subDays = [];
+        var maxSubs = 1;
+        for (var i = 13; i >= 0; i--) {
+          var d = new Date();
+          d.setDate(d.getDate() - i);
+          var key = d.toISOString().slice(0,10);
+          var v = subsByDay[key] || 0;
+          if (v > maxSubs) maxSubs = v;
+          subDays.push({ key: key, label: d.toLocaleDateString('en', {day:'numeric'}), value: v });
+        }
+      %>
+      <div class="chart-bars">
+        <% subDays.forEach(function(day) { %>
+          <div class="bar-wrap">
+            <div class="bar-value"><%= day.value > 0 ? day.value : '' %></div>
+            <div class="bar bar-accent" style="height: <%= Math.max(2, (day.value / maxSubs) * 100) %>%"></div>
+          </div>
+        <% }); %>
+      </div>
+      <div class="chart-labels">
+        <% subDays.forEach(function(day) { %>
+          <div style="flex:1;text-align:center;font-size:9px;"><%= day.label %></div>
+        <% }); %>
+      </div>
+    <% } else { %>
+      <div class="chart-empty">No subscriber data yet.</div>
+    <% } %>
+  </div>
+
+  <div class="report-section">
+    <h3>Payment Status</h3>
+    <%
+      var pCompleted = Number(paymentCounts.completed || 0);
+      var pPending = Number(paymentCounts.pending || 0);
+      var pFailed = Number(paymentCounts.failed || 0);
+      var pTotal = pCompleted + pPending + pFailed;
+      var pctCompleted = pTotal ? (pCompleted / pTotal * 100) : 0;
+      var pctPending = pTotal ? (pPending / pTotal * 100) : 0;
+    %>
+    <% if (pTotal > 0) { %>
+      <div class="donut-wrap">
+        <div class="donut" style="background: conic-gradient(
+          #0f7a4d 0% <%= pctCompleted %>%,
+          #b8860b <%= pctCompleted %>% <%= pctCompleted + pctPending %>%,
+          #c0392b <%= pctCompleted + pctPending %>% 100%
+        );">
+          <div class="donut-hole"><%= pTotal %></div>
+        </div>
+        <div class="donut-legend">
+          <div class="legend-item">
+            <div class="legend-dot" style="background:#0f7a4d;"></div>
+            <span class="legend-label">Completed</span>
+            <span class="legend-value"><%= pCompleted %></span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-dot" style="background:#b8860b;"></div>
+            <span class="legend-label">Pending</span>
+            <span class="legend-value"><%= pPending %></span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-dot" style="background:#c0392b;"></div>
+            <span class="legend-label">Failed</span>
+            <span class="legend-value"><%= pFailed %></span>
+          </div>
+        </div>
+      </div>
+    <% } else { %>
+      <div class="chart-empty">No payments yet.</div>
+    <% } %>
+  </div>
+</div>
+
+<!-- Revenue by plan -->
+<div class="report-section">
+  <h3>Top Plans by Revenue</h3>
+  <% if (revenueByPlan && revenueByPlan.length > 0) { %>
+    <%
+      var maxPlanRevenue = 1;
+      revenueByPlan.forEach(function(p) { if (Number(p.total) > maxPlanRevenue) maxPlanRevenue = Number(p.total); });
+    %>
+    <table class="plan-breakdown">
+      <% revenueByPlan.forEach(function(p) { %>
+        <tr>
+          <td>
+            <strong><%= p.plan_name || 'Unknown' %></strong>
+            <div class="plan-bar-track">
+              <div class="plan-bar-fill" style="width: <%= (Number(p.total) / maxPlanRevenue) * 100 %>%"></div>
+            </div>
+            <div style="font-size:12px;color:var(--muted);margin-top:4px;"><%= p.count %> sale(s)</div>
+          </td>
+          <td>KSh <%= Number(p.total).toLocaleString() %></td>
+        </tr>
+      <% }); %>
+    </table>
+  <% } else { %>
+    <div class="chart-empty">No plan sales yet.</div>
+  <% } %>
+</div>
+
+<!-- Tenant breakdown (super admin only) -->
+<% if (tenants && tenants.length > 0) { %>
+<div class="report-section">
+  <h3>All Tenants — Revenue Leaderboard</h3>
+  <% tenants.forEach(function(t) { %>
+    <div class="tenant-row">
+      <div>
+        <div class="name"><%= t.name %></div>
+        <div class="meta"><%= t.sub_count %> subscriber(s)</div>
+      </div>
+      <div class="amount">KSh <%= Number(t.revenue).toLocaleString() %></div>
+    </div>
+  <% }); %>
+</div>
+<% } %>

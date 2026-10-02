@@ -1,0 +1,52 @@
+<div class="page-header with-action">
+  <div>
+    <h2>Revenue Report</h2>
+    <p class="text-muted">Detailed revenue breakdown</p>
+  </div>
+  <a href="/reports" class="btn">← Back to Reports</a>
+</div>
+
+<div class="report-section">
+  <h3>Daily Revenue — Last 60 Days</h3>
+  <% if (daily && daily.length > 0) { %>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Transactions</th>
+          <th>Revenue</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% daily.forEach(function(d) { %>
+          <tr>
+            <td data-label="Date"><%= new Date(d.day).toLocaleDateString('en-KE', { day:'numeric', month:'short', year:'numeric' }) %></td>
+            <td data-label="Transactions"><%= d.count %></td>
+            <td data-label="Revenue"><strong>KSh <%= Number(d.total).toLocaleString() %></strong></td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  <% } else { %>
+    <div class="chart-empty">No revenue data yet.</div>
+  <% } %>
+</div>
+
+<div class="report-section">
+  <h3>Revenue by Payment Method</h3>
+  <% if (byMethod && byMethod.length > 0) { %>
+    <table class="plan-breakdown">
+      <% byMethod.forEach(function(m) { %>
+        <tr>
+          <td><strong><%= m.method.replace('_', ' ').toUpperCase() %></strong></td>
+          <td>
+            KSh <%= Number(m.total).toLocaleString() %>
+            <div style="font-size:12px;color:var(--muted);font-weight:400;"><%= m.count %> transaction(s)</div>
+          </td>
+        </tr>
+      <% }); %>
+    </table>
+  <% } else { %>
+    <div class="chart-empty">No payment methods data yet.</div>
+  <% } %>
+</div>

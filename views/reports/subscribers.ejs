@@ -1,0 +1,91 @@
+<div class="page-header with-action">
+  <div>
+    <h2>Subscriber Report</h2>
+    <p class="text-muted">Subscriber base breakdown</p>
+  </div>
+  <a href="/reports" class="btn">← Back to Reports</a>
+</div>
+
+<div class="report-grid-2">
+  <div class="report-section">
+    <h3>By Status</h3>
+    <% if (byStatus && byStatus.length > 0) { %>
+      <table class="plan-breakdown">
+        <% byStatus.forEach(function(s) { %>
+          <tr>
+            <td><span class="badge badge-<%= s.status === 'active' ? 'success' : (s.status === 'pending' ? 'warn' : 'muted') %>"><%= s.status %></span></td>
+            <td><%= s.count %></td>
+          </tr>
+        <% }); %>
+      </table>
+    <% } else { %>
+      <div class="chart-empty">No subscribers yet.</div>
+    <% } %>
+  </div>
+
+  <div class="report-section">
+    <h3>By Type</h3>
+    <% if (byType && byType.length > 0) { %>
+      <table class="plan-breakdown">
+        <% byType.forEach(function(t) { %>
+          <tr>
+            <td><strong><%= t.type %></strong></td>
+            <td><%= t.count %></td>
+          </tr>
+        <% }); %>
+      </table>
+    <% } else { %>
+      <div class="chart-empty">No subscriber types.</div>
+    <% } %>
+  </div>
+</div>
+
+<div class="report-section">
+  <h3>By Plan</h3>
+  <% if (byPlan && byPlan.length > 0) { %>
+    <table class="plan-breakdown">
+      <% byPlan.forEach(function(p) { %>
+        <tr>
+          <td><strong><%= p.plan_name || 'No plan' %></strong></td>
+          <td><%= p.count %> subscriber(s)</td>
+        </tr>
+      <% }); %>
+    </table>
+  <% } else { %>
+    <div class="chart-empty">No plan assignments yet.</div>
+  <% } %>
+</div>
+
+<div class="report-section">
+  <h3>Recent Subscribers</h3>
+  <% if (recent && recent.length > 0) { %>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Account</th>
+            <th>Name</th>
+            <th>Phone</th>
+            <th>Plan</th>
+            <th>Status</th>
+            <th>Joined</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% recent.forEach(function(s) { %>
+            <tr>
+              <td data-label="Account"><code><%= s.account_number %></code></td>
+              <td data-label="Name"><strong><%= s.full_name %></strong></td>
+              <td data-label="Phone"><%= s.phone %></td>
+              <td data-label="Plan"><%= s.plan_name || '—' %></td>
+              <td data-label="Status"><span class="badge badge-<%= s.status === 'active' ? 'success' : (s.status === 'pending' ? 'warn' : 'muted') %>"><%= s.status %></span></td>
+              <td data-label="Joined" class="text-muted"><%= new Date(s.created_at).toLocaleDateString() %></td>
+            </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    </div>
+  <% } else { %>
+    <div class="chart-empty">No subscribers yet.</div>
+  <% } %>
+</div>

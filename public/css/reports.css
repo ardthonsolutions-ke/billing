@@ -1,0 +1,301 @@
+/* ═══════════════════════════════════════════
+   Reports & Analytics
+   ═══════════════════════════════════════════ */
+
+/* ─── KPI grid ─── */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.kpi-card {
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.kpi-card.kpi-highlight {
+  background: linear-gradient(135deg, var(--brand) 0%, var(--brand-deep) 100%);
+  color: #fff;
+  border-color: transparent;
+}
+
+.kpi-label {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+
+.kpi-highlight .kpi-label { color: rgba(255,255,255,0.8); }
+
+.kpi-value {
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  color: var(--ink);
+  margin-bottom: 4px;
+}
+
+.kpi-highlight .kpi-value { color: #fff; }
+
+.kpi-sub {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.kpi-highlight .kpi-sub { color: rgba(255,255,255,0.75); }
+
+/* ─── Report sections ─── */
+.report-section {
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 20px;
+}
+
+.report-section h3 {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 0 0 20px 0;
+}
+
+.report-section .sub {
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 20px;
+}
+
+.report-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+/* ─── Simple bar chart ─── */
+.chart-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  height: 160px;
+  padding: 0 4px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 8px;
+}
+
+.bar-wrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  min-height: 0;
+  gap: 4px;
+}
+
+.bar {
+  width: 100%;
+  max-width: 40px;
+  background: linear-gradient(180deg, var(--brand) 0%, var(--brand-deep) 100%);
+  border-radius: 4px 4px 0 0;
+  min-height: 2px;
+  transition: opacity 0.15s;
+  position: relative;
+}
+
+.bar:hover {
+  opacity: 0.85;
+}
+
+.bar.bar-accent {
+  background: linear-gradient(180deg, var(--accent) 0%, #c04a1c 100%);
+}
+
+.bar-value {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--ink-soft);
+  white-space: nowrap;
+}
+
+.bar-label {
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 4px;
+  white-space: nowrap;
+  transform: rotate(-45deg);
+  transform-origin: center;
+}
+
+.chart-labels {
+  display: flex;
+  gap: 6px;
+  padding: 0 4px;
+  font-size: 10px;
+  color: var(--muted);
+}
+
+/* ─── Donut / pie via conic-gradient ─── */
+.donut-wrap {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.donut {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.donut-hole {
+  position: absolute;
+  inset: 24px;
+  background: var(--white);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 22px;
+  color: var(--ink);
+}
+
+.donut-legend {
+  flex: 1;
+  min-width: 0;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
+  font-size: 13px;
+}
+
+.legend-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+.legend-label { flex: 1; }
+
+.legend-value {
+  font-weight: 700;
+  color: var(--ink);
+}
+
+/* ─── Plan breakdown table ─── */
+.plan-breakdown {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.plan-breakdown tr {
+  border-bottom: 1px solid var(--line);
+}
+
+.plan-breakdown tr:last-child { border-bottom: none; }
+
+.plan-breakdown td {
+  padding: 12px 0;
+  font-size: 14px;
+}
+
+.plan-breakdown td:last-child {
+  text-align: right;
+  font-weight: 700;
+}
+
+.plan-bar-track {
+  height: 6px;
+  background: var(--paper-2);
+  border-radius: 100px;
+  overflow: hidden;
+  margin-top: 6px;
+}
+
+.plan-bar-fill {
+  height: 100%;
+  background: var(--brand);
+  border-radius: 100px;
+}
+
+.plan-bar-fill.accent { background: var(--accent); }
+
+/* ─── Empty state inline ─── */
+.chart-empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+/* ─── Tenant table ─── */
+.tenant-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+  gap: 12px;
+  font-size: 14px;
+}
+
+.tenant-row:last-child { border-bottom: none; }
+
+.tenant-row .name {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.tenant-row .meta {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.tenant-row .amount {
+  font-weight: 700;
+  color: var(--brand);
+  white-space: nowrap;
+}
+
+/* ─── Mobile ─── */
+@media (max-width: 768px) {
+  .kpi-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .kpi-card { padding: 14px; }
+  .kpi-value { font-size: 20px; }
+
+  .report-section { padding: 16px; }
+
+  .report-grid-2 {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .chart-bars { height: 120px; }
+
+  .donut-wrap { justify-content: center; }
+
+  .bar-label {
+    font-size: 8px;
+  }
+}
