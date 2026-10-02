@@ -1,0 +1,96 @@
+<div class="page-header with-action">
+  <div>
+    <h2>Payments</h2>
+    <p class="text-muted">Manage subscriber payments and activate accounts</p>
+  </div>
+</div>
+
+<!-- Summary tiles -->
+<div class="stats-grid">
+  <div class="stat-card stat-accent">
+    <div class="stat-label">Pending</div>
+    <div class="stat-value"><%= summary.pending_count || 0 %></div>
+    <div class="stat-hint">Awaiting action</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Completed</div>
+    <div class="stat-value"><%= summary.completed_count || 0 %></div>
+    <div class="stat-hint">Total all time</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Failed</div>
+    <div class="stat-value"><%= summary.failed_count || 0 %></div>
+    <div class="stat-hint">Cancelled or failed</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Today's Revenue</div>
+    <div class="stat-value">KSh <%= Number(summary.today_revenue || 0).toLocaleString() %></div>
+    <div class="stat-hint">Completed payments today</div>
+  </div>
+</div>
+
+<!-- Filter bar -->
+<form method="GET" action="/payments" class="filter-bar">
+  <input type="text" name="q" value="<%= search %>" placeholder="Search name, phone, ref...">
+  <select name="status">
+    <option value="pending" <%= filterStatus === 'pending' ? 'selected' : '' %>>Pending</option>
+    <option value="completed" <%= filterStatus === 'completed' ? 'selected' : '' %>>Completed</option>
+    <option value="failed" <%= filterStatus === 'failed' ? 'selected' : '' %>>Failed</option>
+    <option value="cancelled" <%= filterStatus === 'cancelled' ? 'selected' : '' %>>Cancelled</option>
+    <option value="all" <%= filterStatus === 'all' ? 'selected' : '' %>>All</option>
+  </select>
+  <button type="submit" class="btn btn-primary">Filter</button>
+  <a href="/payments" class="btn">Clear</a>
+</form>
+
+<% if (payments.length === 0) { %>
+  <div class="empty-state">
+    <h3>No payments found</h3>
+    <p>Try a different filter, or <%= filterStatus === 'pending' ? 'wait for subscribers to buy plans' : 'check another status tab' %>.</p>
+  </div>
+<% } else { %>
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Subscriber</th>
+          <th>Plan</th>
+          <th>Amount</th>
+          <th>Method</th>
+          <th>Status</th>
+          <th>Created</th>
+          <th class="actions-col">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% payments.forEach(function(p) { %>
+          <tr>
+            <td data-label="Subscriber">
+              <strong><%= p.subscriber_name || '—' %></strong>
+              <% if (p.subscriber_phone) { %>
+                <div class="text-muted" style="font-size:12px;"><%= p.subscriber_phone %></div>
+              <% } %>
+              <% if (p.account_number) { %>
+                <div class="text-muted" style="font-size:11px;"><code><%= p.account_number %></code></div>
+              <% } %>
+            </td>
+            <td data-label="Plan"><%= p.plan_name || '—' %></td>
+            <td data-label="Amount"><strong>KSh <%= Number(p.amount).toLocaleString() %></strong></td>
+            <td data-label="Method"><%= p.method %></td>
+            <td data-label="Status">
+              <span class="badge badge-<%= p.status === 'completed' ? 'success' : (p.status === 'pending' ? 'warn' : 'muted') %>">
+                <%= p.status %>
+              </span>
+            </td>
+            <td data-label="Created" class="text-muted">
+              <%= new Date(p.created_at).toLocaleString() %>
+            </td>
+            <td class="actions-col">
+              <a href="/payments/<%= p.id %>" class="btn btn-sm">View</a>
+            </td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  </div>
+<% } %>

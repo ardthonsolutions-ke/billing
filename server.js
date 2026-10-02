@@ -101,6 +101,7 @@ app.use('/', require('./routes/tenants'));
 app.use('/', require('./routes/users'));
 app.use('/', require('./routes/plans'));
 app.use('/', require('./routes/subscribers'));
+app.use('/', require('./routes/payments'));
 app.use('/', require('./routes/routers'));
 
 // ── Root redirect ──

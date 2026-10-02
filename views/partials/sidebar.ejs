@@ -27,6 +27,13 @@
       </a>
     </div>
 
+    <div class="nav-section">
+      <div class="nav-section-title">Billing</div>
+      <a href="/payments" class="nav-link <%= currentPath.startsWith('/payments') ? 'active' : '' %>">
+        <span class="nav-icon">₭</span> Payments
+      </a>
+    </div>
+
     <% if (currentUser && currentUser.role === 'super_admin') { %>
     <div class="nav-section">
       <div class="nav-section-title">Administration</div>
@@ -48,13 +55,10 @@
 
     <div class="nav-section">
       <div class="nav-section-title">Coming Soon</div>
-      <a href="#" class="nav-link disabled" title="Phase 4">
-        <span class="nav-icon">₭</span> Payments
-      </a>
-      <a href="#" class="nav-link disabled" title="Phase 4">
+      <a href="#" class="nav-link disabled" title="Phase 4.5">
         <span class="nav-icon">✎</span> Tickets
       </a>
-      <a href="#" class="nav-link disabled" title="Phase 4">
+      <a href="#" class="nav-link disabled" title="Phase 4.6">
         <span class="nav-icon">▩</span> Reports
       </a>
     </div>

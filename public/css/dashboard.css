@@ -962,3 +962,38 @@
   background: #fff;
   padding: 4px;
 }
+
+/* ═══════════════════════════════════════════
+   Block 4.4 — Payments action bar
+   ═══════════════════════════════════════════ */
+.p-action-bar {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  padding: 16px;
+  background: var(--white);
+  border-radius: 12px;
+  border: 1px solid var(--line);
+}
+
+.p-btn-lg {
+  padding: 14px 22px;
+  font-size: 15px;
+  font-weight: 700;
+  min-height: 52px;
+}
+
+@media (max-width: 768px) {
+  .p-action-bar {
+    flex-direction: column;
+    gap: 10px;
+  }
+  .p-action-bar .inline-form {
+    width: 100%;
+  }
+  .p-btn-lg {
+    width: 100%;
+    justify-content: center;
+  }
+}

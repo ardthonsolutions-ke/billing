@@ -1,0 +1,93 @@
+<div class="page-header with-action">
+  <div>
+    <h2>Payment #<%= payment.id %></h2>
+    <p class="text-muted">
+      <%= payment.subscriber_name || '—' %> ·
+      KSh <%= Number(payment.amount).toLocaleString() %> ·
+      <span class="badge badge-<%= payment.status === 'completed' ? 'success' : (payment.status === 'pending' ? 'warn' : 'muted') %>">
+        <%= payment.status %>
+      </span>
+    </p>
+  </div>
+  <a href="/payments" class="btn">Back to Payments</a>
+</div>
+
+<!-- Action buttons — big and mobile-friendly -->
+<% if (payment.status === 'pending') { %>
+  <div class="p-action-bar">
+    <form method="POST" action="/payments/<%= payment.id %>/complete" class="inline-form" style="flex:1;">
+      <button type="submit" class="btn btn-primary p-btn-lg" style="width:100%;">✓ Mark as Completed & Activate</button>
+    </form>
+    <form method="POST" action="/payments/<%= payment.id %>/fail" class="inline-form">
+      <button type="submit" class="btn p-btn-lg">✗ Mark Failed</button>
+    </form>
+    <form method="POST" action="/payments/<%= payment.id %>/cancel" class="inline-form">
+      <button type="submit" class="btn p-btn-lg">Cancel</button>
+    </form>
+  </div>
+<% } %>
+
+<div class="detail-grid">
+  <div class="detail-card">
+    <h3>Payment</h3>
+    <table class="kv-table">
+      <tr><td>Amount</td><td><strong>KSh <%= Number(payment.amount).toLocaleString() %></strong></td></tr>
+      <tr><td>Method</td><td><%= payment.method %></td></tr>
+      <tr><td>Status</td><td><span class="badge badge-<%= payment.status === 'completed' ? 'success' : (payment.status === 'pending' ? 'warn' : 'muted') %>"><%= payment.status %></span></td></tr>
+      <tr><td>Reference</td><td><code style="font-size:11px;"><%= payment.reference || '—' %></code></td></tr>
+      <tr><td>M-PESA Receipt</td><td><%= payment.mpesa_receipt || '—' %></td></tr>
+      <tr><td>Created</td><td><%= new Date(payment.created_at).toLocaleString() %></td></tr>
+      <tr><td>Completed</td><td><%= payment.completed_at ? new Date(payment.completed_at).toLocaleString() : '—' %></td></tr>
+    </table>
+  </div>
+
+  <div class="detail-card">
+    <h3>Subscriber</h3>
+    <% if (payment.subscriber_id) { %>
+      <table class="kv-table">
+        <tr><td>Name</td><td><%= payment.subscriber_name %></td></tr>
+        <tr><td>Phone</td><td><%= payment.subscriber_phone %></td></tr>
+        <tr><td>Account #</td><td><code><%= payment.account_number %></code></td></tr>
+        <tr><td>Status</td><td><span class="badge badge-<%= payment.subscriber_status === 'active' ? 'success' : 'muted' %>"><%= payment.subscriber_status %></span></td></tr>
+        <tr>
+          <td>Current Expiry</td>
+          <td><%= payment.subscriber_expires_at ? new Date(payment.subscriber_expires_at).toLocaleString() : '—' %></td>
+        </tr>
+      </table>
+      <div style="margin-top:12px;">
+        <a href="/subscribers/<%= payment.subscriber_id %>" class="btn btn-sm">View Subscriber →</a>
+      </div>
+    <% } else { %>
+      <p class="text-muted">No subscriber attached.</p>
+    <% } %>
+  </div>
+</div>
+
+<div class="detail-card">
+  <h3>Plan</h3>
+  <% if (payment.plan_name) { %>
+    <table class="kv-table">
+      <tr><td>Plan</td><td><strong><%= payment.plan_name %></strong></td></tr>
+      <tr><td>Duration</td><td><%= payment.duration_hours ? payment.duration_hours + ' hours' : 'Unlimited' %></td></tr>
+      <tr>
+        <td>Data Cap</td>
+        <td><%= payment.data_cap_mb ? (payment.data_cap_mb >= 1024 ? Math.round(payment.data_cap_mb/1024) + ' GB' : payment.data_cap_mb + ' MB') : 'Unlimited' %></td>
+      </tr>
+    </table>
+    <% if (payment.status === 'pending' && payment.duration_hours) { %>
+      <div class="info-box" style="margin-top:16px;">
+        <strong>On completion:</strong> subscriber's expiry will be extended by <strong><%= payment.duration_hours %> hours</strong>.
+        If their current plan is still active, extension starts from their existing expiry.
+      </div>
+    <% } %>
+  <% } else { %>
+    <p class="text-muted">No plan attached.</p>
+  <% } %>
+</div>
+
+<% if (payment.notes) { %>
+  <div class="detail-card">
+    <h3>Notes</h3>
+    <pre style="white-space:pre-wrap;font-family:inherit;font-size:13px;color:var(--ink-soft);"><%= payment.notes %></pre>
+  </div>
+<% } %>
