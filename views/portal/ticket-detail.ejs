@@ -1,0 +1,44 @@
+<%- include('layout', { title: 'Ticket', tenant: tenant, subscriber: subscriber, portalBase: portalBase, flash: flash, body: '' }) %>
+
+<div class="p-card">
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;margin-bottom:20px;">
+    <div>
+      <h2 style="margin:0 0 6px;"><%= ticket.subject %></h2>
+      <p class="subtitle" style="margin:0;">
+        <code><%= ticket.ticket_number %></code> ·
+        <span class="p-badge p-badge-<%= ticket.status === 'open' ? 'active' : (ticket.status === 'pending' ? 'pending' : (ticket.status === 'resolved' ? 'active' : 'suspended')) %>"><%= ticket.status %></span>
+      </p>
+    </div>
+    <a href="<%= portalBase %>/tickets" class="p-btn">← All Tickets</a>
+  </div>
+
+  <div class="p-ticket-thread">
+    <% if (messages.length === 0) { %>
+      <p style="color:var(--p-muted);text-align:center;padding:20px 0;">No messages yet. Add a reply below.</p>
+    <% } else { %>
+      <% messages.forEach(function(m) { %>
+        <div class="p-ticket-msg p-ticket-msg-<%= m.sender_type %>">
+          <div class="p-ticket-msg-head">
+            <strong><%= m.sender_type === 'staff' ? 'Support Team' : (m.sender_name || 'You') %></strong>
+            <span class="p-ticket-msg-time"><%= new Date(m.created_at).toLocaleString() %></span>
+          </div>
+          <div class="p-ticket-msg-body"><%= m.body %></div>
+        </div>
+      <% }); %>
+    <% } %>
+  </div>
+
+  <% if (ticket.status !== 'closed') { %>
+    <form method="POST" action="<%= portalBase %>/tickets/<%= ticket.id %>/reply" style="margin-top:24px;padding-top:20px;border-top:1px solid var(--p-border);">
+      <div class="p-form-group">
+        <label for="body">Add a reply</label>
+        <textarea id="body" name="body" rows="4" required placeholder="Type your message..." style="width:100%;padding:11px 14px;border:1px solid var(--p-border);border-radius:8px;font-family:inherit;font-size:14px;resize:vertical;"></textarea>
+      </div>
+      <button type="submit" class="p-btn p-btn-primary" style="width:100%;justify-content:center;">Send Reply</button>
+    </form>
+  <% } else { %>
+    <div class="p-alert p-alert-info" style="margin-top:20px;">
+      This ticket has been closed. If you need more help, please <a href="<%= portalBase %>/tickets/new" style="color:inherit;text-decoration:underline;">open a new ticket</a>.
+    </div>
+  <% } %>
+</div>

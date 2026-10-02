@@ -1,0 +1,37 @@
+<%- include('layout', { title: 'Support', tenant: tenant, subscriber: subscriber, portalBase: portalBase, flash: flash, body: '' }) %>
+
+<div class="p-card">
+  <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:20px;">
+    <div>
+      <h2 style="margin:0;">Support</h2>
+      <p class="subtitle" style="margin:4px 0 0;">Get help with your internet service</p>
+    </div>
+    <a href="<%= portalBase %>/tickets/new" class="p-btn p-btn-primary">+ New Request</a>
+  </div>
+
+  <% if (!tickets || tickets.length === 0) { %>
+    <div style="text-align:center;padding:40px 20px;">
+      <div style="font-size:48px;opacity:0.3;">✎</div>
+      <h3 style="margin:12px 0 6px;">No support requests yet</h3>
+      <p style="color:var(--p-muted);margin-bottom:20px;">If you have an issue, we're here to help.</p>
+      <a href="<%= portalBase %>/tickets/new" class="p-btn p-btn-primary">Open a Request</a>
+    </div>
+  <% } else { %>
+    <div class="p-ticket-list">
+      <% tickets.forEach(function(t) { %>
+        <a href="<%= portalBase %>/tickets/<%= t.id %>" class="p-ticket-item">
+          <div class="p-ticket-main">
+            <div class="p-ticket-subject"><%= t.subject %></div>
+            <div class="p-ticket-meta">
+              <code><%= t.ticket_number %></code> ·
+              <%= new Date(t.updated_at).toLocaleDateString() %>
+            </div>
+          </div>
+          <div class="p-ticket-badges">
+            <span class="p-badge p-badge-<%= t.status === 'open' ? 'active' : (t.status === 'pending' ? 'pending' : 'suspended') %>"><%= t.status %></span>
+          </div>
+        </a>
+      <% }); %>
+    </div>
+  <% } %>
+</div>

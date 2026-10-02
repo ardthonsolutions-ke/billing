@@ -251,6 +251,187 @@ router.get('/portal/history', ensureTenant, requireSubscriber, async (req, res) 
 });
 
 // ─── No tenant (fallback page) ───
+
+// ═══════════════════════════════════════════════════════════
+// SUBSCRIBER TICKETS
+// ═══════════════════════════════════════════════════════════
+
+// ─── List my tickets ───
+router.get('/portal/tickets', ensureTenant, requireSubscriber, async (req, res) => {
+  const sid = req.session.subscriber.id;
+
+  const [tickets] = await req.db.query(`
+    SELECT id, ticket_number, subject, category, priority, status,
+           created_at, updated_at
+    FROM tickets
+    WHERE subscriber_id = ?
+    ORDER BY updated_at DESC
+    LIMIT 100
+  `, [sid]);
+
+  res.render('portal/tickets', {
+    layout: false,
+    title: 'Support',
+    tenant: req.tenant,
+    subscriber: req.session.subscriber,
+    portalBase: portalBase(req),
+    tickets
+  });
+});
+
+// ─── New ticket form ───
+router.get('/portal/tickets/new', ensureTenant, requireSubscriber, (req, res) => {
+  res.render('portal/ticket-new', {
+    layout: false,
+    title: 'New Support Request',
+    tenant: req.tenant,
+    subscriber: req.session.subscriber,
+    portalBase: portalBase(req)
+  });
+});
+
+// ─── Create ticket ───
+router.post('/portal/tickets/new', ensureTenant, requireSubscriber, async (req, res) => {
+  const sid = req.session.subscriber.id;
+  const tenantId = req.tenant.id;
+  const { subject, category, message } = req.body;
+
+  if (!subject || !subject.trim()) {
+    req.flash('error', 'Subject is required.');
+    return res.redirect(portalBase(req) + '/tickets/new');
+  }
+
+  try {
+    // Generate ticket number
+    const ym = new Date().toISOString().slice(0,7).replace('-', '');
+    const [c] = await req.db.query(
+      "SELECT COUNT(*) + 1 AS n FROM tickets WHERE tenant_id = ? AND ticket_number LIKE ?",
+      [tenantId, 'TKT-' + ym + '-%']
+    );
+    const ticketNumber = 'TKT-' + ym + '-' + String(c[0].n).padStart(4, '0');
+
+    // Get subscriber details for contact info
+    const [subs] = await req.db.query(
+      'SELECT full_name, phone, email FROM subscribers WHERE id = ?',
+      [sid]
+    );
+    const sub = subs[0];
+
+    const [result] = await req.db.query(
+      `INSERT INTO tickets
+        (tenant_id, subscriber_id, ticket_number, subject, category, priority,
+         contact_name, contact_phone, contact_email, created_by)
+       VALUES (?, ?, ?, ?, ?, 'normal', ?, ?, ?, NULL)`,
+      [tenantId, sid, ticketNumber, subject.trim(), category || 'general',
+       sub.full_name, sub.phone, sub.email || null]
+    );
+
+    // Initial message
+    if (message && message.trim()) {
+      await req.db.query(
+        `INSERT INTO ticket_messages (ticket_id, sender_type, sender_id, sender_name, body)
+         VALUES (?, 'subscriber', ?, ?, ?)`,
+        [result.insertId, sid, sub.full_name, message.trim()]
+      );
+    }
+
+    req.flash('success', 'Ticket ' + ticketNumber + ' opened. Our team will respond shortly.');
+    res.redirect(portalBase(req) + '/tickets/' + result.insertId);
+  } catch (err) {
+    console.error('[Portal Tickets] create error:', err.message);
+    req.flash('error', 'Failed to open ticket. Please try again.');
+    res.redirect(portalBase(req) + '/tickets/new');
+  }
+});
+
+// ─── View ticket + thread ───
+router.get('/portal/tickets/:id', ensureTenant, requireSubscriber, async (req, res) => {
+  const sid = req.session.subscriber.id;
+
+  const [rows] = await req.db.query(
+    `SELECT * FROM tickets WHERE id = ? AND subscriber_id = ?`,
+    [req.params.id, sid]
+  );
+  if (!rows.length) {
+    req.flash('error', 'Ticket not found.');
+    return res.redirect(portalBase(req) + '/tickets');
+  }
+
+  // Only show non-internal messages to subscriber
+  const [messages] = await req.db.query(
+    `SELECT id, sender_type, sender_name, body, created_at
+     FROM ticket_messages
+     WHERE ticket_id = ? AND is_internal = 0
+     ORDER BY created_at`,
+    [req.params.id]
+  );
+
+  res.render('portal/ticket-detail', {
+    layout: false,
+    title: 'Ticket ' + rows[0].ticket_number,
+    tenant: req.tenant,
+    subscriber: req.session.subscriber,
+    portalBase: portalBase(req),
+    ticket: rows[0],
+    messages
+  });
+});
+
+// ─── Reply to ticket ───
+router.post('/portal/tickets/:id/reply', ensureTenant, requireSubscriber, async (req, res) => {
+  const sid = req.session.subscriber.id;
+  const { body } = req.body;
+
+  if (!body || !body.trim()) {
+    req.flash('error', 'Message cannot be empty.');
+    return res.redirect(portalBase(req) + '/tickets/' + req.params.id);
+  }
+
+  try {
+    // Verify ownership
+    const [rows] = await req.db.query(
+      'SELECT id, status FROM tickets WHERE id = ? AND subscriber_id = ?',
+      [req.params.id, sid]
+    );
+    if (!rows.length) {
+      req.flash('error', 'Ticket not found.');
+      return res.redirect(portalBase(req) + '/tickets');
+    }
+
+    if (rows[0].status === 'closed') {
+      req.flash('error', 'This ticket is closed. Please open a new one.');
+      return res.redirect(portalBase(req) + '/tickets/' + req.params.id);
+    }
+
+    const subName = req.session.subscriber.full_name;
+
+    await req.db.query(
+      `INSERT INTO ticket_messages (ticket_id, sender_type, sender_id, sender_name, body)
+       VALUES (?, 'subscriber', ?, ?, ?)`,
+      [req.params.id, sid, subName, body.trim()]
+    );
+
+    // Move status back to open if it was resolved
+    if (rows[0].status === 'resolved' || rows[0].status === 'pending') {
+      await req.db.query(
+        "UPDATE tickets SET status = 'open', updated_at = NOW() WHERE id = ?",
+        [req.params.id]
+      );
+    } else {
+      await req.db.query(
+        'UPDATE tickets SET updated_at = NOW() WHERE id = ?',
+        [req.params.id]
+      );
+    }
+
+    req.flash('success', 'Reply sent.');
+    res.redirect(portalBase(req) + '/tickets/' + req.params.id);
+  } catch (err) {
+    console.error('[Portal Tickets] reply error:', err.message);
+    req.flash('error', 'Failed to send reply.');
+    res.redirect(portalBase(req) + '/tickets/' + req.params.id);
+  }
+});
 router.get('/portal/no-tenant', (req, res) => {
   res.status(404).render('portal/no-tenant', { layout: false, tenant: null, slug: null });
 });

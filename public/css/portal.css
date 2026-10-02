@@ -471,3 +471,110 @@ body {
     grid-template-columns: 1fr 1fr;
   }
 }
+
+/* ═══════════════════════════════════════════
+   Portal tickets
+   ═══════════════════════════════════════════ */
+.p-ticket-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.p-ticket-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: var(--p-bg);
+  border: 1px solid var(--p-border);
+  border-radius: 10px;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.15s;
+}
+
+.p-ticket-item:hover {
+  border-color: var(--p-brand);
+  transform: translateY(-1px);
+}
+
+.p-ticket-main {
+  min-width: 0;
+  flex: 1;
+}
+
+.p-ticket-subject {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--p-text);
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.p-ticket-meta {
+  font-size: 12px;
+  color: var(--p-muted);
+}
+
+.p-ticket-badges {
+  flex-shrink: 0;
+}
+
+.p-ticket-thread {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.p-ticket-msg {
+  padding: 14px 16px;
+  border-radius: 10px;
+  border-left: 4px solid var(--p-border);
+  background: var(--p-bg);
+}
+
+.p-ticket-msg-subscriber {
+  background: #eff6ff;
+  border-left-color: var(--p-brand);
+}
+
+.p-ticket-msg-staff {
+  background: #ecfdf5;
+  border-left-color: #0f7a4d;
+}
+
+.p-ticket-msg-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  font-size: 13px;
+  flex-wrap: wrap;
+}
+
+.p-ticket-msg-time {
+  font-size: 11px;
+  color: var(--p-muted);
+}
+
+.p-ticket-msg-body {
+  font-size: 14px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  color: var(--p-text);
+}
+
+@media (max-width: 640px) {
+  .p-ticket-item {
+    padding: 12px 14px;
+  }
+  .p-ticket-subject {
+    font-size: 13px;
+  }
+}
