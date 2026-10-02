@@ -1,0 +1,70 @@
+<%- include('layout', { title: 'Dashboard', tenant: tenant, subscriber: subscriber, flash: flash, active: 'dashboard', body: '' }) %>
+
+<%
+// The include above uses express-ejs-layouts "body" slot — the following content
+// is the actual body rendered into the layout. With layout:false in the route,
+// we render this view standalone, so we build the full page here instead.
+%>
+
+<div class="p-card">
+  <h2>Welcome, <%= subscriber.full_name %></h2>
+  <p class="subtitle">
+    Account: <strong><%= subscriber.account_number %></strong>
+    &nbsp;·&nbsp;
+    Status: <span class="p-badge p-badge-<%= subscriber.status %>"><%= subscriber.status %></span>
+  </p>
+</div>
+
+<div class="p-stats">
+  <div class="p-stat">
+    <div class="p-stat-label">Plan</div>
+    <div class="p-stat-value"><%= subscriber.plan_name || 'None' %></div>
+  </div>
+  <div class="p-stat">
+    <div class="p-stat-label">Expires</div>
+    <div class="p-stat-value" style="font-size:16px;">
+      <%= subscriber.expires_at ? new Date(subscriber.expires_at).toLocaleDateString() : '—' %>
+    </div>
+  </div>
+  <div class="p-stat">
+    <div class="p-stat-label">Data Used</div>
+    <div class="p-stat-value"><%= Math.round((subscriber.data_used_mb || 0) / 1024 * 10) / 10 %> GB</div>
+  </div>
+  <div class="p-stat">
+    <div class="p-stat-label">Time Used</div>
+    <div class="p-stat-value" style="font-size:16px;">
+      <%= Math.round((subscriber.time_used_sec || 0) / 3600) %> hrs
+    </div>
+  </div>
+</div>
+
+<div class="p-card">
+  <h2>Quick Actions</h2>
+  <p class="subtitle">Manage your account</p>
+  <div style="display:flex;gap:12px;flex-wrap:wrap;">
+    <a href="/portal/plans" class="p-btn p-btn-primary">Buy / Renew Plan</a>
+    <a href="/portal/history" class="p-btn">Payment History</a>
+  </div>
+</div>
+
+<% if (payments && payments.length) { %>
+<div class="p-card">
+  <h2>Recent Payments</h2>
+  <p class="subtitle">Your last 5 payment records</p>
+  <table class="p-table">
+    <thead>
+      <tr><th>Date</th><th>Amount</th><th>Method</th><th>Status</th></tr>
+    </thead>
+    <tbody>
+      <% payments.forEach(function(p) { %>
+        <tr>
+          <td><%= new Date(p.created_at).toLocaleDateString() %></td>
+          <td><strong>KSh <%= Number(p.amount).toLocaleString() %></strong></td>
+          <td><%= p.method %></td>
+          <td><span class="p-badge p-badge-<%= p.status === 'completed' ? 'active' : 'pending' %>"><%= p.status %></span></td>
+        </tr>
+      <% }); %>
+    </tbody>
+  </table>
+</div>
+<% } %>

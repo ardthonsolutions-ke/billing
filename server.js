@@ -90,6 +90,11 @@ app.get('/health', (req, res) => {
 
 
 // ── Routes ──
+// ── Portal (public, no admin auth) ──
+const tenantResolver = require('./middleware/tenantResolver');
+app.use(tenantResolver);
+app.use('/', require('./routes/portal'));
+
 app.use('/', require('./routes/auth'));
 app.use('/', require('./routes/dashboard'));
 app.use('/', require('./routes/tenants'));

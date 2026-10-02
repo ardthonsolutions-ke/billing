@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="<%= tenant.primary_color %>">
+  <title>Sign In — <%= tenant.name %></title>
+  <link rel="icon" href="<%= tenant.favicon_url || '/icons/icon-192.png' %>">
+  <link rel="stylesheet" href="/css/portal.css">
+  <style>
+    :root {
+      --p-brand: <%= tenant.primary_color || '#1a4a8a' %>;
+      --p-accent: <%= tenant.accent_color || '#e85d2c' %>;
+    }
+  </style>
+</head>
+<body>
+  <div class="portal-login-wrap">
+    <div class="portal-login-card">
+      <div class="portal-login-logo">
+        <% if (tenant.logo_url) { %>
+          <img src="<%= tenant.logo_url %>" alt="<%= tenant.name %>">
+        <% } else { %>
+          <%= tenant.name.substring(0,2).toUpperCase() %>
+        <% } %>
+      </div>
+      <div class="portal-login-heading">
+        <h2><%= tenant.name %></h2>
+        <% if (tenant.tagline) { %><p><%= tenant.tagline %></p><% } %>
+      </div>
+
+      <% if (flash && flash.error && flash.error.length) { %>
+        <div class="p-alert p-alert-error"><%= flash.error[0] %></div>
+      <% } %>
+      <% if (flash && flash.success && flash.success.length) { %>
+        <div class="p-alert p-alert-success"><%= flash.success[0] %></div>
+      <% } %>
+
+      <form method="POST" action="/portal/login">
+        <div class="p-form-group">
+          <label for="identifier">Phone or Username</label>
+          <input type="text" id="identifier" name="identifier" required autofocus placeholder="e.g. 0712345678">
+        </div>
+        <div class="p-form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" required placeholder="Your password">
+        </div>
+        <button type="submit" class="p-btn p-btn-primary p-btn-block">Sign In</button>
+      </form>
+
+      <p style="text-align:center;margin-top:24px;font-size:13px;color:var(--p-muted);">
+        Need help? Contact <%= tenant.contact_phone || 'your ISP' %>
+      </p>
+    </div>
+  </div>
+</body>
+</html>

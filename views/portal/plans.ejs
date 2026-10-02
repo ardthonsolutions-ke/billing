@@ -1,0 +1,39 @@
+<%- include('layout', { title: 'Plans', tenant: tenant, subscriber: subscriber, flash: flash, active: 'plans', body: '' }) %>
+
+<div class="p-card">
+  <h2>Available Plans</h2>
+  <p class="subtitle">Choose a plan to get online</p>
+
+  <% if (!plans || plans.length === 0) { %>
+    <p style="color:var(--p-muted);text-align:center;padding:40px 0;">No plans available right now. Contact your ISP.</p>
+  <% } else { %>
+    <div class="plans-grid">
+      <% plans.forEach(function(plan) { %>
+        <div class="plan-card">
+          <div class="plan-name"><%= plan.name %></div>
+          <% if (plan.description) { %>
+            <div style="font-size:12px;color:var(--p-muted);"><%= plan.description %></div>
+          <% } %>
+
+          <div class="plan-price">KSh <%= Number(plan.price).toLocaleString() %></div>
+
+          <ul class="plan-details">
+            <% if (plan.duration_hours) { %>
+              <li><%= plan.duration_hours %> hours access</li>
+            <% } %>
+            <% if (plan.data_cap_mb) { %>
+              <li><%= plan.data_cap_mb >= 1024 ? Math.round(plan.data_cap_mb / 1024) + ' GB' : plan.data_cap_mb + ' MB' %> data</li>
+            <% } else { %>
+              <li>Unlimited data</li>
+            <% } %>
+            <% if (plan.speed_down_kbps) { %>
+              <li><%= Math.round(plan.speed_down_kbps / 1024 * 10) / 10 %> Mbps download</li>
+            <% } %>
+          </ul>
+
+          <a href="/portal/buy/<%= plan.id %>" class="p-btn p-btn-accent p-btn-block">Buy Plan</a>
+        </div>
+      <% }); %>
+    </div>
+  <% } %>
+</div>

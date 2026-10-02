@@ -1,0 +1,34 @@
+<%- include('layout', { title: 'Buy ' + plan.name, tenant: tenant, subscriber: subscriber, flash: flash, active: 'plans', body: '' }) %>
+
+<div class="p-card" style="max-width:600px;margin:0 auto;">
+  <h2>Confirm Purchase</h2>
+  <p class="subtitle">You're buying: <strong><%= plan.name %></strong></p>
+
+  <div style="background:var(--p-bg);padding:20px;border-radius:10px;margin:20px 0;">
+    <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--p-border);">
+      <span style="color:var(--p-muted);">Plan</span>
+      <strong><%= plan.name %></strong>
+    </div>
+    <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--p-border);">
+      <span style="color:var(--p-muted);">Duration</span>
+      <span><%= plan.duration_hours ? plan.duration_hours + ' hours' : 'Unlimited' %></span>
+    </div>
+    <div style="display:flex;justify-content:space-between;padding:8px 0;">
+      <span style="color:var(--p-muted);">Amount</span>
+      <strong style="font-size:20px;color:var(--p-brand);">KSh <%= Number(plan.price).toLocaleString() %></strong>
+    </div>
+  </div>
+
+  <div class="p-alert p-alert-info">
+    <strong>How to pay:</strong><br>
+    <%= tenant.contact_phone ? 'Pay via M-PESA to ' + tenant.contact_phone : 'Contact your ISP for payment instructions' %>
+    <br>
+    <small style="margin-top:6px;display:block;">M-PESA STK Push coming soon — pay directly from this page.</small>
+  </div>
+
+  <form method="POST" action="/portal/buy/<%= plan.id %>" style="margin-top:20px;">
+    <button type="submit" class="p-btn p-btn-primary p-btn-block">Create Payment Request</button>
+  </form>
+
+  <a href="/portal/plans" style="display:block;text-align:center;margin-top:16px;font-size:13px;color:var(--p-muted);text-decoration:none;">← Back to plans</a>
+</div>
