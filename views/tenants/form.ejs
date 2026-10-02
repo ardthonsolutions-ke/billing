@@ -1,28 +1,54 @@
 <div class="page-header">
   <h2><%= tenant ? 'Edit Tenant: ' + tenant.name : 'New Tenant' %></h2>
-  <p class="text-muted"><%= tenant ? 'Update tenant details' : 'Onboard a new ISP onto the platform' %></p>
+  <p class="text-muted"><%= tenant ? 'Update branding and contact details' : 'Onboard a new ISP with branding' %></p>
 </div>
 
-<form method="POST" action="<%= tenant ? '/tenants/' + tenant.id : '/tenants' %>" class="form-card">
+<form method="POST" action="<%= tenant ? '/tenants/' + tenant.id : '/tenants' %>" enctype="multipart/form-data" class="form-card">
+
+  <!-- ═══ Basic Info ═══ -->
+  <h3 class="form-section">Basic Information</h3>
   <div class="form-row">
     <div class="form-group">
       <label for="name">ISP Name *</label>
       <input type="text" id="name" name="name" required value="<%= tenant ? tenant.name : '' %>" placeholder="e.g. FastNet Kenya">
     </div>
     <div class="form-group">
-      <label for="slug">Slug * <span class="hint">(URL-safe identifier)</span></label>
+      <label for="slug">Slug * <span class="hint">(URL-safe)</span></label>
       <input type="text" id="slug" name="slug" required value="<%= tenant ? tenant.slug : '' %>" placeholder="e.g. fastnet-kenya">
     </div>
   </div>
 
+  <div class="form-group">
+    <label for="tagline">Tagline</label>
+    <input type="text" id="tagline" name="tagline" value="<%= tenant && tenant.tagline ? tenant.tagline : '' %>" placeholder="e.g. Fast. Reliable. Local.">
+  </div>
+
+  <!-- ═══ Branding ═══ -->
+  <h3 class="form-section">Branding</h3>
   <div class="form-row">
     <div class="form-group">
-      <label for="contact_email">Contact Email</label>
-      <input type="email" id="contact_email" name="contact_email" value="<%= tenant && tenant.contact_email ? tenant.contact_email : '' %>" placeholder="admin@isp.example">
+      <label for="logo">Logo <span class="hint">(PNG/JPG/SVG, max 2MB)</span></label>
+      <input type="file" id="logo" name="logo" accept="image/*">
+      <% if (tenant && tenant.logo_url) { %>
+        <div class="file-preview">
+          <img src="<%= tenant.logo_url %>" alt="Current logo">
+          <label class="checkbox-label" style="margin-top:8px;">
+            <input type="checkbox" name="remove_logo" value="1"> Remove logo
+          </label>
+        </div>
+      <% } %>
     </div>
     <div class="form-group">
-      <label for="contact_phone">Contact Phone</label>
-      <input type="text" id="contact_phone" name="contact_phone" value="<%= tenant && tenant.contact_phone ? tenant.contact_phone : '' %>" placeholder="+254 7XX XXX XXX">
+      <label for="favicon">Favicon <span class="hint">(small icon, 512x512 ideal)</span></label>
+      <input type="file" id="favicon" name="favicon" accept="image/*">
+      <% if (tenant && tenant.favicon_url) { %>
+        <div class="file-preview">
+          <img src="<%= tenant.favicon_url %>" alt="Current favicon" style="max-width:60px;">
+          <label class="checkbox-label" style="margin-top:8px;">
+            <input type="checkbox" name="remove_favicon" value="1"> Remove favicon
+          </label>
+        </div>
+      <% } %>
     </div>
   </div>
 
@@ -35,6 +61,84 @@
       <label for="accent_color">Accent Color</label>
       <input type="color" id="accent_color" name="accent_color" value="<%= tenant && tenant.accent_color ? tenant.accent_color : '#e85d2c' %>">
     </div>
+  </div>
+
+  <!-- ═══ Contact ═══ -->
+  <h3 class="form-section">Contact</h3>
+  <div class="form-row">
+    <div class="form-group">
+      <label for="contact_email">Email</label>
+      <input type="email" id="contact_email" name="contact_email" value="<%= tenant && tenant.contact_email ? tenant.contact_email : '' %>" placeholder="admin@isp.example">
+    </div>
+    <div class="form-group">
+      <label for="contact_phone">Phone</label>
+      <input type="text" id="contact_phone" name="contact_phone" value="<%= tenant && tenant.contact_phone ? tenant.contact_phone : '' %>" placeholder="+254 7XX XXX XXX">
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="form-group">
+      <label for="website">Website</label>
+      <input type="url" id="website" name="website" value="<%= tenant && tenant.website ? tenant.website : '' %>" placeholder="https://isp.example">
+    </div>
+    <div class="form-group">
+      <label for="whatsapp_number">WhatsApp Number</label>
+      <input type="text" id="whatsapp_number" name="whatsapp_number" value="<%= tenant && tenant.whatsapp_number ? tenant.whatsapp_number : '' %>" placeholder="2547XXXXXXXX">
+    </div>
+  </div>
+
+  <!-- ═══ Address ═══ -->
+  <h3 class="form-section">Address</h3>
+  <div class="form-row">
+    <div class="form-group">
+      <label for="address_line1">Address Line 1</label>
+      <input type="text" id="address_line1" name="address_line1" value="<%= tenant && tenant.address_line1 ? tenant.address_line1 : '' %>">
+    </div>
+    <div class="form-group">
+      <label for="address_line2">Address Line 2</label>
+      <input type="text" id="address_line2" name="address_line2" value="<%= tenant && tenant.address_line2 ? tenant.address_line2 : '' %>">
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="form-group">
+      <label for="city">City / Town</label>
+      <input type="text" id="city" name="city" value="<%= tenant && tenant.city ? tenant.city : '' %>">
+    </div>
+    <div class="form-group">
+      <label for="country_code">Country</label>
+      <select id="country_code" name="country_code">
+        <option value="KE" <%= tenant && tenant.country_code === 'KE' ? 'selected' : '' %>>Kenya</option>
+        <option value="UG" <%= tenant && tenant.country_code === 'UG' ? 'selected' : '' %>>Uganda</option>
+        <option value="TZ" <%= tenant && tenant.country_code === 'TZ' ? 'selected' : '' %>>Tanzania</option>
+        <option value="RW" <%= tenant && tenant.country_code === 'RW' ? 'selected' : '' %>>Rwanda</option>
+        <option value="OTHER" <%= tenant && tenant.country_code === 'OTHER' ? 'selected' : '' %>>Other</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- ═══ Social ═══ -->
+  <h3 class="form-section">Social Links</h3>
+  <div class="form-row">
+    <div class="form-group">
+      <label for="facebook_url">Facebook</label>
+      <input type="url" id="facebook_url" name="facebook_url" value="<%= tenant && tenant.facebook_url ? tenant.facebook_url : '' %>" placeholder="https://facebook.com/...">
+    </div>
+    <div class="form-group">
+      <label for="twitter_url">Twitter / X</label>
+      <input type="url" id="twitter_url" name="twitter_url" value="<%= tenant && tenant.twitter_url ? tenant.twitter_url : '' %>" placeholder="https://x.com/...">
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="instagram_url">Instagram</label>
+    <input type="url" id="instagram_url" name="instagram_url" value="<%= tenant && tenant.instagram_url ? tenant.instagram_url : '' %>" placeholder="https://instagram.com/...">
+  </div>
+
+  <!-- ═══ Invoice ═══ -->
+  <h3 class="form-section">Invoice Footer</h3>
+  <div class="form-group">
+    <label for="invoice_footer">Text shown on receipts / invoices</label>
+    <textarea id="invoice_footer" name="invoice_footer" rows="3" placeholder="Thank you for your business!"><%= tenant && tenant.invoice_footer ? tenant.invoice_footer : '' %></textarea>
   </div>
 
   <% if (tenant) { %>

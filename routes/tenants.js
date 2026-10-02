@@ -1,6 +1,40 @@
 const express = require('express');
 const router = express.Router();
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
 const { requireSuperAdmin } = require('../middleware/auth');
+
+// Multer storage for branding assets
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const dir = path.join(__dirname, '..', 'public', 'uploads', 'branding');
+    fs.mkdirSync(dir, { recursive: true });
+    cb(null, dir);
+  },
+  filename: (req, file, cb) => {
+    const ext = path.extname(file.originalname).toLowerCase();
+    const tenantSlug = (req.body.slug || 'tenant').replace(/[^a-z0-9-]/g, '-');
+    const kind = file.fieldname; // 'logo' or 'favicon'
+    cb(null, `${tenantSlug}-${kind}-${Date.now()}${ext}`);
+  }
+});
+
+const upload = multer({
+  storage,
+  limits: { fileSize: 2 * 1024 * 1024 }, // 2 MB
+  fileFilter: (req, file, cb) => {
+    const allowed = ['.png', '.jpg', '.jpeg', '.svg', '.webp'];
+    const ext = path.extname(file.originalname).toLowerCase();
+    if (allowed.includes(ext)) return cb(null, true);
+    cb(new Error('Only PNG, JPG, SVG, or WebP allowed'));
+  }
+});
+
+const brandingUpload = upload.fields([
+  { name: 'logo', maxCount: 1 },
+  { name: 'favicon', maxCount: 1 }
+]);
 
 router.use(requireSuperAdmin);
 
@@ -8,7 +42,8 @@ router.use(requireSuperAdmin);
 router.get('/tenants', async (req, res) => {
   const [tenants] = await req.db.query(`
     SELECT t.*,
-      (SELECT COUNT(*) FROM users u WHERE u.tenant_id = t.id) AS user_count
+      (SELECT COUNT(*) FROM users u WHERE u.tenant_id = t.id) AS user_count,
+      (SELECT COUNT(*) FROM subscribers s WHERE s.tenant_id = t.id) AS subscriber_count
     FROM tenants t
     ORDER BY t.created_at DESC
   `);
@@ -30,8 +65,14 @@ router.get('/tenants/new', (req, res) => {
 });
 
 // Create tenant
-router.post('/tenants', async (req, res) => {
-  const { name, slug, contact_email, contact_phone, primary_color, accent_color } = req.body;
+router.post('/tenants', brandingUpload, async (req, res) => {
+  const {
+    name, slug, tagline, contact_email, contact_phone, website,
+    primary_color, accent_color,
+    address_line1, address_line2, city, country_code,
+    facebook_url, twitter_url, instagram_url, whatsapp_number,
+    invoice_footer
+  } = req.body;
 
   if (!name || !slug) {
     req.flash('error', 'Name and slug are required.');
@@ -39,6 +80,8 @@ router.post('/tenants', async (req, res) => {
   }
 
   const cleanSlug = slug.toLowerCase().replace(/[^a-z0-9-]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
+  const logoUrl = req.files && req.files.logo ? '/uploads/branding/' + req.files.logo[0].filename : null;
+  const faviconUrl = req.files && req.files.favicon ? '/uploads/branding/' + req.files.favicon[0].filename : null;
 
   try {
     const [existing] = await req.db.query('SELECT id FROM tenants WHERE slug = ?', [cleanSlug]);
@@ -48,17 +91,26 @@ router.post('/tenants', async (req, res) => {
     }
 
     await req.db.query(
-      `INSERT INTO tenants (name, slug, contact_email, contact_phone, primary_color, accent_color)
-       VALUES (?, ?, ?, ?, ?, ?)`,
-      [name, cleanSlug, contact_email || null, contact_phone || null,
-       primary_color || '#1a4a8a', accent_color || '#e85d2c']
+      `INSERT INTO tenants
+       (name, slug, tagline, logo_url, favicon_url, contact_email, contact_phone, website,
+        primary_color, accent_color,
+        address_line1, address_line2, city, country_code,
+        facebook_url, twitter_url, instagram_url, whatsapp_number,
+        invoice_footer)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [name, cleanSlug, tagline || null, logoUrl, faviconUrl,
+       contact_email || null, contact_phone || null, website || null,
+       primary_color || '#1a4a8a', accent_color || '#e85d2c',
+       address_line1 || null, address_line2 || null, city || null, country_code || 'KE',
+       facebook_url || null, twitter_url || null, instagram_url || null, whatsapp_number || null,
+       invoice_footer || null]
     );
 
     req.flash('success', 'Tenant "' + name + '" created.');
     res.redirect('/tenants');
   } catch (err) {
     console.error('[Tenants] create error:', err.message);
-    req.flash('error', 'Failed to create tenant.');
+    req.flash('error', 'Failed to create tenant: ' + err.message);
     res.redirect('/tenants/new');
   }
 });
@@ -78,23 +130,58 @@ router.get('/tenants/:id/edit', async (req, res) => {
 });
 
 // Update tenant
-router.post('/tenants/:id', async (req, res) => {
-  const { name, slug, contact_email, contact_phone, primary_color, accent_color, is_active } = req.body;
+router.post('/tenants/:id', brandingUpload, async (req, res) => {
+  const {
+    name, slug, tagline, contact_email, contact_phone, website,
+    primary_color, accent_color, is_active,
+    address_line1, address_line2, city, country_code,
+    facebook_url, twitter_url, instagram_url, whatsapp_number,
+    invoice_footer
+  } = req.body;
+
   const cleanSlug = slug.toLowerCase().replace(/[^a-z0-9-]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
 
   try {
+    // Get current logo/favicon URLs
+    const [current] = await req.db.query('SELECT logo_url, favicon_url FROM tenants WHERE id = ?', [req.params.id]);
+    if (!current.length) { req.flash('error', 'Not found.'); return res.redirect('/tenants'); }
+
+    let logoUrl = current[0].logo_url;
+    let faviconUrl = current[0].favicon_url;
+
+    if (req.files && req.files.logo) {
+      logoUrl = '/uploads/branding/' + req.files.logo[0].filename;
+    }
+    if (req.files && req.files.favicon) {
+      faviconUrl = '/uploads/branding/' + req.files.favicon[0].filename;
+    }
+
+    // Allow removing logo (checkbox)
+    if (req.body.remove_logo === '1') logoUrl = null;
+    if (req.body.remove_favicon === '1') faviconUrl = null;
+
     await req.db.query(
-      `UPDATE tenants SET name=?, slug=?, contact_email=?, contact_phone=?, primary_color=?, accent_color=?, is_active=?
+      `UPDATE tenants SET
+        name=?, slug=?, tagline=?, logo_url=?, favicon_url=?,
+        contact_email=?, contact_phone=?, website=?,
+        primary_color=?, accent_color=?, is_active=?,
+        address_line1=?, address_line2=?, city=?, country_code=?,
+        facebook_url=?, twitter_url=?, instagram_url=?, whatsapp_number=?,
+        invoice_footer=?
        WHERE id=?`,
-      [name, cleanSlug, contact_email || null, contact_phone || null,
-       primary_color || '#1a4a8a', accent_color || '#e85d2c',
-       is_active ? 1 : 0, req.params.id]
+      [name, cleanSlug, tagline || null, logoUrl, faviconUrl,
+       contact_email || null, contact_phone || null, website || null,
+       primary_color || '#1a4a8a', accent_color || '#e85d2c', is_active ? 1 : 0,
+       address_line1 || null, address_line2 || null, city || null, country_code || 'KE',
+       facebook_url || null, twitter_url || null, instagram_url || null, whatsapp_number || null,
+       invoice_footer || null, req.params.id]
     );
+
     req.flash('success', 'Tenant updated.');
-    res.redirect('/tenants');
+    res.redirect('/tenants/' + req.params.id + '/edit');
   } catch (err) {
     console.error('[Tenants] update error:', err.message);
-    req.flash('error', 'Failed to update tenant.');
+    req.flash('error', 'Failed to update tenant: ' + err.message);
     res.redirect('/tenants/' + req.params.id + '/edit');
   }
 });

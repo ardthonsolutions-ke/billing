@@ -911,3 +911,54 @@
 }
 
 .badge-warn { background: #fef3c7; color: #92400e; }
+
+/* ═══════════════════════════════════════════
+   Block 4.2 — Form sections, file previews
+   ═══════════════════════════════════════════ */
+
+.form-section {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--brand);
+  margin: 28px 0 16px 0;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--line);
+}
+
+.form-section:first-child {
+  margin-top: 0;
+}
+
+.form-group input[type="file"] {
+  padding: 10px;
+  border: 2px dashed var(--line);
+  border-radius: 8px;
+  background: var(--paper-2);
+  cursor: pointer;
+  font-size: 13px;
+  width: 100%;
+}
+
+.form-group input[type="file"]:hover {
+  border-color: var(--brand);
+  background: #eef2f8;
+}
+
+.file-preview {
+  margin-top: 12px;
+  padding: 12px;
+  background: var(--paper-2);
+  border-radius: 8px;
+  text-align: center;
+}
+
+.file-preview img {
+  max-width: 120px;
+  max-height: 80px;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+  background: #fff;
+  padding: 4px;
+}

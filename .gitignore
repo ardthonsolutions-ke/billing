@@ -19,3 +19,11 @@ public/tmp/
 *.bak-*
 *.bak2
 server.js.bak-*
+
+# Uploads — keep folder, ignore files
+public/uploads/branding/*
+!public/uploads/branding/.gitkeep
+public/uploads/*.png
+public/uploads/*.jpg
+public/uploads/*.jpeg
+public/uploads/*.svg
