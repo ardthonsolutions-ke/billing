@@ -1108,3 +1108,14 @@
     min-width: 70px;
   }
 }
+
+/* Settings — portal preview row */
+.preview-links {
+  padding: 12px 16px;
+  background: var(--paper-2);
+  border-radius: 10px;
+  border: 1px solid var(--line);
+}
+.preview-links .btn {
+  background: var(--white);
+}

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="<%= tenant.primary_color %>">
+  <title><%= tenant.name %></title>
+  <link rel="stylesheet" href="/css/captive.css">
+  <style>:root { --c-brand: <%= tenant.primary_color %>; --c-accent: <%= tenant.accent_color %>; }</style>
+</head>
+<body class="tpl-minimal font-<%= tenant.portal_font || 'system' %>">
+<div class="captive-shell" style="max-width:480px;">
+  <header class="captive-header">
+    <div class="captive-logo">
+      <% if (tenant.logo_url) { %><img src="<%= tenant.logo_url %>" alt=""><% } else { %><%= tenant.name.substring(0,2).toUpperCase() %><% } %>
+    </div>
+    <h1 class="captive-name"><%= tenant.name %></h1>
+    <% if (tenant.tagline) { %><div class="captive-tagline"><%= tenant.tagline %></div><% } %>
+  </header>
+
+  <% if (activeSubscriber) { %>
+    <div class="captive-alert captive-alert-success">
+      <strong>You're online</strong><br>
+      Welcome back, <%= activeSubscriber.full_name %>
+    </div>
+    <a href="/captive/reconnect?tenant=<%= tenant.slug %>&mac=<%= mac %>" class="captive-btn">Reconnect</a>
+  <% } else { %>
+    <p style="margin-bottom:16px;color:#6b7280;"><%= tenant.portal_welcome || 'Choose a plan:' %></p>
+    <div class="captive-plans" style="grid-template-columns:1fr;">
+      <% plans.forEach(function(plan) { %>
+        <a href="/captive/buy/<%= plan.id %>?tenant=<%= tenant.slug %>&mac=<%= mac %>&ip=<%= ip %>&router=<%= routerId %>" class="captive-plan">
+          <div class="captive-plan-name"><%= plan.name %></div>
+          <div class="captive-plan-price">KSh <%= Number(plan.price).toLocaleString() %> <small><%= plan.duration_hours ? '/' + plan.duration_hours + 'h' : '' %></small></div>
+          <span class="captive-plan-cta">Buy</span>
+        </a>
+      <% }); %>
+    </div>
+    <% if (tenant.support_phone || tenant.contact_phone) { %>
+      <p style="text-align:center;margin-top:20px;font-size:13px;color:#6b7280;">
+        Help: <a href="tel:<%= tenant.support_phone || tenant.contact_phone %>" style="color:var(--c-brand);"><%= tenant.support_phone || tenant.contact_phone %></a>
+      </p>
+    <% } %>
+  <% } %>
+</div>
+</body>
+</html>

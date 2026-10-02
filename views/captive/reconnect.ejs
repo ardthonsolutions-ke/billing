@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reconnect</title>
+  <link rel="stylesheet" href="/css/captive.css">
+  <style>:root { --c-brand: <%= tenant.primary_color %>; --c-accent: <%= tenant.accent_color %>; }</style>
+</head>
+<body class="font-<%= tenant.portal_font || 'system' %>">
+<div class="captive-shell" style="max-width:520px;">
+  <div class="captive-hero">
+    <div class="captive-hero-icon <%= subscriber && subscriber.status === 'active' ? 'success' : 'pending' %>">
+      <%= subscriber && subscriber.status === 'active' ? '✓' : '⌛' %>
+    </div>
+    <h1>
+      <% if (subscriber && subscriber.status === 'active') { %>
+        Welcome back!
+      <% } else { %>
+        Not Connected
+      <% } %>
+    </h1>
+    <% if (subscriber) { %>
+      <p>
+        <strong><%= subscriber.full_name %></strong>
+        <% if (subscriber.status === 'active') { %>
+          · Plan: <%= subscriber.plan_name || 'None' %>
+          <% if (subscriber.expires_at) { %>
+            · Expires: <%= new Date(subscriber.expires_at).toLocaleString() %>
+          <% } %>
+        <% } else { %>
+          · Your subscription is <%= subscriber.status %>
+        <% } %>
+      </p>
+      <% if (subscriber.status === 'active') { %>
+        <a href="#" onclick="alert('Reconnect request sent. If your device supports it, you will be online in seconds.');return false;" class="captive-btn">Reconnect Now</a>
+      <% } else { %>
+        <a href="/captive?tenant=<%= tenant.slug %>&mac=<%= mac %>" class="captive-btn captive-btn-accent">Buy New Plan</a>
+      <% } %>
+    <% } else { %>
+      <p>We couldn't find your device. Please purchase a plan to get online.</p>
+      <a href="/captive?tenant=<%= tenant.slug %>&mac=<%= mac %>" class="captive-btn captive-btn-accent">See Plans</a>
+    <% } %>
+  </div>
+</div>
+</body>
+</html>

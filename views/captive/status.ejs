@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payment Status</title>
+  <link rel="stylesheet" href="/css/captive.css">
+  <style>:root { --c-brand: <%= tenant.primary_color %>; --c-accent: <%= tenant.accent_color %>; }</style>
+</head>
+<body class="font-<%= tenant.portal_font || 'system' %>">
+<div class="captive-shell" style="max-width:520px;">
+
+  <% if (isActive) { %>
+    <div class="captive-hero">
+      <div class="captive-hero-icon success">✓</div>
+      <h1>You're Online!</h1>
+      <p>Your plan is now active. You can start browsing.</p>
+      <a href="/captive?tenant=<%= tenant.slug %>&mac=<%= mac %>" class="captive-btn">Continue Browsing</a>
+    </div>
+  <% } else { %>
+    <div class="captive-hero">
+      <div class="captive-hero-icon pending">⏱</div>
+      <h1>Waiting for Payment</h1>
+      <p>Your payment request has been created. The ISP will activate your plan once payment is confirmed.</p>
+      <div class="captive-alert captive-alert-info" style="text-align:left;">
+        <div><strong>Reference:</strong> <code><%= payment.reference %></code></div>
+        <div><strong>Amount:</strong> KSh <%= Number(payment.amount).toLocaleString() %></div>
+        <div><strong>Phone:</strong> <%= payment.mpesa_phone %></div>
+        <div><strong>Plan:</strong> <%= payment.plan_name %></div>
+      </div>
+      <button type="button" class="captive-btn" onclick="location.reload()">🔄 Check Status</button>
+      <div style="margin-top:12px;">
+        <a href="/captive?tenant=<%= tenant.slug %>&mac=<%= mac %>" class="captive-btn captive-btn-ghost">← Back</a>
+      </div>
+    </div>
+  <% } %>
+
+</div>
+<script>
+// Auto-refresh every 10 seconds while pending
+<% if (!isActive) { %>
+(function() {
+  setTimeout(function() { location.reload(); }, 10000);
+})();
+<% } %>
+</script>
+</body>
+</html>

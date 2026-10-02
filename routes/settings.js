@@ -250,6 +250,44 @@ router.post('/settings/password', async (req, res) => {
 });
 
 // ─── Preview portal ───
+
+// ─── Preview specific template ───
+router.get('/settings/portal-preview/:template', async (req, res) => {
+  const user = req.session.user;
+  const tenantId = currentTenantId(user);
+  const [rows] = await req.db.query('SELECT * FROM tenants WHERE id = ?', [tenantId]);
+  if (!rows.length) return res.redirect('/settings');
+
+  const template = ['classic', 'modern', 'minimal'].includes(req.params.template)
+    ? req.params.template
+    : 'classic';
+
+  // Load plans for realistic preview
+  const [plans] = await req.db.query(
+    'SELECT id, name, type, price, duration_hours, data_cap_mb, speed_down_kbps, speed_up_kbps, description FROM plans WHERE tenant_id = ? AND is_active = 1 ORDER BY sort_order, price LIMIT 6',
+    [tenantId]
+  );
+
+  // If no plans, create fake ones for preview
+  const previewPlans = plans.length ? plans : [
+    { id: 1, name: 'Hourly 100MB', price: 20, duration_hours: 1, data_cap_mb: 100, speed_down_kbps: 2048 },
+    { id: 2, name: 'Daily 1GB', price: 50, duration_hours: 24, data_cap_mb: 1024, speed_down_kbps: 5120 },
+    { id: 3, name: 'Weekly 5GB', price: 250, duration_hours: 168, data_cap_mb: 5120, speed_down_kbps: 10240 }
+  ];
+
+  res.render('captive/' + template, {
+    layout: false,
+    tenant: rows[0],
+    plans: previewPlans,
+    mac: '',
+    ip: '',
+    routerId: '',
+    activeSubscriber: null,
+    portalBase: '/settings/portal-preview/' + template,
+    isPreview: true
+  });
+});
+
 router.get('/settings/portal-preview', async (req, res) => {
   const user = req.session.user;
   const tenantId = currentTenantId(user);

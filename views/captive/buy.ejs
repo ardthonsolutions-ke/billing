@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="<%= tenant.primary_color %>">
+  <title>Buy <%= plan.name %></title>
+  <link rel="stylesheet" href="/css/captive.css">
+  <style>:root { --c-brand: <%= tenant.primary_color %>; --c-accent: <%= tenant.accent_color %>; }</style>
+</head>
+<body class="font-<%= tenant.portal_font || 'system' %>">
+<div class="captive-shell" style="max-width:520px;">
+  <div class="captive-form-card">
+    <h1 class="captive-form-title">Buy <%= plan.name %></h1>
+    <p class="captive-form-sub">Enter your phone number to continue</p>
+
+    <div class="captive-alert captive-alert-info">
+      <strong>Amount:</strong> KSh <%= Number(plan.price).toLocaleString() %><br>
+      <strong>Duration:</strong> <%= plan.duration_hours ? plan.duration_hours + ' hours' : 'Unlimited' %>
+    </div>
+
+    <form method="POST" action="/captive/buy/<%= plan.id %>?tenant=<%= tenant.slug %>">
+      <input type="hidden" name="mac" value="<%= mac %>">
+      <input type="hidden" name="ip" value="<%= ip %>">
+      <input type="hidden" name="router" value="<%= routerId %>">
+
+      <div class="captive-field">
+        <label for="phone">Your M-PESA Phone Number</label>
+        <input type="tel" id="phone" name="phone" required placeholder="0712345678" pattern="[0-9+ ]{9,15}">
+      </div>
+
+      <button type="submit" class="captive-btn captive-btn-accent">Continue →</button>
+    </form>
+
+    <div style="text-align:center;margin-top:16px;">
+      <a href="/captive?tenant=<%= tenant.slug %>&mac=<%= mac %>" class="captive-btn captive-btn-ghost">← Back to plans</a>
+    </div>
+  </div>
+</div>
+</body>
+</html>

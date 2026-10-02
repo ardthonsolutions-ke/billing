@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="<%= tenant.primary_color %>">
+  <title><%= tenant.name %></title>
+  <link rel="icon" href="<%= tenant.favicon_url || tenant.logo_url || '/icons/favicon-32.png' %>">
+  <link rel="stylesheet" href="/css/captive.css">
+  <style>
+    :root {
+      --c-brand: <%= tenant.primary_color || '#1a4a8a' %>;
+      --c-accent: <%= tenant.accent_color || '#e85d2c' %>;
+    }
+  </style>
+</head>
+<body class="font-<%= tenant.portal_font || 'system' %>">
+
+<div class="captive-shell">
+
+  <header class="captive-header">
+    <div class="captive-logo">
+      <% if (tenant.logo_url) { %>
+        <img src="<%= tenant.logo_url %>" alt="<%= tenant.name %>">
+      <% } else { %>
+        <%= tenant.name.substring(0,2).toUpperCase() %>
+      <% } %>
+    </div>
+    <h1 class="captive-name"><%= tenant.name %></h1>
+    <% if (tenant.tagline) { %>
+      <div class="captive-tagline"><%= tenant.tagline %></div>
+    <% } %>
+  </header>
+
+  <% if (activeSubscriber) { %>
+    <!-- Active subscriber: show reconnect -->
+    <div class="captive-welcome">
+      <div class="status-pill status-online" style="margin-bottom:10px;">✓ You're online</div>
+      <p>Welcome back, <strong><%= activeSubscriber.full_name %></strong>!
+        <% if (activeSubscriber.expires_at) { %>
+          Your plan expires <%= new Date(activeSubscriber.expires_at).toLocaleString() %>.
+        <% } %>
+      </p>
+    </div>
+    <a href="/captive/reconnect?tenant=<%= tenant.slug %>&mac=<%= mac %>" class="captive-btn">Reconnect Now</a>
+  <% } else { %>
+
+    <% if (tenant.advert_image_url) { %>
+      <a href="<%= tenant.advert_link || '#' %>" class="captive-advert" target="_blank">
+        <img src="<%= tenant.advert_image_url %>" alt="Advert">
+      </a>
+    <% } %>
+
+    <div class="captive-welcome">
+      <p><%= tenant.portal_welcome || 'Get online in seconds. Choose a plan below.' %></p>
+    </div>
+
+    <h2 class="section-title">Choose a Plan</h2>
+    <% if (plans.length === 0) { %>
+      <div class="captive-welcome">
+        <p>No plans available right now. Please contact support.</p>
+      </div>
+    <% } else { %>
+      <div class="captive-plans">
+        <% plans.forEach(function(plan) { %>
+          <a href="/captive/buy/<%= plan.id %>?tenant=<%= tenant.slug %>&mac=<%= mac %>&ip=<%= ip %>&router=<%= routerId %>" class="captive-plan">
+            <div class="captive-plan-name"><%= plan.name %></div>
+            <div class="captive-plan-price">
+              KSh <%= Number(plan.price).toLocaleString() %>
+              <small><%= plan.duration_hours ? '/ ' + plan.duration_hours + 'h' : '' %></small>
+            </div>
+            <ul class="captive-plan-features">
+              <% if (plan.duration_hours) { %><li><%= plan.duration_hours %> hours online</li><% } %>
+              <% if (plan.data_cap_mb) { %>
+                <li><%= plan.data_cap_mb >= 1024 ? Math.round(plan.data_cap_mb/1024) + ' GB' : plan.data_cap_mb + ' MB' %> data</li>
+              <% } else { %><li>Unlimited data</li><% } %>
+              <% if (plan.speed_down_kbps) { %>
+                <li><%= Math.round(plan.speed_down_kbps/1024 * 10) / 10 %> Mbps</li>
+              <% } %>
+            </ul>
+            <span class="captive-plan-cta">Buy Now</span>
+          </a>
+        <% }); %>
+      </div>
+    <% } %>
+
+  <% } %>
+
+  <div class="captive-support">
+    <h3>Need help?</h3>
+    <div class="captive-support-actions">
+      <% if (tenant.support_phone || tenant.contact_phone) { %>
+        <a href="tel:<%= tenant.support_phone || tenant.contact_phone %>" class="captive-support-btn">📞 <%= tenant.support_phone || tenant.contact_phone %></a>
+      <% } %>
+      <% if (tenant.support_whatsapp) { %>
+        <a href="https://wa.me/<%= tenant.support_whatsapp.replace(/[^0-9]/g, '') %>" target="_blank" class="captive-support-btn">💬 WhatsApp</a>
+      <% } %>
+      <% if (tenant.support_email || tenant.contact_email) { %>
+        <a href="mailto:<%= tenant.support_email || tenant.contact_email %>" class="captive-support-btn">✉ Email</a>
+      <% } %>
+    </div>
+  </div>
+
+  <footer class="captive-footer">
+    <div>Powered by <a href="https://ardthonsolutions.com" target="_blank">Ardthon Billing</a></div>
+    <% if (tenant.portal_terms) { %>
+      <div style="margin-top:8px;"><a href="#" onclick="alert('<%= tenant.portal_terms.replace(/'/g, "\\'") %>');return false;">Terms & Conditions</a></div>
+    <% } %>
+  </footer>
+
+</div>
+
+</body>
+</html>
