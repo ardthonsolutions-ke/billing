@@ -123,6 +123,35 @@ app.use((err, req, res, next) => {
 });
 
 // ── Start ──
+
+// ═══════════════════════════════════════════════════════════
+// EXPIRY CRON
+// Every 5 minutes, mark expired subscribers
+// ═══════════════════════════════════════════════════════════
+const expiryService = require('./services/expiryService');
+
+setInterval(async () => {
+  try {
+    const result = await expiryService.expireSubscribers();
+    if (result.processed > 0) {
+      console.log('[Expiry Cron] Processed ' + result.processed + ' expired subscriber(s)');
+    }
+  } catch (err) {
+    console.error('[Expiry Cron] Error:', err.message);
+  }
+}, 5 * 60 * 1000); // 5 minutes
+
+// Also run once ~30s after startup (catch any expired subs from downtime)
+setTimeout(async () => {
+  try {
+    const result = await expiryService.expireSubscribers();
+    if (result.processed > 0) {
+      console.log('[Expiry Cron] Startup catch-up: ' + result.processed + ' expired');
+    }
+  } catch (err) {
+    console.error('[Expiry Cron] Startup error:', err.message);
+  }
+}, 30 * 1000);
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`[ABS] Listening on port ${PORT}`);
   console.log(`[ABS] Environment: ${process.env.NODE_ENV || 'development'}`);
