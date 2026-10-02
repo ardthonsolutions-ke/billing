@@ -36,7 +36,7 @@
         <div class="p-alert p-alert-success"><%= flash.success[0] %></div>
       <% } %>
 
-      <form method="POST" action="/portal/login">
+      <form method="POST" action="/t/<%= tenant.slug %>/portal/login">
         <div class="p-form-group">
           <label for="identifier">Phone or Username</label>
           <input type="text" id="identifier" name="identifier" required autofocus placeholder="e.g. 0712345678">

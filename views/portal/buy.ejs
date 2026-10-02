@@ -26,9 +26,9 @@
     <small style="margin-top:6px;display:block;">M-PESA STK Push coming soon — pay directly from this page.</small>
   </div>
 
-  <form method="POST" action="/portal/buy/<%= plan.id %>" style="margin-top:20px;">
+  <form method="POST" action="<%= portalBase %>/buy/<%= plan.id %>" style="margin-top:20px;">
     <button type="submit" class="p-btn p-btn-primary p-btn-block">Create Payment Request</button>
   </form>
 
-  <a href="/portal/plans" style="display:block;text-align:center;margin-top:16px;font-size:13px;color:var(--p-muted);text-decoration:none;">← Back to plans</a>
+  <a href="<%= portalBase %>/plans" style="display:block;text-align:center;margin-top:16px;font-size:13px;color:var(--p-muted);text-decoration:none;">← Back to plans</a>
 </div>

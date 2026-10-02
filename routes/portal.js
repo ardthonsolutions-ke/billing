@@ -4,6 +4,12 @@ const router = express.Router();
 const bcrypt = require('bcryptjs');
 const { requireSubscriber, requireGuestSubscriber, portalPath } = require('../middleware/subscriberAuth');
 
+// Compute the base URL for the current portal request
+function portalBase(req) {
+  if (req.tenantSlug) return '/t/' + req.tenantSlug + '/portal';
+  return '/portal';
+}
+
 // Helper: require a resolved tenant for portal routes
 function ensureTenant(req, res, next) {
   if (!req.tenant) {
@@ -27,6 +33,7 @@ router.get('/portal', ensureTenant, (req, res) => {
 // ─── Login form ───
 router.get('/portal/login', ensureTenant, requireGuestSubscriber, (req, res) => {
   res.render('portal/login', {
+    portalBase: portalBase(req),
     layout: false,
     tenant: req.tenant,
     title: 'Sign In'
@@ -126,6 +133,7 @@ router.get('/portal/dashboard', ensureTenant, requireSubscriber, async (req, res
   );
 
   res.render('portal/dashboard', {
+    portalBase: portalBase(req),
     layout: false,
     title: 'Dashboard',
     tenant: req.tenant,
@@ -146,6 +154,7 @@ router.get('/portal/plans', ensureTenant, requireSubscriber, async (req, res) =>
   );
 
   res.render('portal/plans', {
+    portalBase: portalBase(req),
     subscriber: req.session.subscriber,
     layout: false,
     title: 'Plans',
@@ -171,6 +180,7 @@ router.get('/portal/buy/:planId', ensureTenant, requireSubscriber, async (req, r
   );
 
   res.render('portal/buy', {
+    portalBase: portalBase(req),
     layout: false,
     title: 'Buy ' + plans[0].name,
     tenant: req.tenant,
@@ -231,6 +241,7 @@ router.get('/portal/history', ensureTenant, requireSubscriber, async (req, res) 
   );
 
   res.render('portal/history', {
+    portalBase: portalBase(req),
     subscriber: req.session.subscriber,
     layout: false,
     title: 'Payment History',

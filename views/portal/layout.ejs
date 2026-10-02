@@ -17,7 +17,7 @@
 <body>
   <div class="portal-shell">
     <header class="portal-header">
-      <a href="/portal" class="portal-brand">
+      <a href="<%= portalBase %>/dashboard" class="portal-brand">
         <div class="portal-brand-logo">
           <% if (tenant && tenant.logo_url) { %>
             <img src="<%= tenant.logo_url %>" alt="<%= tenant.name %>">
@@ -35,10 +35,10 @@
 
       <nav class="portal-nav">
         <% if (typeof subscriber !== 'undefined' && subscriber) { %>
-          <a href="/portal/dashboard" class="<%= typeof active === 'undefined' ? '' : '' %>">Dashboard</a>
-          <a href="/portal/plans">Buy Plan</a>
-          <a href="/portal/history">History</a>
-          <a href="/portal/logout">Log out</a>
+          <a href="<%= portalBase %>/dashboard" class="<%= typeof active === 'undefined' ? '' : '' %>">Dashboard</a>
+          <a href="<%= portalBase %>/plans">Buy Plan</a>
+          <a href="<%= portalBase %>/history">History</a>
+          <a href="<%= portalBase %>/logout">Log out</a>
         <% } %>
       </nav>
     </header>

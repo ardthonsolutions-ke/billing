@@ -7,7 +7,7 @@
   <% if (!payments || payments.length === 0) { %>
     <p style="color:var(--p-muted);text-align:center;padding:40px 0;">No payments yet.</p>
     <div style="text-align:center;">
-      <a href="/portal/plans" class="p-btn p-btn-primary">Browse Plans</a>
+      <a href="<%= portalBase %>/plans" class="p-btn p-btn-primary">Browse Plans</a>
     </div>
   <% } else { %>
     <table class="p-table">
