@@ -1,17 +1,38 @@
 {
-  "name": "Ardthon Billing System",
-  "short_name": "ABS Billing",
-  "description": "ISP billing + hotspot management + MikroTik control",
-  "start_url": "/?utm_source=pwa",
+  "name": "Ardthon Billing Admin",
+  "short_name": "ABS Admin",
+  "description": "Manage ISPs, subscribers, routers, and payments",
+  "start_url": "/dashboard?utm_source=pwa",
   "scope": "/",
   "display": "standalone",
   "orientation": "any",
-  "background_color": "#ffffff",
+  "background_color": "#f8f7f4",
   "theme_color": "#1a4a8a",
   "lang": "en-KE",
+  "categories": ["business", "productivity", "finance"],
   "icons": [
-    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
-    { "src": "/icons/maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    { "src": "/icons/admin-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/admin-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/admin-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    {
+      "name": "Subscribers",
+      "short_name": "Subscribers",
+      "url": "/subscribers",
+      "icons": [{ "src": "/icons/admin-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Plans",
+      "short_name": "Plans",
+      "url": "/plans",
+      "icons": [{ "src": "/icons/admin-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Routers",
+      "short_name": "Routers",
+      "url": "/routers",
+      "icons": [{ "src": "/icons/admin-192.png", "sizes": "192x192" }]
+    }
   ]
 }

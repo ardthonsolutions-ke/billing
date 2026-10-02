@@ -1,0 +1,81 @@
+<!-- PWA Install Banner — dismissible, respects localStorage -->
+<div id="pwa-install-banner" class="pwa-install-banner" style="display:none" data-icon="<%= typeof pwaIcon !== 'undefined' ? pwaIcon : '/icons/admin-192.png' %>">
+  <div class="pwa-install-inner">
+    <img class="pwa-install-icon" src="<%= typeof pwaIcon !== 'undefined' ? pwaIcon : '/icons/admin-192.png' %>" alt="">
+    <div class="pwa-install-text">
+      <strong>Install <%= typeof pwaLabel !== 'undefined' ? pwaLabel : 'app' %></strong>
+      <span id="pwa-install-sub">Add to your home screen for quick access</span>
+    </div>
+    <button type="button" class="pwa-install-btn" id="pwa-install-action">Install</button>
+    <button type="button" class="pwa-install-dismiss" id="pwa-install-close" aria-label="Dismiss">&times;</button>
+  </div>
+</div>
+
+<script>
+(function() {
+  'use strict';
+  var KEY = 'pwa-dismissed-<%= typeof pwaManifest !== "undefined" ? pwaManifest.replace(/[^a-z0-9]/gi, "") : "default" %>';
+  var banner = document.getElementById('pwa-install-banner');
+  if (!banner) return;
+
+  // Already dismissed recently?
+  var dismissedAt = parseInt(localStorage.getItem(KEY) || '0', 10);
+  var sevenDays = 7 * 24 * 60 * 60 * 1000;
+  if (dismissedAt && (Date.now() - dismissedAt < sevenDays)) return;
+
+  // Already installed (standalone mode)?
+  if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) return;
+
+  var deferredPrompt = null;
+  var actionBtn = document.getElementById('pwa-install-action');
+  var closeBtn  = document.getElementById('pwa-install-close');
+  var subEl     = document.getElementById('pwa-install-sub');
+
+  // Android/Chrome: intercept the install prompt
+  window.addEventListener('beforeinstallprompt', function(e) {
+    e.preventDefault();
+    deferredPrompt = e;
+    showBanner();
+  });
+
+  // iOS Safari: no beforeinstallprompt — show manual instructions
+  var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+  if (isIOS) {
+    subEl.textContent = 'Tap Share, then "Add to Home Screen"';
+    actionBtn.style.display = 'none';
+    // Show after 3s on iOS
+    setTimeout(showBanner, 3000);
+  }
+
+  function showBanner() {
+    banner.style.display = 'block';
+    requestAnimationFrame(function() { banner.classList.add('pwa-visible'); });
+  }
+
+  function hideBanner() {
+    banner.classList.remove('pwa-visible');
+    setTimeout(function() { banner.style.display = 'none'; }, 250);
+  }
+
+  closeBtn.addEventListener('click', function() {
+    localStorage.setItem(KEY, String(Date.now()));
+    hideBanner();
+  });
+
+  actionBtn.addEventListener('click', async function() {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    var choice = await deferredPrompt.userChoice;
+    if (choice.outcome === 'accepted') {
+      localStorage.setItem(KEY, String(Date.now()));
+      hideBanner();
+    }
+    deferredPrompt = null;
+  });
+
+  window.addEventListener('appinstalled', function() {
+    localStorage.setItem(KEY, String(Date.now()));
+    hideBanner();
+  });
+})();
+</script>

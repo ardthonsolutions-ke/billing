@@ -2,12 +2,23 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#1a4a8a">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="<%= currentTenant && currentTenant.primary_color ? currentTenant.primary_color : '#1a4a8a' %>">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="ABS Admin">
+
   <title><%= typeof title !== 'undefined' ? title + ' — ' + APP_NAME : APP_NAME %></title>
+
   <link rel="manifest" href="/manifest.json">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/icons/admin-180.png">
+
   <link rel="stylesheet" href="/css/style.css">
   <link rel="stylesheet" href="/css/dashboard.css">
+  <link rel="stylesheet" href="/css/mobile.css">
 </head>
 <body class="abs-app">
   <div class="app-shell">
@@ -20,6 +31,10 @@
       </main>
     </div>
   </div>
+
+  <%- include('../partials/pwa-install', { pwaLabel: 'ABS Admin', pwaIcon: '/icons/admin-192.png', pwaManifest: '/manifest.json' }) %>
+
   <script src="/js/main.js"></script>
+  <script src="/js/pwa.js"></script>
 </body>
 </html>

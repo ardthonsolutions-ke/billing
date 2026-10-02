@@ -1,0 +1,454 @@
+/* ═══════════════════════════════════════════════
+   Ardthon Billing — Mobile-first overrides
+   Applied to BOTH admin and portal
+   ═══════════════════════════════════════════════ */
+
+/* ─── Global mobile hygiene ─── */
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  overscroll-behavior-y: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Inputs: 16px font prevents iOS auto-zoom on focus */
+input, select, textarea, button {
+  font-size: 16px;
+}
+
+/* Enforce minimum tap target 44px (Apple HIG) */
+button, .btn, .p-btn, a.btn, a.p-btn {
+  min-height: 44px;
+}
+
+/* ─── PWA Install Banner ─── */
+.pwa-install-banner {
+  position: fixed;
+  left: 12px;
+  right: 12px;
+  bottom: 12px;
+  background: #fff;
+  border: 1px solid #e4e1d8;
+  border-radius: 14px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+  z-index: 9000;
+  transform: translateY(120%);
+  opacity: 0;
+  transition: transform 0.25s ease, opacity 0.25s ease;
+  max-width: 460px;
+  margin: 0 auto;
+}
+
+.pwa-install-banner.pwa-visible {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.pwa-install-inner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+}
+
+.pwa-install-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  flex-shrink: 0;
+  background: #f1efea;
+}
+
+.pwa-install-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  font-size: 13px;
+  line-height: 1.3;
+}
+
+.pwa-install-text strong {
+  font-size: 14px;
+  color: #14171f;
+  font-weight: 700;
+}
+
+.pwa-install-text span {
+  color: #767b85;
+  font-size: 12px;
+  margin-top: 2px;
+}
+
+.pwa-install-btn {
+  flex-shrink: 0;
+  padding: 8px 16px;
+  border-radius: 50px;
+  background: #1a4a8a;
+  color: #fff;
+  border: none;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  min-height: 36px;
+}
+
+.pwa-install-btn:hover {
+  background: #0f3560;
+}
+
+.pwa-install-dismiss {
+  flex-shrink: 0;
+  background: transparent;
+  border: none;
+  color: #767b85;
+  font-size: 22px;
+  line-height: 1;
+  padding: 4px 6px;
+  cursor: pointer;
+}
+
+/* ─── Mobile: Admin dashboard ─── */
+@media (max-width: 768px) {
+  /* Sidebar drawer */
+  .abs-sidebar {
+    position: fixed;
+    left: -100%;
+    top: 0;
+    bottom: 0;
+    z-index: 200;
+    transition: left 0.28s ease;
+    box-shadow: 4px 0 24px rgba(0,0,0,0.2);
+    width: 82%;
+    max-width: 320px;
+  }
+
+  body.sidebar-open .abs-sidebar {
+    left: 0;
+  }
+
+  body.sidebar-open::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    z-index: 150;
+  }
+
+  .sidebar-toggle {
+    display: inline-flex !important;
+  }
+
+  .abs-topbar {
+    padding: 0 14px;
+    height: 56px;
+  }
+
+  .page-title {
+    font-size: 15px;
+  }
+
+  .app-main {
+    padding: 16px 12px 90px 12px;
+  }
+
+  /* Page header stacks */
+  .page-header.with-action {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .page-header.with-action .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .page-header h2 {
+    font-size: 20px;
+  }
+
+  /* Stats cards: 2-up on mobile */
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .stat-value {
+    font-size: 22px;
+  }
+
+  .stat-card {
+    padding: 14px;
+  }
+
+  /* Quick action cards stack */
+  .actions-row {
+    grid-template-columns: 1fr;
+  }
+
+  /* ─── Tables → card layout ─── */
+  .table-wrap {
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    overflow: visible;
+  }
+
+  .data-table {
+    display: block;
+  }
+
+  .data-table thead {
+    display: none;
+  }
+
+  .data-table tbody {
+    display: block;
+  }
+
+  .data-table tr {
+    display: block;
+    background: #fff;
+    border: 1px solid #e4e1d8;
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-bottom: 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+
+  .data-table td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 0;
+    border: none !important;
+    gap: 12px;
+    font-size: 14px;
+  }
+
+  .data-table td::before {
+    content: attr(data-label);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #767b85;
+    flex-shrink: 0;
+  }
+
+  .data-table td[data-label=""]::before,
+  .data-table td:not([data-label])::before {
+    content: '';
+  }
+
+  .data-table td:first-child {
+    padding-top: 0;
+    font-size: 15px;
+  }
+
+  .data-table td:last-child {
+    padding-bottom: 0;
+    padding-top: 12px;
+    border-top: 1px solid #f1efea !important;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .data-table td.actions-col {
+    justify-content: flex-end;
+  }
+
+  .data-table td.actions-col::before {
+    content: '';
+  }
+
+  /* Forms */
+  .form-card {
+    padding: 18px 16px;
+    border-radius: 10px;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 0;
+    margin-bottom: 0;
+  }
+
+  .form-group {
+    margin-bottom: 16px;
+  }
+
+  .form-actions {
+    flex-direction: column-reverse;
+    gap: 10px;
+    margin-top: 20px;
+    padding-top: 16px;
+  }
+
+  .form-actions .btn,
+  .form-actions button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* Filters */
+  .filter-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .filter-bar input,
+  .filter-bar select,
+  .filter-bar button,
+  .filter-bar a.btn {
+    width: 100%;
+  }
+
+  /* Detail grid */
+  .detail-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  /* Badges inline */
+  .badge {
+    font-size: 10px;
+  }
+}
+
+/* ─── Mobile: Subscriber portal ─── */
+@media (max-width: 640px) {
+  .portal-shell {
+    padding: 12px;
+  }
+
+  .portal-header {
+    padding: 14px 16px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .portal-nav {
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  .portal-nav a {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+
+  /* Bottom-nav style for portal (fixed) */
+  .portal-nav a {
+    flex: 1;
+    text-align: center;
+    min-width: 0;
+  }
+
+  .p-card {
+    padding: 18px 16px;
+    border-radius: 10px;
+  }
+
+  .plans-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .plan-card {
+    padding: 20px 18px;
+  }
+
+  .plan-price {
+    font-size: 24px;
+  }
+
+  .p-stats {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .p-stat {
+    padding: 14px;
+  }
+
+  .p-stat-value {
+    font-size: 18px;
+  }
+
+  .p-table {
+    display: block;
+  }
+
+  .p-table thead {
+    display: none;
+  }
+
+  .p-table tr {
+    display: block;
+    background: #fff;
+    border-radius: 10px;
+    padding: 14px;
+    margin-bottom: 10px;
+    border: 1px solid #e5e7eb;
+  }
+
+  .p-table td {
+    display: flex;
+    justify-content: space-between;
+    padding: 5px 0;
+    border: none;
+    font-size: 13px;
+  }
+
+  .p-table td::before {
+    content: attr(data-label);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #6b7280;
+    letter-spacing: 0.3px;
+  }
+
+  .portal-login-wrap {
+    margin: 24px auto;
+    padding: 0 12px;
+  }
+
+  .portal-login-card {
+    padding: 28px 22px;
+  }
+
+  .p-btn {
+    min-height: 48px;
+    font-size: 15px;
+  }
+}
+
+/* ─── Safe area for notched phones ─── */
+@supports (padding: max(0px)) {
+  .app-main,
+  .portal-shell {
+    padding-left: max(16px, env(safe-area-inset-left));
+    padding-right: max(16px, env(safe-area-inset-right));
+  }
+  .pwa-install-banner {
+    bottom: max(12px, env(safe-area-inset-bottom));
+  }
+}
+
+/* ─── Reduce motion for accessibility ─── */
+@media (prefers-reduced-motion: reduce) {
+  .pwa-install-banner,
+  .abs-sidebar {
+    transition: none;
+  }
+}
