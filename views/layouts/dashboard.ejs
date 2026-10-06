@@ -18,15 +18,15 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png">
   <link rel="apple-touch-icon" sizes="180x180" href="/icons/admin-180.png">
 
-  <link rel="stylesheet" href="/css/dashboard.css">
+  <link rel="stylesheet" href="/css/dashboard.css?v=20261006a">
   <% if (currentPath && currentPath.startsWith('/reports')) { %>
-    <link rel="stylesheet" href="/css/reports.css">
+    <link rel="stylesheet" href="/css/reports.css?v=20261006a">
   <% } %>
   <% if (currentPath && currentPath.startsWith('/network')) { %>
-    <link rel="stylesheet" href="/css/network.css">
+    <link rel="stylesheet" href="/css/network.css?v=20261006a">
   <% } %>
 
-  <script src="/js/theme.js"></script>
+  <script src="/js/theme.js?v=20261006a"></script>
 </head>
 <body class="abs-app">
   <div class="app-shell">
@@ -68,17 +68,17 @@
 
   <%- include('../partials/pwa-install', { pwaLabel: 'ABS Admin', pwaIcon: '/icons/admin-192.png', pwaManifest: '/manifest.json' }) %>
 
-  <script src="/js/command-palette.js"></script>
-  <script src="/js/rail.js"></script>
-  <script src="/js/rail-health.js?v=20261006b"></script>
-  <script src="/js/mini-chart.js"></script>
-  <script src="/js/theme.js"></script>
-  <script src="/js/pwa.js"></script>
+  <script src="/js/command-palette.js?v=20261006a"></script>
+  <script src="/js/rail.js?v=20261006a"></script>
+  <script src="/js/rail-health.js?v=20261006a"></script>
+  <script src="/js/mini-chart.js?v=20261006a"></script>
+  <script src="/js/theme.js?v=20261006a"></script>
+  <script src="/js/pwa.js?v=20261006a"></script>
   <% if (currentPath && currentPath.startsWith('/settings')) { %>
-    <script src="/js/settings.js"></script>
+    <script src="/js/settings.js?v=20261006a"></script>
   <% } %>
   <% if (currentPath && currentPath.startsWith('/network')) { %>
-    <script src="/js/network.js"></script>
+    <script src="/js/network.js?v=20261006a"></script>
   <% } %>
 </body>
 </html>
