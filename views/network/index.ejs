@@ -1,0 +1,163 @@
+<div class="page-header with-action">
+  <div>
+    <h2>Network</h2>
+    <p class="text-muted">Live view of your routers and connected users</p>
+  </div>
+  <div style="display:flex;gap:8px;">
+    <a href="/network/active" class="btn">All Active Sessions</a>
+    <a href="/network/history" class="btn">History</a>
+  </div>
+</div>
+
+<!-- Live KPIs -->
+<div class="stats-grid" id="live-kpis">
+  <div class="stat-card stat-accent">
+    <div class="stat-label">Connected Now</div>
+    <div class="stat-value" id="kpi-active"><%= totalActive %></div>
+    <div class="stat-hint">Across all routers</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Active Subscribers</div>
+    <div class="stat-value"><%= subCounts.active || 0 %></div>
+    <div class="stat-hint">Total in DB</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Pending Payments</div>
+    <div class="stat-value"><%= todaySum.pending_count || 0 %></div>
+    <div class="stat-hint">Awaiting action</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Revenue Today</div>
+    <div class="stat-value">KSh <%= Number(todaySum.today_revenue || 0).toLocaleString() %></div>
+    <div class="stat-hint">Completed</div>
+  </div>
+</div>
+
+<!-- Routers -->
+<h3 class="section-heading" style="margin-top:28px;">Routers</h3>
+
+<% if (routerStatuses.length === 0) { %>
+  <div class="empty-state">
+    <h3>No routers yet</h3>
+    <p>Add a MikroTik router to start monitoring connected users.</p>
+    <a href="/routers/new" class="btn btn-primary">Add Router</a>
+  </div>
+<% } else { %>
+  <div class="router-grid" id="router-grid">
+    <% routerStatuses.forEach(function(rs) { %>
+      <div class="router-card" data-router-id="<%= rs.router.id %>">
+        <div class="router-head">
+          <div>
+            <h4><%= rs.router.name %></h4>
+            <div class="router-host"><code><%= rs.router.host %>:<%= rs.router.port %></code></div>
+            <% if (rs.router.site_name) { %>
+              <div class="text-muted" style="font-size:12px;"><%= rs.router.site_name %></div>
+            <% } %>
+          </div>
+          <span class="router-status-badge <%= rs.status.ok ? 'online' : 'offline' %>">
+            <%= rs.status.ok ? '● Online' : '● Offline' %>
+          </span>
+        </div>
+
+        <% if (rs.status.ok) { %>
+          <div class="router-meta">
+            <% if (rs.status.version) { %><div><strong>RouterOS</strong> <%= rs.status.version %></div><% } %>
+            <% if (rs.status.uptime) { %><div><strong>Uptime</strong> <%= rs.status.uptime %></div><% } %>
+            <% if (rs.status.cpuLoad !== undefined) { %><div><strong>CPU</strong> <%= rs.status.cpuLoad %>%</div><% } %>
+          </div>
+
+          <div class="router-active-count">
+            <strong><%= rs.sessions.length %></strong> connected
+          </div>
+
+          <% if (rs.sessions.length > 0) { %>
+            <div class="router-sessions-mini">
+              <% rs.sessions.slice(0, 3).forEach(function(s) { %>
+                <div class="mini-session">
+                  <div>
+                    <strong><%= s.user || 'unknown' %></strong>
+                    <div class="text-muted" style="font-size:11px;"><%= s.address || s['mac-address'] || '—' %></div>
+                  </div>
+                  <div class="text-muted" style="font-size:11px;"><%= s.uptime || '—' %></div>
+                </div>
+              <% }); %>
+              <% if (rs.sessions.length > 3) { %>
+                <div class="mini-session text-muted" style="justify-content:center;font-size:12px;">
+                  +<%= rs.sessions.length - 3 %> more — <a href="/network/active">see all</a>
+                </div>
+              <% } %>
+            </div>
+          <% } else { %>
+            <div class="text-muted" style="font-size:13px;text-align:center;padding:12px 0;">No one connected</div>
+          <% } %>
+        <% } else { %>
+          <div class="router-error">
+            <strong>Connection failed</strong><br>
+            <span class="text-muted" style="font-size:12px;"><%= rs.status.error || 'Unknown error' %></span>
+          </div>
+        <% } %>
+
+        <div class="router-actions">
+          <form method="POST" action="/network/router/<%= rs.router.id %>/test" class="inline-form" style="flex:1;">
+            <button type="submit" class="btn btn-sm" style="width:100%;">Test Connection</button>
+          </form>
+          <a href="/routers/<%= rs.router.id %>/edit" class="btn btn-sm">Edit</a>
+          <a href="/routers/<%= rs.router.id %>/sessions" class="btn btn-sm">Details</a>
+        </div>
+      </div>
+    <% }); %>
+  </div>
+<% } %>
+
+<!-- Recent activity split -->
+<div class="report-grid-2" style="margin-top:28px;">
+  <div class="report-section">
+    <h3>Recent Payments</h3>
+    <% if (recentPayments.length === 0) { %>
+      <div class="chart-empty">No payments yet.</div>
+    <% } else { %>
+      <table class="plan-breakdown">
+        <% recentPayments.forEach(function(p) { %>
+          <tr>
+            <td>
+              <strong><%= p.subscriber_name || 'Guest' %></strong>
+              <div class="text-muted" style="font-size:12px;"><%= new Date(p.created_at).toLocaleString() %></div>
+            </td>
+            <td>
+              KSh <%= Number(p.amount).toLocaleString() %>
+              <div class="text-muted" style="font-size:11px;font-weight:400;">
+                <span class="badge badge-<%= p.status === 'completed' ? 'success' : (p.status === 'pending' ? 'warn' : 'muted') %>" style="font-size:10px;"><%= p.status %></span>
+              </div>
+            </td>
+          </tr>
+        <% }); %>
+      </table>
+    <% } %>
+    <div style="margin-top:12px;">
+      <a href="/payments" class="btn btn-sm">All Payments →</a>
+    </div>
+  </div>
+
+  <div class="report-section">
+    <h3>Recent Activity</h3>
+    <% if (recentEvents.length === 0) { %>
+      <div class="chart-empty">No activity yet.</div>
+    <% } else { %>
+      <table class="plan-breakdown">
+        <% recentEvents.forEach(function(e) { %>
+          <tr>
+            <td>
+              <span class="badge badge-role" style="text-transform:capitalize;"><%= e.event_type.replace(/_/g, ' ') %></span>
+              <div class="text-muted" style="font-size:12px;margin-top:4px;"><%= e.subscriber_name || 'System' %></div>
+            </td>
+            <td class="text-muted" style="font-size:12px;font-weight:400;">
+              <%= new Date(e.created_at).toLocaleString() %>
+            </td>
+          </tr>
+        <% }); %>
+      </table>
+    <% } %>
+  </div>
+</div>
+
+<script src="/js/network.js"></script>

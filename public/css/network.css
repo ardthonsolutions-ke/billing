@@ -1,0 +1,184 @@
+/* ═══════════════════════════════════════════
+   Network Dashboard
+   ═══════════════════════════════════════════ */
+
+.section-heading {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 0 0 14px 0;
+}
+
+.session-summary {
+  background: var(--white);
+  padding: 12px 16px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  margin-bottom: 16px;
+  font-size: 14px;
+  color: var(--ink-soft);
+}
+
+.session-summary strong {
+  font-size: 18px;
+  color: var(--brand);
+}
+
+/* ─── Router grid ─── */
+.router-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 16px;
+}
+
+.router-card {
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+}
+
+.router-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.router-head h4 {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 0 0 4px 0;
+}
+
+.router-host {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.router-host code {
+  background: var(--paper-2);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 11px;
+}
+
+.router-status-badge {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  padding: 4px 10px;
+  border-radius: 100px;
+  white-space: nowrap;
+}
+
+.router-status-badge.online {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.router-status-badge.offline {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.router-meta {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px 12px;
+  font-size: 12px;
+  color: var(--ink-soft);
+  padding: 10px 12px;
+  background: var(--paper-2);
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
+.router-meta strong {
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.router-active-count {
+  font-size: 13px;
+  color: var(--ink-soft);
+  padding: 8px 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 12px;
+}
+
+.router-active-count strong {
+  font-size: 20px;
+  color: var(--brand);
+  font-weight: 800;
+  margin-right: 4px;
+}
+
+.router-sessions-mini {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.mini-session {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  background: var(--paper);
+  border-radius: 6px;
+  font-size: 13px;
+}
+
+.router-error {
+  padding: 14px;
+  background: #fef2f2;
+  border-radius: 8px;
+  font-size: 13px;
+  color: #7f1d1d;
+  margin-bottom: 12px;
+}
+
+.router-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: auto;
+}
+
+.router-actions .btn {
+  font-size: 12px;
+  padding: 6px 10px;
+}
+
+/* ─── Live update pulse ─── */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.kpi-updating {
+  animation: pulse 1s ease-in-out;
+}
+
+/* ─── Mobile ─── */
+@media (max-width: 640px) {
+  .router-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .router-head {
+    flex-direction: column;
+  }
+
+  .router-status-badge {
+    align-self: flex-start;
+  }
+}

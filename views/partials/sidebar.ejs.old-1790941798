@@ -1,0 +1,80 @@
+<aside class="abs-sidebar">
+  <div class="sidebar-brand">
+    <a href="/dashboard">
+      <span class="brand-mark">ABS</span>
+      <span class="brand-name">Ardthon Billing</span>
+    </a>
+  </div>
+
+  <nav class="sidebar-nav">
+    <div class="nav-section">
+      <div class="nav-section-title">Main</div>
+      <a href="/dashboard" class="nav-link <%= currentPath === '/dashboard' ? 'active' : '' %>">
+        <span class="nav-icon">▤</span> Dashboard
+      </a>
+      <a href="/reports" class="nav-link <%= currentPath.startsWith('/reports') ? 'active' : '' %>">
+        <span class="nav-icon">▩</span> Reports
+      </a>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-title">Network</div>
+      <a href="/plans" class="nav-link <%= currentPath.startsWith('/plans') ? 'active' : '' %>">
+        <span class="nav-icon">◇</span> Plans
+      </a>
+      <a href="/subscribers" class="nav-link <%= currentPath.startsWith('/subscribers') ? 'active' : '' %>">
+        <span class="nav-icon">☷</span> Subscribers
+      </a>
+      <a href="/routers" class="nav-link <%= currentPath.startsWith('/routers') ? 'active' : '' %>">
+        <span class="nav-icon">◈</span> Routers
+      </a>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-title">Billing</div>
+      <a href="/payments" class="nav-link <%= currentPath.startsWith('/payments') ? 'active' : '' %>">
+        <span class="nav-icon">₭</span> Payments
+      </a>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-title">Customer</div>
+      <a href="/tickets" class="nav-link <%= currentPath.startsWith('/tickets') ? 'active' : '' %>">
+        <span class="nav-icon">✎</span> Tickets
+      </a>
+      <a href="/leads" class="nav-link <%= currentPath.startsWith('/leads') ? 'active' : '' %>">
+        <span class="nav-icon">◐</span> Leads
+      </a>
+    </div>
+
+    <% if (currentUser && currentUser.role === 'super_admin') { %>
+    <div class="nav-section">
+      <div class="nav-section-title">Administration</div>
+      <a href="/tenants" class="nav-link <%= currentPath.startsWith('/tenants') ? 'active' : '' %>">
+        <span class="nav-icon">◫</span> Tenants
+      </a>
+      <a href="/users" class="nav-link <%= currentPath.startsWith('/users') ? 'active' : '' %>">
+        <span class="nav-icon">◉</span> Users
+      </a>
+    </div>
+    <% } %>
+
+    <div class="nav-section">
+      <div class="nav-section-title">System</div>
+      <a href="/settings" class="nav-link <%= currentPath.startsWith('/settings') ? 'active' : '' %>">
+        <span class="nav-icon">⚙</span> Settings
+      </a>
+    </div>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="sidebar-user">
+      <div class="user-avatar"><%= currentUser ? currentUser.full_name.substring(0,1).toUpperCase() : '?' %></div>
+      <div class="user-info">
+        <div class="user-name"><%= currentUser ? currentUser.full_name : 'Guest' %></div>
+        <div class="user-role"><%= currentUser ? currentUser.role.replace('_',' ') : '' %></div>
+      </div>
+    </div>
+    <a href="/logout" class="logout-link">Log out</a>
+  </div>
+</aside>

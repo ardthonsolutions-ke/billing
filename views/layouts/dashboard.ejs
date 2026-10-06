@@ -3,11 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="theme-color" content="<%= currentTenant && currentTenant.primary_color ? currentTenant.primary_color : '#1a4a8a' %>">
+  <meta name="theme-color" content="#c2542a">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="ABS Admin">
 
   <title><%= typeof title !== 'undefined' ? title + ' — ' + APP_NAME : APP_NAME %></title>
 
@@ -16,10 +15,20 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png">
   <link rel="apple-touch-icon" sizes="180x180" href="/icons/admin-180.png">
 
-  <link rel="stylesheet" href="/css/style.css">
+  <link rel="preconnect" href="https://fonts.bunny.net">
   <link rel="stylesheet" href="/css/dashboard.css">
-  <link rel="stylesheet" href="/css/mobile.css">
   <link rel="stylesheet" href="/css/reports.css">
+  <link rel="stylesheet" href="/css/network.css">
+
+  <script>
+    (function() {
+      try {
+        var t = localStorage.getItem('abs-theme');
+        if (!t && window.matchMedia('(prefers-color-scheme: dark)').matches) t = 'dark';
+        if (t) document.documentElement.setAttribute('data-theme', t);
+      } catch (e) {}
+    })();
+  </script>
 </head>
 <body class="abs-app">
   <div class="app-shell">
@@ -33,9 +42,49 @@
     </div>
   </div>
 
+  <nav class="mobile-bottom-nav">
+    <a href="/dashboard" class="mobile-nav-item <%= currentPath === '/dashboard' ? 'active' : '' %>">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1V9.5z"/>
+      </svg>
+      <span>Home</span>
+    </a>
+    <a href="/network" class="mobile-nav-item <%= currentPath.startsWith('/network') ? 'active' : '' %>">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+      </svg>
+      <span>Network</span>
+    </a>
+    <a href="/subscribers" class="mobile-nav-item <%= currentPath.startsWith('/subscribers') ? 'active' : '' %>">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+      </svg>
+      <span>Subs</span>
+    </a>
+    <a href="/payments" class="mobile-nav-item <%= currentPath.startsWith('/payments') ? 'active' : '' %>">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/><path d="M6 15h2M12 15h4"/>
+      </svg>
+      <span>Pay</span>
+    </a>
+    <a href="#" onclick="document.body.classList.toggle('sidebar-open');return false;" class="mobile-nav-item">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 12h18M3 6h18M3 18h18"/>
+      </svg>
+      <span>More</span>
+    </a>
+  </nav>
+
   <%- include('../partials/pwa-install', { pwaLabel: 'ABS Admin', pwaIcon: '/icons/admin-192.png', pwaManifest: '/manifest.json' }) %>
 
+  <script src="/js/theme.js"></script>
   <script src="/js/main.js"></script>
   <script src="/js/pwa.js"></script>
+  <% if (currentPath && currentPath.startsWith('/settings')) { %>
+    <script src="/js/settings.js"></script>
+  <% } %>
+  <% if (currentPath && currentPath.startsWith('/network')) { %>
+    <script src="/js/network.js"></script>
+  <% } %>
 </body>
 </html>

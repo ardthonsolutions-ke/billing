@@ -1,0 +1,44 @@
+<%- include('layout', { title: 'Change Password', tenant: tenant, subscriber: subscriber, portalBase: portalBase, flash: flash, body: '' }) %>
+
+<div class="p-card" style="max-width:520px;margin:0 auto;">
+  <h2 style="margin:0 0 6px;">Change Connection Password</h2>
+  <p class="subtitle" style="margin:0 0 20px;">Update the password your router uses to connect</p>
+
+  <% if (!canChange) { %>
+    <div class="p-alert p-alert-error">
+      Password change is only available for PPPoE accounts linked to a router.
+      Please contact your ISP for assistance.
+    </div>
+    <div style="text-align:center;margin-top:16px;">
+      <a href="<%= portalBase %>/network" class="p-btn">← Back</a>
+    </div>
+  <% } else { %>
+
+    <div class="p-alert p-alert-info">
+      <strong>Note:</strong> After changing your password, your router will need to be updated with the new password to reconnect.
+      You will briefly go offline.
+    </div>
+
+    <form method="POST" action="<%= portalBase %>/network/change-password">
+      <div class="p-form-group">
+        <label for="current_password">Current Password</label>
+        <input type="password" id="current_password" name="current_password" required>
+      </div>
+
+      <div class="p-form-group">
+        <label for="new_password">New Password</label>
+        <input type="password" id="new_password" name="new_password" required minlength="6" placeholder="At least 6 characters">
+      </div>
+
+      <div class="p-form-group">
+        <label for="confirm_password">Confirm New Password</label>
+        <input type="password" id="confirm_password" name="confirm_password" required minlength="6">
+      </div>
+
+      <div style="display:flex;gap:10px;margin-top:20px;">
+        <a href="<%= portalBase %>/network" class="p-btn" style="flex:1;text-align:center;justify-content:center;">Cancel</a>
+        <button type="submit" class="p-btn p-btn-primary" style="flex:2;">Update Password</button>
+      </div>
+    </form>
+  <% } %>
+</div>

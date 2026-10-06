@@ -1,0 +1,132 @@
+<%- include('layout', { title: 'My Connection', tenant: tenant, subscriber: subscriber, portalBase: portalBase, flash: flash, body: '' }) %>
+
+<div class="p-card">
+  <h2>My Connection</h2>
+  <p class="subtitle">Live status of your internet connection</p>
+
+  <% if (connection.type !== 'pppoe') { %>
+    <div class="p-alert p-alert-info">
+      <strong>Connection type: <%= connection.type %></strong><br>
+      Self-service network controls are available for <strong>PPPoE</strong> accounts.
+      For help with <%= connection.type %> accounts, please contact support.
+    </div>
+  <% } else { %>
+
+    <%
+      var isOnline = pppoeStatus && pppoeStatus.online;
+      var hasRouter = !!connection.router_id;
+    %>
+
+    <!-- Status hero -->
+    <div style="text-align:center;padding:20px 0;">
+      <div style="display:inline-flex;width:80px;height:80px;border-radius:50%;background:<%= isOnline ? '#10b981' : '#e5e7eb' %>;color:#fff;align-items:center;justify-content:center;font-size:36px;margin-bottom:16px;">
+        <%= isOnline ? '✓' : '⌛' %>
+      </div>
+      <h3 style="font-size:20px;margin:0 0 6px;">
+        <%= isOnline ? 'Connected' : (hasRouter ? 'Offline' : 'Not Linked') %>
+      </h3>
+      <p style="color:#6b7280;font-size:14px;margin:0;">
+        <% if (isOnline) { %>
+          Connected for <%= pppoeStatus.session.uptime || 'a while' %>
+        <% } else if (hasRouter) { %>
+          Your router is not currently connected
+        <% } else { %>
+          Your account is not linked to a router
+        <% } %>
+      </p>
+    </div>
+
+    <!-- Status grid -->
+    <div class="p-stats" style="margin-top:20px;">
+      <div class="p-stat">
+        <div class="p-stat-label">Status</div>
+        <div class="p-stat-value" style="font-size:16px;color:<%= isOnline ? '#10b981' : '#6b7280' %>;">
+          <%= isOnline ? 'Online' : 'Offline' %>
+        </div>
+      </div>
+      <div class="p-stat">
+        <div class="p-stat-label">Plan</div>
+        <div class="p-stat-value" style="font-size:16px;"><%= connection.plan_name || '—' %></div>
+      </div>
+      <div class="p-stat">
+        <div class="p-stat-label">Expires</div>
+        <div class="p-stat-value" style="font-size:16px;">
+          <%= connection.expires_at ? new Date(connection.expires_at).toLocaleDateString() : '—' %>
+        </div>
+      </div>
+      <div class="p-stat">
+        <div class="p-stat-label">IP Address</div>
+        <div class="p-stat-value" style="font-size:16px;">
+          <%= isOnline && pppoeStatus.session.address ? pppoeStatus.session.address : '—' %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Connection details -->
+    <div style="background:var(--p-bg);padding:16px;border-radius:10px;margin-top:20px;">
+      <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--p-border);font-size:14px;">
+        <span style="color:var(--p-muted);">Username</span>
+        <strong><%= connection.username %></strong>
+      </div>
+      <% if (connection.router_name) { %>
+      <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--p-border);font-size:14px;">
+        <span style="color:var(--p-muted);">Router</span>
+        <span><%= connection.router_name %></span>
+      </div>
+      <% } %>
+      <% if (isOnline && pppoeStatus.session.caller_id) { %>
+      <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--p-border);font-size:14px;">
+        <span style="color:var(--p-muted);">Router MAC</span>
+        <code style="font-size:12px;"><%= pppoeStatus.session.caller_id %></code>
+      </div>
+      <% } %>
+      <% if (isOnline && pppoeStatus.session.bytes_in) { %>
+      <div style="display:flex;justify-content:space-between;padding:8px 0;font-size:14px;">
+        <span style="color:var(--p-muted);">Data this session</span>
+        <span>
+          ↓ <%= (pppoeStatus.session.bytes_in / 1024 / 1024).toFixed(1) %> MB
+          · ↑ <%= ((pppoeStatus.session.bytes_out || 0) / 1024 / 1024).toFixed(1) %> MB
+        </span>
+      </div>
+      <% } %>
+    </div>
+
+    <% if (pppoeError) { %>
+      <div class="p-alert p-alert-error" style="margin-top:16px;">
+        <strong>Could not fetch live status:</strong> <%= pppoeError %>
+      </div>
+    <% } %>
+
+    <!-- Actions -->
+    <div style="margin-top:24px;display:flex;flex-direction:column;gap:10px;">
+      <form method="POST" action="<%= portalBase %>/network/reconnect" onsubmit="return confirm('Reconnect your connection? You will briefly go offline.');">
+        <button type="submit" class="p-btn p-btn-primary" style="width:100%;justify-content:center;">🔄 Reconnect Now</button>
+      </form>
+
+      <a href="<%= portalBase %>/network/change-password" class="p-btn" style="width:100%;justify-content:center;text-align:center;">
+        🔒 Change Connection Password
+      </a>
+
+      <a href="<%= portalBase %>/tickets/new" class="p-btn" style="width:100%;justify-content:center;text-align:center;">
+        ✎ Report an Issue
+      </a>
+    </div>
+
+  <% } %>
+</div>
+
+<% if (connection.type === 'pppoe' && events && events.length > 0) { %>
+<div class="p-card">
+  <h3 style="margin:0 0 14px;">Recent Activity</h3>
+  <div style="display:flex;flex-direction:column;gap:8px;">
+    <% events.slice(0, 8).forEach(function(e) { %>
+      <div style="display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid var(--p-border);font-size:13px;">
+        <span style="text-transform:capitalize;"><%= e.event_type.replace(/_/g, ' ') %></span>
+        <span style="color:var(--p-muted);font-size:12px;white-space:nowrap;">
+          <%= new Date(e.created_at).toLocaleString() %>
+        </span>
+      </div>
+    <% }); %>
+  </div>
+</div>
+<% } %>

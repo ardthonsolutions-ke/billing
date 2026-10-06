@@ -1,70 +1,157 @@
-<%- include('layout', { title: 'Dashboard', tenant: tenant, subscriber: subscriber, flash: flash, active: 'dashboard', body: '' }) %>
+<%- include('layout', { title: 'Home', tenant: tenant, subscriber: subscriber, portalBase: portalBase, flash: flash, currentPath: portalBase + '/dashboard', body: '' }) %>
 
 <%
-// The include above uses express-ejs-layouts "body" slot — the following content
-// is the actual body rendered into the layout. With layout:false in the route,
-// we render this view standalone, so we build the full page here instead.
+var isActive = subscriber.status === 'active' && (!subscriber.expires_at || new Date(subscriber.expires_at) > new Date());
+var statusClass = isActive ? 'active' : (subscriber.status === 'pending' ? 'pending' : (subscriber.status === 'expired' ? 'expired' : 'suspended'));
+var statusLabel = isActive ? 'Active' : subscriber.status;
+
+// Days/hours remaining
+var expiresLabel = '—';
+var remainingLabel = '—';
+if (subscriber.expires_at) {
+  var expDate = new Date(subscriber.expires_at);
+  expiresLabel = expDate.toLocaleDateString('en-KE', { day: 'numeric', month: 'short', year: 'numeric' });
+  var now = new Date();
+  var diffMs = expDate - now;
+  if (diffMs > 0) {
+    var hours = Math.floor(diffMs / (1000 * 60 * 60));
+    if (hours >= 24) {
+      remainingLabel = Math.floor(hours / 24) + ' days left';
+    } else {
+      remainingLabel = hours + ' hours left';
+    }
+  } else {
+    remainingLabel = 'Expired';
+  }
+}
 %>
 
-<div class="p-card">
-  <h2>Welcome, <%= subscriber.full_name %></h2>
-  <p class="subtitle">
-    Account: <strong><%= subscriber.account_number %></strong>
-    &nbsp;·&nbsp;
-    Status: <span class="p-badge p-badge-<%= subscriber.status %>"><%= subscriber.status %></span>
-  </p>
-</div>
-
-<div class="p-stats">
-  <div class="p-stat">
-    <div class="p-stat-label">Plan</div>
-    <div class="p-stat-value"><%= subscriber.plan_name || 'None' %></div>
+<!-- HERO -->
+<div class="p-hero">
+  <div class="p-hero-status">
+    <span class="p-hero-pill <%= statusClass %>">
+      <span class="p-hero-pill-dot"></span>
+      <%= statusLabel %>
+    </span>
   </div>
-  <div class="p-stat">
-    <div class="p-stat-label">Expires</div>
-    <div class="p-stat-value" style="font-size:16px;">
-      <%= subscriber.expires_at ? new Date(subscriber.expires_at).toLocaleDateString() : '—' %>
+
+  <div class="p-hero-body">
+    <div class="p-hero-greeting">Hi, <%= subscriber.full_name.split(' ')[0] || 'there' %></div>
+    <div class="p-hero-sub">
+      <% if (isActive) { %>
+        You're connected. <%= remainingLabel %> on your plan.
+      <% } else if (subscriber.status === 'expired') { %>
+        Your plan has expired. Reconnect with a new plan.
+      <% } else { %>
+        <%= subscriber.status === 'pending' ? 'Waiting for payment confirmation.' : 'Your account is on hold.' %>
+      <% } %>
     </div>
   </div>
-  <div class="p-stat">
-    <div class="p-stat-label">Data Used</div>
-    <div class="p-stat-value"><%= Math.round((subscriber.data_used_mb || 0) / 1024 * 10) / 10 %> GB</div>
-  </div>
-  <div class="p-stat">
-    <div class="p-stat-label">Time Used</div>
-    <div class="p-stat-value" style="font-size:16px;">
-      <%= Math.round((subscriber.time_used_sec || 0) / 3600) %> hrs
+
+  <% if (isActive) { %>
+    <div class="p-hero-plan">
+      <div class="p-hero-plan-name"><%= connection && connection.plan_name ? connection.plan_name : 'Current plan' %></div>
+      <div class="p-hero-plan-expiry">Expires <%= expiresLabel %></div>
+    </div>
+  <% } %>
+</div>
+
+<!-- QUICK ACTIONS -->
+<div class="p-actions">
+  <a href="<%= portalBase %>/plans" class="p-action-card">
+    <div class="p-action-icon p-action-icon-accent">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/><path d="M6 15h2M12 15h4"/></svg>
+    </div>
+    <div class="p-action-text">
+      <strong><%= isActive ? 'Renew or Upgrade' : 'Buy a Plan' %></strong>
+      <span><%= isActive ? 'Extend your time' : 'Get back online' %></span>
+    </div>
+  </a>
+
+  <a href="<%= portalBase %>/history" class="p-action-card">
+    <div class="p-action-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+    </div>
+    <div class="p-action-text">
+      <strong>Payment History</strong>
+      <span>See all your receipts</span>
+    </div>
+  </a>
+
+  <a href="<%= portalBase %>/network" class="p-action-card">
+    <div class="p-action-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="14" width="20" height="8" rx="2"/><path d="M6.01 18H6M10 18h.01"/><path d="M12 2v6"/><path d="M8 4l4 4 4-4"/></svg>
+    </div>
+    <div class="p-action-text">
+      <strong>My Connection</strong>
+      <span>Status and settings</span>
+    </div>
+  </a>
+
+  <a href="<%= portalBase %>/tickets" class="p-action-card">
+    <div class="p-action-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 3-3h14a3 3 0 0 1 3 3v1a2 2 0 0 0 0 4v1a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3v-1a2 2 0 0 0 0-4V9z"/><path d="M13 5v2M13 11v2M13 17v2"/></svg>
+    </div>
+    <div class="p-action-text">
+      <strong>Support</strong>
+      <span>Get help or report</span>
+    </div>
+  </a>
+</div>
+
+<!-- ACCOUNT DETAILS -->
+<div class="p-card">
+  <h3>Account</h3>
+  <div class="p-info-grid">
+    <div class="p-info-row">
+      <span class="p-info-label">Account number</span>
+      <span class="p-info-value"><code><%= subscriber.account_number %></code></span>
+    </div>
+    <div class="p-info-row">
+      <span class="p-info-label">Phone</span>
+      <span class="p-info-value"><%= subscriber.phone %></span>
+    </div>
+    <% if (connection && connection.plan_name) { %>
+      <div class="p-info-row">
+        <span class="p-info-label">Current plan</span>
+        <span class="p-info-value"><%= connection.plan_name %></span>
+      </div>
+    <% } %>
+    <div class="p-info-row">
+      <span class="p-info-label">Expires</span>
+      <span class="p-info-value"><%= expiresLabel %></span>
+    </div>
+    <div class="p-info-row">
+      <span class="p-info-label">Data used this period</span>
+      <span class="p-info-value"><%= Math.round((subscriber.data_used_mb || 0) / 1024 * 10) / 10 %> GB</span>
+    </div>
+    <div class="p-info-row">
+      <span class="p-info-label">Time used</span>
+      <span class="p-info-value"><%= Math.round((subscriber.time_used_sec || 0) / 3600) %> hrs</span>
     </div>
   </div>
 </div>
 
+<!-- RECENT PAYMENTS -->
+<% if (typeof payments !== 'undefined' && payments && payments.length) { %>
 <div class="p-card">
-  <h2>Quick Actions</h2>
-  <p class="subtitle">Manage your account</p>
-  <div style="display:flex;gap:12px;flex-wrap:wrap;">
-    <a href="<%= portalBase %>/plans" class="p-btn p-btn-primary">Buy / Renew Plan</a>
-    <a href="<%= portalBase %>/history" class="p-btn">Payment History</a>
+  <div class="p-card-head">
+    <h3>Recent payments</h3>
+    <a href="<%= portalBase %>/history" class="p-link">View all →</a>
   </div>
-</div>
 
-<% if (payments && payments.length) { %>
-<div class="p-card">
-  <h2>Recent Payments</h2>
-  <p class="subtitle">Your last 5 payment records</p>
-  <table class="p-table">
-    <thead>
-      <tr><th>Date</th><th>Amount</th><th>Method</th><th>Status</th></tr>
-    </thead>
-    <tbody>
-      <% payments.forEach(function(p) { %>
-        <tr>
-          <td><%= new Date(p.created_at).toLocaleDateString() %></td>
-          <td><strong>KSh <%= Number(p.amount).toLocaleString() %></strong></td>
-          <td><%= p.method %></td>
-          <td><span class="p-badge p-badge-<%= p.status === 'completed' ? 'active' : 'pending' %>"><%= p.status %></span></td>
-        </tr>
-      <% }); %>
-    </tbody>
-  </table>
+  <div class="p-list">
+    <% payments.forEach(function(p) { %>
+      <div class="p-list-item">
+        <div class="p-list-main">
+          <div class="p-list-title">KSh <%= Number(p.amount).toLocaleString() %></div>
+          <div class="p-list-sub"><%= new Date(p.created_at).toLocaleString('en-KE', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) %> · <%= p.method %></div>
+        </div>
+        <div>
+          <span class="p-badge p-badge-<%= p.status === 'completed' ? 'active' : (p.status === 'pending' ? 'pending' : 'expired') %>"><%= p.status %></span>
+        </div>
+      </div>
+    <% }); %>
+  </div>
 </div>
 <% } %>

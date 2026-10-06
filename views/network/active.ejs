@@ -1,0 +1,66 @@
+<div class="page-header with-action">
+  <div>
+    <h2>Active Sessions</h2>
+    <p class="text-muted">All users connected right now</p>
+  </div>
+  <div style="display:flex;gap:8px;">
+    <a href="/network" class="btn">← Back to Network</a>
+    <button type="button" class="btn" onclick="location.reload()">Refresh</button>
+  </div>
+</div>
+
+<% if (sessions.length === 0) { %>
+  <div class="empty-state">
+    <h3>No active sessions</h3>
+    <p>Nobody is connected to your routers right now.</p>
+    <a href="/network" class="btn btn-primary">Back to Network</a>
+  </div>
+<% } else { %>
+  <div class="session-summary">
+    <strong><%= sessions.length %></strong> connected session<%= sessions.length === 1 ? '' : 's' %>
+  </div>
+
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>User</th>
+          <th>IP</th>
+          <th>MAC</th>
+          <th>Router</th>
+          <th>Uptime</th>
+          <th>Bytes In / Out</th>
+          <th class="actions-col">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% sessions.forEach(function(item) { %>
+          <tr>
+            <td data-label="User">
+              <strong><%= item.session.user || item.session.name || 'unknown' %></strong>
+              <div class="text-muted" style="font-size:11px;">
+                <span class="badge badge-<%= item.kind === 'pppoe' ? 'role' : 'muted' %>" style="font-size:10px;"><%= item.kind %></span>
+              </div>
+            </td>
+            <td data-label="IP"><code><%= item.session.address || item.session['remote-address'] || '—' %></code></td>
+            <td data-label="MAC"><code style="font-size:11px;"><%= item.session['mac-address'] || '—' %></code></td>
+            <td data-label="Router"><%= item.router_name %></td>
+            <td data-label="Uptime" class="text-muted"><%= item.session.uptime || '—' %></td>
+            <td data-label="Bytes" class="text-muted">
+              <%= item.session['bytes-in'] ? Math.round(item.session['bytes-in']/1024/1024) + ' / ' + Math.round((item.session['bytes-out'] || 0)/1024/1024) + ' MB' : '—' %>
+            </td>
+            <td class="actions-col">
+              <form method="POST" action="/network/disconnect" class="inline-form"
+                    onsubmit="return confirm('Disconnect this user from <%= item.router_name %>?');">
+                <input type="hidden" name="router_id" value="<%= item.router_id %>">
+                <input type="hidden" name="session_id" value="<%= item.session['.id'] %>">
+                <input type="hidden" name="kind" value="<%= item.kind %>">
+                <button type="submit" class="btn btn-sm" style="color:#c0392b;border-color:#c0392b;">Disconnect</button>
+              </form>
+            </td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  </div>
+<% } %>

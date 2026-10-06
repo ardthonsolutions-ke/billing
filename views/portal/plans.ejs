@@ -1,39 +1,72 @@
-<%- include('layout', { title: 'Plans', tenant: tenant, subscriber: subscriber, flash: flash, active: 'plans', body: '' }) %>
+<%- include('layout', { title: 'Buy a Plan', tenant: tenant, subscriber: subscriber, portalBase: portalBase, flash: flash, currentPath: portalBase + '/plans', body: '' }) %>
 
-<div class="p-card">
-  <h2>Available Plans</h2>
-  <p class="subtitle">Choose a plan to get online</p>
-
-  <% if (!plans || plans.length === 0) { %>
-    <p style="color:var(--p-muted);text-align:center;padding:40px 0;">No plans available right now. Contact your ISP.</p>
-  <% } else { %>
-    <div class="plans-grid">
-      <% plans.forEach(function(plan) { %>
-        <div class="plan-card">
-          <div class="plan-name"><%= plan.name %></div>
-          <% if (plan.description) { %>
-            <div style="font-size:12px;color:var(--p-muted);"><%= plan.description %></div>
-          <% } %>
-
-          <div class="plan-price">KSh <%= Number(plan.price).toLocaleString() %></div>
-
-          <ul class="plan-details">
-            <% if (plan.duration_hours) { %>
-              <li><%= plan.duration_hours %> hours access</li>
-            <% } %>
-            <% if (plan.data_cap_mb) { %>
-              <li><%= plan.data_cap_mb >= 1024 ? Math.round(plan.data_cap_mb / 1024) + ' GB' : plan.data_cap_mb + ' MB' %> data</li>
-            <% } else { %>
-              <li>Unlimited data</li>
-            <% } %>
-            <% if (plan.speed_down_kbps) { %>
-              <li><%= Math.round(plan.speed_down_kbps / 1024 * 10) / 10 %> Mbps download</li>
-            <% } %>
-          </ul>
-
-          <a href="<%= portalBase %>/buy/<%= plan.id %>" class="p-btn p-btn-accent p-btn-block">Buy Plan</a>
-        </div>
-      <% }); %>
-    </div>
-  <% } %>
+<div class="p-card" style="text-align:center;background:linear-gradient(135deg, var(--p-brand), var(--p-accent));color:#fff;border:none;">
+  <div style="font-size:13px;font-weight:600;opacity:0.9;text-transform:uppercase;letter-spacing:0.06em;">Available Plans</div>
+  <div style="font-size:22px;font-weight:700;margin-top:6px;letter-spacing:-0.02em;">Choose your plan</div>
+  <div style="font-size:13px;opacity:0.85;margin-top:4px;">Pay with M-PESA · Instant activation</div>
 </div>
+
+<% if (!plans || plans.length === 0) { %>
+  <div class="p-empty">
+    <div class="p-empty-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
+    </div>
+    <h3>No plans available</h3>
+    <p>Please contact your ISP for more information.</p>
+  </div>
+<% } else { %>
+  <div class="p-plans">
+    <% plans.forEach(function(plan, idx) { %>
+      <div class="p-plan-card <%= idx === 1 && plans.length >= 3 ? 'p-plan-popular' : '' %>">
+        <% if (idx === 1 && plans.length >= 3) { %>
+          <div class="p-plan-badge">POPULAR</div>
+        <% } %>
+
+        <div class="p-plan-name"><%= plan.name %></div>
+        <% if (plan.description) { %>
+          <div class="p-plan-desc"><%= plan.description %></div>
+        <% } %>
+
+        <div class="p-plan-price">
+          <span class="p-plan-currency">KSh</span>
+          <span class="p-plan-amount"><%= Number(plan.price).toLocaleString() %></span>
+          <% if (plan.duration_hours) { %>
+            <span class="p-plan-period">/ <%= plan.duration_hours >= 24 ? Math.round(plan.duration_hours / 24) + ' day' + (plan.duration_hours >= 48 ? 's' : '') : plan.duration_hours + 'h' %></span>
+          <% } %>
+        </div>
+
+        <ul class="p-plan-features">
+          <% if (plan.duration_hours) { %>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+              <%= plan.duration_hours %> hours of access
+            </li>
+          <% } %>
+          <% if (plan.data_cap_mb) { %>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+              <%= plan.data_cap_mb >= 1024 ? Math.round(plan.data_cap_mb / 1024 * 10) / 10 + ' GB' : plan.data_cap_mb + ' MB' %> data
+            </li>
+          <% } else { %>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+              Unlimited data
+            </li>
+          <% } %>
+          <% if (plan.speed_down_kbps) { %>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+              Up to <%= Math.round(plan.speed_down_kbps / 1024 * 10) / 10 %> Mbps
+            </li>
+          <% } %>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+            Instant activation
+          </li>
+        </ul>
+
+        <a href="<%= portalBase %>/buy/<%= plan.id %>" class="p-btn p-btn-accent p-btn-block">Buy Now</a>
+      </div>
+    <% }); %>
+  </div>
+<% } %>

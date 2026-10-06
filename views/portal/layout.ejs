@@ -8,6 +8,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="<%= tenant ? tenant.name : 'Portal' %>">
+  <meta name="color-scheme" content="light dark">
 
   <title><%= typeof title !== 'undefined' ? title + ' — ' + (tenant ? tenant.name : 'Portal') : 'Portal' %></title>
 
@@ -17,7 +18,6 @@
   <link rel="apple-touch-icon" sizes="180x180" href="/icons/portal-180.png">
 
   <link rel="stylesheet" href="/css/portal.css">
-  <link rel="stylesheet" href="/css/mobile.css">
   <style>
     :root {
       --p-brand: <%= tenant && tenant.primary_color ? tenant.primary_color : '#1a4a8a' %>;
@@ -26,70 +26,101 @@
   </style>
 </head>
 <body>
-  <div class="portal-shell">
-    <header class="portal-header">
-      <a href="<%= portalBase %>/dashboard" class="portal-brand">
-        <div class="portal-brand-logo">
-          <% if (tenant && tenant.logo_url) { %>
-            <img src="<%= tenant.logo_url %>" alt="<%= tenant.name %>">
-          <% } else { %>
-            <%= tenant ? tenant.name.substring(0,2).toUpperCase() : 'ABS' %>
-          <% } %>
-        </div>
-        <div class="portal-brand-text">
-          <h1><%= tenant ? tenant.name : 'Subscriber Portal' %></h1>
-          <% if (tenant && tenant.tagline) { %>
-            <div class="tagline"><%= tenant.tagline %></div>
-          <% } %>
-        </div>
-      </a>
 
-      <nav class="portal-nav">
-        <% if (typeof subscriber !== 'undefined' && subscriber) { %>
-          <a href="<%= portalBase %>/dashboard">Dashboard</a>
-          <a href="<%= portalBase %>/plans">Buy Plan</a>
-          <a href="<%= portalBase %>/history">History</a>
-          <a href="<%= portalBase %>/logout">Log out</a>
-          <a href="<%= portalBase %>/tickets">Support</a>
+<div class="portal-shell">
+
+  <header class="portal-header">
+    <a href="<%= portalBase %>/dashboard" class="portal-brand">
+      <div class="portal-brand-logo">
+        <% if (tenant && tenant.logo_url) { %>
+          <img src="<%= tenant.logo_url %>" alt="<%= tenant.name %>">
+        <% } else { %>
+          <%= tenant ? tenant.name.substring(0,2).toUpperCase() : 'AB' %>
         <% } %>
-      </nav>
-    </header>
+      </div>
+      <div class="portal-brand-text">
+        <h1><%= tenant ? tenant.name : 'Portal' %></h1>
+        <% if (tenant && tenant.tagline) { %>
+          <div class="tagline"><%= tenant.tagline %></div>
+        <% } %>
+      </div>
+    </a>
 
-    <% if (typeof flash !== 'undefined' && flash) { %>
-      <% if (flash.success && flash.success.length) { %>
-        <% flash.success.forEach(function(m) { %><div class="p-alert p-alert-success"><%= m %></div><% }); %>
+    <nav class="portal-nav">
+      <% if (typeof subscriber !== 'undefined' && subscriber) { %>
+        <a href="<%= portalBase %>/dashboard" class="<%= currentPath === portalBase + '/dashboard' ? 'active' : '' %>">Home</a>
+        <a href="<%= portalBase %>/plans" class="<%= currentPath === portalBase + '/plans' ? 'active' : '' %>">Buy Plan</a>
+        <a href="<%= portalBase %>/history" class="<%= currentPath === portalBase + '/history' ? 'active' : '' %>">History</a>
+        <a href="<%= portalBase %>/network" class="<%= currentPath === portalBase + '/network' ? 'active' : '' %>">Connection</a>
+        <a href="<%= portalBase %>/tickets" class="<%= currentPath === portalBase + '/tickets' ? 'active' : '' %>">Support</a>
+        <a href="<%= portalBase %>/logout">Log out</a>
       <% } %>
-      <% if (flash.error && flash.error.length) { %>
-        <% flash.error.forEach(function(m) { %><div class="p-alert p-alert-error"><%= m %></div><% }); %>
-      <% } %>
-      <% if (flash.info && flash.info.length) { %>
-        <% flash.info.forEach(function(m) { %><div class="p-alert p-alert-info"><%= m %></div><% }); %>
-      <% } %>
+    </nav>
+  </header>
+
+  <% if (typeof flash !== 'undefined' && flash) { %>
+    <% if (flash.success && flash.success.length) { %>
+      <% flash.success.forEach(function(m) { %><div class="p-alert p-alert-success"><%= m %></div><% }); %>
     <% } %>
-
-    <%- body %>
-
-    <footer class="portal-footer">
-      <div>&copy; <%= new Date().getFullYear() %> <%= tenant ? tenant.name : 'Ardthon Billing' %></div>
-      <% if (tenant && (tenant.facebook_url || tenant.twitter_url || tenant.instagram_url || tenant.website)) { %>
-        <div class="social">
-          <% if (tenant.website) { %><a href="<%= tenant.website %>" target="_blank">Website</a><% } %>
-          <% if (tenant.facebook_url) { %><a href="<%= tenant.facebook_url %>" target="_blank">Facebook</a><% } %>
-          <% if (tenant.twitter_url) { %><a href="<%= tenant.twitter_url %>" target="_blank">Twitter</a><% } %>
-          <% if (tenant.instagram_url) { %><a href="<%= tenant.instagram_url %>" target="_blank">Instagram</a><% } %>
-        </div>
-      <% } %>
-      <% if (tenant && (tenant.contact_email || tenant.contact_phone || tenant.whatsapp_number)) { %>
-        <div style="margin-top:10px;font-size:12px;">
-          <% if (tenant.contact_phone) { %>Phone: <%= tenant.contact_phone %> &nbsp; <% } %>
-          <% if (tenant.contact_email) { %>Email: <%= tenant.contact_email %><% } %>
-        </div>
-      <% } %>
-    </footer>
-  </div>
-
-  <% if (typeof subscriber !== 'undefined' && subscriber) { %>
-    <%- include('../partials/pwa-install', { pwaLabel: tenant ? tenant.name : 'Portal', pwaIcon: '/icons/portal-192.png', pwaManifest: '/portal-manifest.json' }) %>
+    <% if (flash.error && flash.error.length) { %>
+      <% flash.error.forEach(function(m) { %><div class="p-alert p-alert-error"><%= m %></div><% }); %>
+    <% } %>
+    <% if (flash.info && flash.info.length) { %>
+      <% flash.info.forEach(function(m) { %><div class="p-alert p-alert-info"><%= m %></div><% }); %>
+    <% } %>
   <% } %>
+
+  <%- body %>
+
+  <footer class="portal-footer">
+    <div>&copy; <%= new Date().getFullYear() %> <%= tenant ? tenant.name : 'Ardthon Billing' %></div>
+    <% if (tenant && (tenant.facebook_url || tenant.twitter_url || tenant.instagram_url || tenant.website)) { %>
+      <div class="social">
+        <% if (tenant.website) { %><a href="<%= tenant.website %>" target="_blank">Website</a><% } %>
+        <% if (tenant.facebook_url) { %><a href="<%= tenant.facebook_url %>" target="_blank">Facebook</a><% } %>
+        <% if (tenant.twitter_url) { %><a href="<%= tenant.twitter_url %>" target="_blank">Twitter</a><% } %>
+        <% if (tenant.instagram_url) { %><a href="<%= tenant.instagram_url %>" target="_blank">Instagram</a><% } %>
+      </div>
+    <% } %>
+    <% if (tenant && (tenant.contact_email || tenant.contact_phone || tenant.whatsapp_number)) { %>
+      <div style="margin-top:10px;">
+        <% if (tenant.contact_phone) { %>Phone: <%= tenant.contact_phone %> &nbsp; <% } %>
+        <% if (tenant.contact_email) { %>Email: <%= tenant.contact_email %><% } %>
+      </div>
+    <% } %>
+  </footer>
+
+</div>
+
+<% if (typeof subscriber !== 'undefined' && subscriber) { %>
+  <!-- Mobile bottom nav -->
+  <nav class="portal-bottomnav">
+    <a href="<%= portalBase %>/dashboard" class="<%= currentPath === portalBase + '/dashboard' ? 'active' : '' %>">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1V9.5z"/></svg>
+      <span>Home</span>
+    </a>
+    <a href="<%= portalBase %>/plans" class="<%= currentPath === portalBase + '/plans' ? 'active' : '' %>">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/><path d="M6 15h2M12 15h4"/></svg>
+      <span>Buy</span>
+    </a>
+    <a href="<%= portalBase %>/history" class="<%= currentPath === portalBase + '/history' ? 'active' : '' %>">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+      <span>History</span>
+    </a>
+    <a href="<%= portalBase %>/network" class="<%= currentPath === portalBase + '/network' ? 'active' : '' %>">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="14" width="20" height="8" rx="2"/><path d="M6.01 18H6M10 18h.01"/><path d="M12 2v6"/><path d="M8 4l4 4 4-4"/></svg>
+      <span>Connection</span>
+    </a>
+    <a href="<%= portalBase %>/tickets" class="<%= currentPath === portalBase + '/tickets' ? 'active' : '' %>">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 3-3h14a3 3 0 0 1 3 3v1a2 2 0 0 0 0 4v1a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3v-1a2 2 0 0 0 0-4V9z"/><path d="M13 5v2M13 11v2M13 17v2"/></svg>
+      <span>Support</span>
+    </a>
+  </nav>
+<% } %>
+
+<% if (typeof subscriber !== 'undefined' && subscriber) { %>
+  <%- include('../partials/pwa-install', { pwaLabel: tenant ? tenant.name : 'Portal', pwaIcon: '/icons/portal-192.png', pwaManifest: '/portal-manifest.json' }) %>
+<% } %>
+
 </body>
 </html>

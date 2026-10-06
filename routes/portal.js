@@ -138,7 +138,9 @@ router.get('/portal/dashboard', ensureTenant, requireSubscriber, async (req, res
     title: 'Dashboard',
     tenant: req.tenant,
     subscriber,
-    payments
+    payments,
+    connection: subscriber,
+    currentPath: portalBase(req) + '/dashboard'
   });
 });
 
@@ -246,12 +248,264 @@ router.get('/portal/history', ensureTenant, requireSubscriber, async (req, res) 
     layout: false,
     title: 'Payment History',
     tenant: req.tenant,
-    payments
+    payments,
+    currentPath: portalBase(req) + '/history'
   });
 });
 
 // ─── No tenant (fallback page) ───
 
+
+// ═══════════════════════════════════════════════════════════
+// SUBSCRIBER CONNECTION / PPPoE SELF-SERVICE
+// ═══════════════════════════════════════════════════════════
+
+// ─── Connection dashboard ───
+router.get('/portal/network', ensureTenant, requireSubscriber, async (req, res) => {
+  const sid = req.session.subscriber.id;
+
+  const [rows] = await req.db.query(`
+    SELECT s.*, p.name AS plan_name, p.price AS plan_price, p.duration_hours,
+           p.data_cap_mb, p.speed_down_kbps, p.speed_up_kbps,
+           r.id AS router_id, r.name AS router_name, r.host AS router_host,
+           r.port AS router_port, r.username AS router_user, r.password_encrypted AS router_pass,
+           r.site_name, r.status AS router_status
+    FROM subscribers s
+    LEFT JOIN plans p ON s.plan_id = p.id
+    LEFT JOIN routers r ON s.router_id = r.id
+    WHERE s.id = ?
+  `, [sid]);
+
+  if (!rows.length) {
+    req.session.subscriber = null;
+    return res.redirect(portalPath(req, '/login'));
+  }
+
+  const subscriber = rows[0];
+
+  // Attempt to fetch live PPPoE status if this is a PPPoE subscriber and router is set
+  let pppoeStatus = null;
+  let pppoeError = null;
+
+  if (subscriber.type === 'pppoe' && subscriber.router_id && subscriber.router_pass) {
+    try {
+      const mikrotik = require('../services/mikrotikService');
+      const result = await mikrotik.getPppoeStatus(
+        {
+          host: subscriber.router_host,
+          port: subscriber.router_port,
+          username: subscriber.router_user,
+          password_encrypted: subscriber.router_pass
+        },
+        subscriber.username
+      );
+      if (result.ok) {
+        pppoeStatus = result;
+      } else {
+        pppoeError = result.error;
+      }
+    } catch (e) {
+      pppoeError = e.message;
+    }
+  }
+
+  // Recent events for this subscriber
+  const [events] = await req.db.query(
+    `SELECT event_type, details, created_at
+     FROM subscriber_events
+     WHERE subscriber_id = ?
+     ORDER BY created_at DESC
+     LIMIT 10`,
+    [sid]
+  );
+
+  res.render('portal/network', {
+    layout: false,
+    title: 'My Connection',
+    tenant: req.tenant,
+    subscriber: req.session.subscriber,
+    portalBase: portalBase(req),
+    connection: subscriber,
+    pppoeStatus,
+    pppoeError,
+    events
+  });
+});
+
+// ─── Change PPPoE password form ───
+router.get('/portal/network/change-password', ensureTenant, requireSubscriber, async (req, res) => {
+  const sid = req.session.subscriber.id;
+
+  const [rows] = await req.db.query(
+    `SELECT s.type, s.username, r.id AS router_id, r.name AS router_name
+     FROM subscribers s
+     LEFT JOIN routers r ON s.router_id = r.id
+     WHERE s.id = ?`,
+    [sid]
+  );
+
+  if (!rows.length) return res.redirect(portalPath(req, '/login'));
+
+  const s = rows[0];
+  const canChange = s.type === 'pppoe' && s.router_id;
+
+  res.render('portal/network-change-pass', {
+    layout: false,
+    title: 'Change Password',
+    tenant: req.tenant,
+    subscriber: req.session.subscriber,
+    portalBase: portalBase(req),
+    connection: s,
+    canChange
+  });
+});
+
+// ─── Handle password change ───
+router.post('/portal/network/change-password', ensureTenant, requireSubscriber, async (req, res) => {
+  const sid = req.session.subscriber.id;
+  const { current_password, new_password, confirm_password } = req.body;
+
+  if (!current_password || !new_password || !confirm_password) {
+    req.flash('error', 'All fields required.');
+    return res.redirect(portalBase(req) + '/network/change-password');
+  }
+
+  if (new_password !== confirm_password) {
+    req.flash('error', 'New passwords do not match.');
+    return res.redirect(portalBase(req) + '/network/change-password');
+  }
+
+  if (new_password.length < 6) {
+    req.flash('error', 'Password must be at least 6 characters.');
+    return res.redirect(portalBase(req) + '/network/change-password');
+  }
+
+  try {
+    const [rows] = await req.db.query(`
+      SELECT s.id, s.type, s.username, s.password_plain,
+             r.host AS router_host, r.port AS router_port,
+             r.username AS router_user, r.password_encrypted AS router_pass
+      FROM subscribers s
+      LEFT JOIN routers r ON s.router_id = r.id
+      WHERE s.id = ?
+    `, [sid]);
+
+    if (!rows.length) return res.redirect(portalPath(req, '/login'));
+    const sub = rows[0];
+
+    if (sub.type !== 'pppoe') {
+      req.flash('error', 'Password change is only available for PPPoE accounts.');
+      return res.redirect(portalBase(req) + '/network');
+    }
+
+    if (!sub.router_host) {
+      req.flash('error', 'Your account is not linked to a router. Contact support.');
+      return res.redirect(portalBase(req) + '/network');
+    }
+
+    // Verify current password matches what we have stored
+    if (sub.password_plain !== current_password) {
+      req.flash('error', 'Current password is incorrect.');
+      return res.redirect(portalBase(req) + '/network/change-password');
+    }
+
+    // Push the new password to the router
+    const mikrotik = require('../services/mikrotikService');
+    const result = await mikrotik.changePppoeSecret(
+      {
+        host: sub.router_host,
+        port: sub.router_port,
+        username: sub.router_user,
+        password_encrypted: sub.router_pass
+      },
+      sub.username,
+      new_password
+    );
+
+    if (!result.ok) {
+      console.error('[Portal Network] Router update failed:', result.error);
+      req.flash('error', 'Could not update on the router. Contact support. (' + result.error + ')');
+      return res.redirect(portalBase(req) + '/network/change-password');
+    }
+
+    // Update local DB
+    await req.db.query(
+      'UPDATE subscribers SET password_plain = ? WHERE id = ?',
+      [new_password, sid]
+    );
+
+    // Log event
+    try {
+      await req.db.query(
+        `INSERT INTO subscriber_events (tenant_id, subscriber_id, event_type, details)
+         VALUES (?, ?, 'pppoe_password_changed', ?)`,
+        [req.tenant.id, sid, JSON.stringify({ via: 'self_service', disconnected: result.disconnected })]
+      );
+    } catch (e) { /* silent */ }
+
+    req.flash('success', 'Password updated. Your connection will reconnect in a few seconds.');
+    res.redirect(portalBase(req) + '/network');
+  } catch (err) {
+    console.error('[Portal Network] change-password error:', err.message);
+    req.flash('error', 'Failed: ' + err.message);
+    res.redirect(portalBase(req) + '/network/change-password');
+  }
+});
+
+// ─── Force reconnect (disconnect PPPoE session) ───
+router.post('/portal/network/reconnect', ensureTenant, requireSubscriber, async (req, res) => {
+  const sid = req.session.subscriber.id;
+
+  try {
+    const [rows] = await req.db.query(`
+      SELECT s.username, s.type,
+             r.host AS router_host, r.port AS router_port,
+             r.username AS router_user, r.password_encrypted AS router_pass
+      FROM subscribers s
+      LEFT JOIN routers r ON s.router_id = r.id
+      WHERE s.id = ?
+    `, [sid]);
+
+    if (!rows.length) return res.redirect(portalPath(req, '/login'));
+    const sub = rows[0];
+
+    if (sub.type !== 'pppoe' || !sub.router_host) {
+      req.flash('error', 'Reconnect is only available for PPPoE accounts linked to a router.');
+      return res.redirect(portalBase(req) + '/network');
+    }
+
+    const mikrotik = require('../services/mikrotikService');
+    const result = await mikrotik.disconnectPppoeSession(
+      {
+        host: sub.router_host,
+        port: sub.router_port,
+        username: sub.router_user,
+        password_encrypted: sub.router_pass
+      },
+      sub.username
+    );
+
+    if (!result.ok) {
+      req.flash('error', 'Reconnect failed: ' + result.error);
+      return res.redirect(portalBase(req) + '/network');
+    }
+
+    try {
+      await req.db.query(
+        `INSERT INTO subscriber_events (tenant_id, subscriber_id, event_type, details)
+         VALUES (?, ?, 'reconnect_requested', ?)`,
+        [req.tenant.id, sid, JSON.stringify({ disconnected: result.disconnected })]
+      );
+    } catch (e) { /* silent */ }
+
+    req.flash('success', 'Reconnect signal sent. Your router will dial again in a few seconds.');
+    res.redirect(portalBase(req) + '/network');
+  } catch (err) {
+    console.error('[Portal Network] reconnect error:', err.message);
+    req.flash('error', 'Failed: ' + err.message);
+    res.redirect(portalBase(req) + '/network');
+  }
+});
 // ═══════════════════════════════════════════════════════════
 // SUBSCRIBER TICKETS
 // ═══════════════════════════════════════════════════════════

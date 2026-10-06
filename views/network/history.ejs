@@ -1,0 +1,43 @@
+<div class="page-header with-action">
+  <div>
+    <h2>Network History</h2>
+    <p class="text-muted">Recent portal visits and device activity</p>
+  </div>
+  <a href="/network" class="btn">← Back</a>
+</div>
+
+<% if (sessions.length === 0) { %>
+  <div class="empty-state">
+    <h3>No history yet</h3>
+    <p>Portal visits and device sessions will appear here.</p>
+  </div>
+<% } else { %>
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>When</th>
+          <th>MAC Address</th>
+          <th>IP</th>
+          <th>Phone</th>
+          <th>Stage</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% sessions.forEach(function(s) { %>
+          <tr>
+            <td data-label="When" class="text-muted"><%= new Date(s.created_at).toLocaleString() %></td>
+            <td data-label="MAC"><code style="font-size:11px;"><%= s.visitor_mac || '—' %></code></td>
+            <td data-label="IP"><code style="font-size:11px;"><%= s.visitor_ip || '—' %></code></td>
+            <td data-label="Phone"><%= s.phone || '—' %></td>
+            <td data-label="Stage">
+              <span class="badge badge-<%= s.stage === 'active' ? 'success' : (s.stage === 'paid' ? 'success' : (s.stage === 'selected_plan' ? 'warn' : 'muted')) %>">
+                <%= s.stage %>
+              </span>
+            </td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  </div>
+<% } %>

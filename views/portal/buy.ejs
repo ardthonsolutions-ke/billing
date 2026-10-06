@@ -1,34 +1,52 @@
-<%- include('layout', { title: 'Buy ' + plan.name, tenant: tenant, subscriber: subscriber, flash: flash, active: 'plans', body: '' }) %>
+<%- include('layout', { title: 'Confirm Purchase', tenant: tenant, subscriber: subscriber, portalBase: portalBase, flash: flash, currentPath: portalBase + '/plans', body: '' }) %>
 
-<div class="p-card" style="max-width:600px;margin:0 auto;">
-  <h2>Confirm Purchase</h2>
-  <p class="subtitle">You're buying: <strong><%= plan.name %></strong></p>
+<a href="<%= portalBase %>/plans" class="p-back-link">← Back to plans</a>
 
-  <div style="background:var(--p-bg);padding:20px;border-radius:10px;margin:20px 0;">
-    <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--p-border);">
-      <span style="color:var(--p-muted);">Plan</span>
+<div class="p-card">
+  <h2 style="margin:0 0 4px;">Confirm purchase</h2>
+  <p class="subtitle">Review your plan and confirm</p>
+
+  <div class="p-purchase-summary">
+    <div class="p-purchase-row">
+      <span>Plan</span>
       <strong><%= plan.name %></strong>
     </div>
-    <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--p-border);">
-      <span style="color:var(--p-muted);">Duration</span>
-      <span><%= plan.duration_hours ? plan.duration_hours + ' hours' : 'Unlimited' %></span>
-    </div>
-    <div style="display:flex;justify-content:space-between;padding:8px 0;">
-      <span style="color:var(--p-muted);">Amount</span>
-      <strong style="font-size:20px;color:var(--p-brand);">KSh <%= Number(plan.price).toLocaleString() %></strong>
+    <% if (plan.duration_hours) { %>
+      <div class="p-purchase-row">
+        <span>Duration</span>
+        <strong><%= plan.duration_hours %> hours</strong>
+      </div>
+    <% } %>
+    <% if (plan.data_cap_mb) { %>
+      <div class="p-purchase-row">
+        <span>Data</span>
+        <strong><%= plan.data_cap_mb >= 1024 ? Math.round(plan.data_cap_mb / 1024 * 10) / 10 + ' GB' : plan.data_cap_mb + ' MB' %></strong>
+      </div>
+    <% } %>
+    <div class="p-purchase-row p-purchase-total">
+      <span>Amount to pay</span>
+      <strong>KSh <%= Number(plan.price).toLocaleString() %></strong>
     </div>
   </div>
+</div>
 
-  <div class="p-alert p-alert-info">
-    <strong>How to pay:</strong><br>
-    <%= tenant.contact_phone ? 'Pay via M-PESA to ' + tenant.contact_phone : 'Contact your ISP for payment instructions' %>
-    <br>
-    <small style="margin-top:6px;display:block;">M-PESA STK Push coming soon — pay directly from this page.</small>
-  </div>
+<div class="p-card">
+  <h3>How would you like to pay?</h3>
 
-  <form method="POST" action="<%= portalBase %>/buy/<%= plan.id %>" style="margin-top:20px;">
-    <button type="submit" class="p-btn p-btn-primary p-btn-block">Create Payment Request</button>
+  <form method="POST" action="<%= portalBase %>/buy/<%= plan.id %>">
+    <div class="p-form-group">
+      <label for="phone">Your M-PESA phone number</label>
+      <input type="tel" id="phone" name="phone" value="<%= subscriber.phone || '' %>" required placeholder="0712 345 678" pattern="[0-9+ ]{9,15}" autocomplete="tel">
+      <div class="hint">We'll send the payment request to this number</div>
+    </div>
+
+    <button type="submit" class="p-btn p-btn-primary p-btn-block">
+      Pay KSh <%= Number(plan.price).toLocaleString() %> with M-PESA
+    </button>
   </form>
 
-  <a href="<%= portalBase %>/plans" style="display:block;text-align:center;margin-top:16px;font-size:13px;color:var(--p-muted);text-decoration:none;">← Back to plans</a>
+  <div class="p-alert p-alert-info" style="margin-top:16px;">
+    <strong>What happens next?</strong><br>
+    We'll create a payment request. Complete payment at the ISP office or wait for the M-PESA prompt (when enabled). Your account activates as soon as payment is confirmed.
+  </div>
 </div>
