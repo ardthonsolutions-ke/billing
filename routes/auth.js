@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+require('../middleware/wrapRouter')(router);
 const bcrypt = require('bcryptjs');
 const { requireGuest, requireAuth } = require('../middleware/auth');
 

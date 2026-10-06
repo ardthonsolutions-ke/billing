@@ -121,9 +121,13 @@ app.use((req, res) => {
 
 // ── Error handler ──
 app.use((err, req, res, next) => {
-  console.error('[Error]', err.message);
-  console.error(err.stack);
-  res.status(500).send('Internal Server Error');
+  console.error('[Unhandled error]', (err && err.stack) || err);
+  if (res.headersSent) return next(err);
+  const isApi = req.path.startsWith('/api/') || req.path.includes('/api/');
+  if (isApi) {
+    return res.status(500).json({ error: 'Internal Server Error' });
+  }
+  res.status(500).send('Internal Server Error — the team has been notified.');
 });
 
 // ── Start ──
