@@ -1,0 +1,19 @@
+<%
+var crumbs = typeof breadcrumbs !== 'undefined' && Array.isArray(breadcrumbs) ? breadcrumbs : [];
+%>
+<div class="topbar-breadcrumb">
+  <a href="/dashboard">Home</a>
+  <% if (crumbs.length) { %>
+    <% crumbs.forEach(function(c, i) { %>
+      <span class="crumb-sep">›</span>
+      <% if (c.url && i < crumbs.length - 1) { %>
+        <a href="<%= c.url %>"><%= c.label %></a>
+      <% } else { %>
+        <span class="crumb-active"><%= c.label %></span>
+      <% } %>
+    <% }); %>
+  <% } else if (typeof title !== 'undefined') { %>
+    <span class="crumb-sep">›</span>
+    <span class="crumb-active"><%= title %></span>
+  <% } %>
+</div>
