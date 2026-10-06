@@ -2346,3 +2346,69 @@ body.flyout-open .abs-sidebar {
 .activity-title a:hover { color: var(--accent); text-decoration: underline; }
 .activity-meta { font-size: 12.5px; margin-top: 2px; }
 .activity-time { font-size: 11.5px; margin-top: 2px; opacity: 0.7; }
+
+/* ─── Mobile drawer: paint above the rail; fill full width ─── */
+@media (max-width: 768px) {
+  html body .abs-sidebar {
+    z-index: 300 !important;
+  }
+  html body.nav-open .abs-sidebar {
+    left: 0 !important;
+    transform: translateX(0) !important;
+  }
+  body.nav-open .abs-rail {
+    /* rail sits behind the drawer */
+    z-index: 100;
+  }
+}
+
+/* ─── Sidebar close button (mobile drawer only) ─── */
+.sidebar-close-btn { display: none; }
+
+@media (max-width: 768px) {
+  .sidebar-head { position: relative; }
+  .sidebar-close-btn {
+    display: flex;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 32px;
+    height: 32px;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: 0;
+    font-size: 22px;
+    line-height: 1;
+    color: var(--text-muted);
+    cursor: pointer;
+    border-radius: 6px;
+    padding: 0;
+  }
+  .sidebar-close-btn:hover {
+    background: var(--surface-hover);
+    color: var(--text);
+  }
+}
+
+/* ─── Mobile: rail + sidebar as two-column drawer ─── */
+@media (max-width: 768px) {
+  /* rail slides in when drawer open, above the sidebar */
+  html body.nav-open .abs-rail {
+    transform: translateX(0) !important;
+    z-index: 300 !important;
+  }
+  /* sidebar starts after the rail */
+  html body.nav-open .abs-sidebar {
+    left: var(--rail-w) !important;
+    width: calc(100vw - var(--rail-w)) !important;
+  }
+  /* closed states: both hidden */
+  html body:not(.nav-open) .abs-rail {
+    transform: translateX(-100%) !important;
+  }
+  html body:not(.nav-open) .abs-sidebar {
+    left: 0 !important;
+    transform: translateX(-100%) !important;
+  }
+}
