@@ -2233,3 +2233,30 @@ body.flyout-open .abs-sidebar {
     backdrop-filter: blur(2px);
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   RAIL HEALTH BADGE
+   ═══════════════════════════════════════════════════════════════ */
+
+.rail-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: transparent;
+  box-shadow: 0 0 0 2px var(--rail-bg, #1a1a1a);
+  pointer-events: none;
+  transition: background 200ms ease, box-shadow 200ms ease;
+}
+
+.rail-badge[data-health="unknown"] { background: var(--text-muted, #666); }
+.rail-badge[data-health="ok"]      { background: #22c55e; }
+.rail-badge[data-health="warn"]    { background: #f59e0b; }
+.rail-badge[data-health="down"]    { background: #ef4444; animation: rail-pulse 1.6s ease-in-out infinite; }
+
+@keyframes rail-pulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.4; }
+}

@@ -1,61 +1,47 @@
 <aside class="abs-rail">
-  <a href="/dashboard" class="rail-brand" aria-label="Ardthon Billing">
-    AB
-  </a>
+  <a href="/dashboard" class="rail-brand" aria-label="Ardthon Billing">AB</a>
 
   <nav class="rail-nav">
     <a href="/dashboard" class="rail-item <%= currentPath === '/dashboard' ? 'active' : '' %>">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1V9.5z"/></svg>
-      <span class="rail-tooltip">Dashboard</span>
     </a>
     <a href="/network" class="rail-item <%= currentPath.startsWith('/network') ? 'active' : '' %>">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
-      <span class="rail-tooltip">Network</span>
     </a>
     <a href="/subscribers" class="rail-item <%= currentPath.startsWith('/subscribers') ? 'active' : '' %>">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-      <span class="rail-tooltip">Subscribers</span>
     </a>
     <a href="/plans" class="rail-item <%= currentPath.startsWith('/plans') ? 'active' : '' %>">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
-      <span class="rail-tooltip">Packages</span>
     </a>
     <a href="/routers" class="rail-item <%= currentPath.startsWith('/routers') ? 'active' : '' %>">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="14" width="20" height="8" rx="2"/><path d="M6.01 18H6M10 18h.01"/><path d="M12 2v6"/><path d="M8 4l4 4 4-4"/></svg>
-      <span class="rail-tooltip">Routers</span>
     </a>
     <a href="/payments" class="rail-item <%= currentPath.startsWith('/payments') ? 'active' : '' %>">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/><path d="M6 15h2M12 15h4"/></svg>
-      <span class="rail-tooltip">Payments</span>
     </a>
     <a href="/reports" class="rail-item <%= currentPath.startsWith('/reports') ? 'active' : '' %>">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l4-4 4 4 5-7"/></svg>
-      <span class="rail-tooltip">Reports</span>
     </a>
     <a href="/tickets" class="rail-item <%= currentPath.startsWith('/tickets') ? 'active' : '' %>">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 3-3h14a3 3 0 0 1 3 3v1a2 2 0 0 0 0 4v1a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3v-1a2 2 0 0 0 0-4V9z"/><path d="M13 5v2M13 11v2M13 17v2"/></svg>
-      <span class="rail-tooltip">Tickets</span>
     </a>
     <a href="/leads" class="rail-item <%= currentPath.startsWith('/leads') ? 'active' : '' %>">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 2"/></svg>
-      <span class="rail-tooltip">Leads</span>
     </a>
     <% if (currentUser && currentUser.role === 'super_admin') { %>
     <a href="/tenants" class="rail-item <%= currentPath.startsWith('/tenants') ? 'active' : '' %>">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01M16 6h.01M12 6h.01"/></svg>
-      <span class="rail-tooltip">Tenants</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M9 22v-4h6v4"/></svg>
     </a>
     <% } %>
     <a href="/settings" class="rail-item <%= currentPath.startsWith('/settings') ? 'active' : '' %>">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33"/></svg>
-      <span class="rail-tooltip">Settings</span>
     </a>
   </nav>
 
   <div class="rail-footer">
     <a href="/logout" class="rail-item" aria-label="Log out">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
-      <span class="rail-tooltip">Log out</span>
     </a>
   </div>
 </aside>
