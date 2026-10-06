@@ -128,11 +128,62 @@ router.get('/subscribers/:id', async (req, res) => {
     [req.params.id]
   );
 
+  const [payments] = await req.db.query(
+    `SELECT id, amount, currency, status, method, created_at, completed_at
+     FROM payments WHERE subscriber_id = ? ORDER BY created_at DESC LIMIT 50`,
+    [req.params.id]
+  );
+
+  const [tickets] = await req.db.query(
+    `SELECT id, subject, status, priority, created_at
+     FROM tickets WHERE subscriber_id = ? ORDER BY created_at DESC LIMIT 50`,
+    [req.params.id]
+  );
+
+  const timeline = [];
+  events.forEach(function (e) {
+    let body = '';
+    try {
+      const d = typeof e.details === 'string' ? JSON.parse(e.details) : e.details;
+      if (d && Object.keys(d).length) body = JSON.stringify(d);
+    } catch (_) {}
+    timeline.push({
+      kind: 'event',
+      ts: e.created_at,
+      title: e.event_type,
+      body: body,
+      link: null
+    });
+  });
+
+  payments.forEach(function (p) {
+    timeline.push({
+      kind: 'payment',
+      ts: p.completed_at || p.created_at,
+      title: 'Payment ' + p.status,
+      body: (p.currency || 'KES') + ' ' + Number(p.amount).toLocaleString() + (p.method ? ' · ' + p.method : ''),
+      link: '/payments/' + p.id
+    });
+  });
+
+  tickets.forEach(function (t) {
+    timeline.push({
+      kind: 'ticket',
+      ts: t.created_at,
+      title: t.subject,
+      body: 'Status: ' + t.status + (t.priority ? ' · ' + t.priority : ''),
+      link: '/tickets/' + t.id
+    });
+  });
+  timeline.sort(function (a, b) { return new Date(b.ts) - new Date(a.ts); });
+  const topTimeline = timeline.slice(0, 60);
+
   res.render('subscribers/detail', {
     title: rows[0].full_name,
     layout: 'layouts/dashboard',
     subscriber: rows[0],
-    events
+    events,
+    timeline: topTimeline
   });
 });
 
