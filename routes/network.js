@@ -161,6 +161,9 @@ router.get('/network/api/live', async (req, res) => {
 
 // ─── All active sessions across all routers ───
 router.get('/network/active', async (req, res) => {
+
+// ─── Shared: collect all active sessions for this tenant ───
+async function collectActiveSessions(req) {
   const user = req.session.user;
   const t = tenantFilter(user);
 
@@ -182,11 +185,25 @@ router.get('/network/active', async (req, res) => {
       });
     }
   }
+  return allSessions;
+}
 
+// ─── JSON endpoint for auto-refresh ───
+router.get('/network/api/active-sessions', async (req, res) => {
+  try {
+    const sessions = await collectActiveSessions(req);
+    res.json({ sessions, time: new Date().toISOString() });
+  } catch (err) {
+    console.error('[Active Sessions API]', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+  const sessions = await collectActiveSessions(req);
   res.render('network/active', {
     title: 'Active Sessions',
     layout: 'layouts/dashboard',
-    sessions: allSessions
+    sessions
   });
 });
 
