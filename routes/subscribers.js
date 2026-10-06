@@ -129,7 +129,7 @@ router.get('/subscribers/:id', async (req, res) => {
   );
 
   const [payments] = await req.db.query(
-    `SELECT id, amount, currency, status, method, created_at, completed_at
+    `SELECT id, amount, status, method, created_at, completed_at
      FROM payments WHERE subscriber_id = ? ORDER BY created_at DESC LIMIT 50`,
     [req.params.id]
   );
@@ -161,7 +161,7 @@ router.get('/subscribers/:id', async (req, res) => {
       kind: 'payment',
       ts: p.completed_at || p.created_at,
       title: 'Payment ' + p.status,
-      body: (p.currency || 'KES') + ' ' + Number(p.amount).toLocaleString() + (p.method ? ' · ' + p.method : ''),
+      body: 'KES ' + Number(p.amount).toLocaleString() + (p.method ? ' · ' + p.method : ''),
       link: '/payments/' + p.id
     });
   });
