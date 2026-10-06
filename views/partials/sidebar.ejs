@@ -1,229 +1,68 @@
 <%
-// Determine current section from URL
 var section = 'dashboard';
-var title = 'Overview';
-if (currentPath.startsWith('/network')) { section = 'network'; title = 'Network'; }
-else if (currentPath.startsWith('/subscribers')) { section = 'subscribers'; title = 'Customers'; }
-else if (currentPath.startsWith('/plans')) { section = 'plans'; title = 'Packages'; }
-else if (currentPath.startsWith('/routers')) { section = 'routers'; title = 'NAS Devices'; }
-else if (currentPath.startsWith('/payments')) { section = 'payments'; title = 'Billing'; }
-else if (currentPath.startsWith('/reports')) { section = 'reports'; title = 'Insights'; }
-else if (currentPath.startsWith('/tickets')) { section = 'tickets'; title = 'Support'; }
-else if (currentPath.startsWith('/leads')) { section = 'leads'; title = 'Growth'; }
-else if (currentPath.startsWith('/tenants')) { section = 'tenants'; title = 'Platform'; }
-else if (currentPath.startsWith('/users')) { section = 'users'; title = 'Team'; }
-else if (currentPath.startsWith('/settings')) { section = 'settings'; title = 'Settings'; }
+var sectionTitle = 'Overview';
+if (currentPath.startsWith('/network')) { section = 'network'; sectionTitle = 'Network'; }
+else if (currentPath.startsWith('/subscribers')) { section = 'subscribers'; sectionTitle = 'Customers'; }
+else if (currentPath.startsWith('/plans')) { section = 'plans'; sectionTitle = 'Packages'; }
+else if (currentPath.startsWith('/routers')) { section = 'routers'; sectionTitle = 'Devices'; }
+else if (currentPath.startsWith('/payments')) { section = 'payments'; sectionTitle = 'Billing'; }
+else if (currentPath.startsWith('/reports')) { section = 'reports'; sectionTitle = 'Insights'; }
+else if (currentPath.startsWith('/tickets')) { section = 'tickets'; sectionTitle = 'Support'; }
+else if (currentPath.startsWith('/leads')) { section = 'leads'; sectionTitle = 'Growth'; }
+else if (currentPath.startsWith('/tenants')) { section = 'tenants'; sectionTitle = 'Platform'; }
+else if (currentPath.startsWith('/users')) { section = 'users'; sectionTitle = 'Team'; }
+else if (currentPath.startsWith('/settings')) { section = 'settings'; sectionTitle = 'Settings'; }
 %>
-
 <aside class="abs-sidebar">
   <div class="sidebar-head">
     <div class="sidebar-head-title">Ardthon Billing</div>
-    <div class="sidebar-head-sub"><%= title %></div>
+    <div class="sidebar-head-sub"><%= sectionTitle %></div>
   </div>
 
   <nav class="sidebar-nav">
     <% if (section === 'dashboard') { %>
-      <div class="nav-section">
-        <div class="nav-section-title">Overview</div>
-        <a href="/dashboard" class="nav-link <%= currentPath === '/dashboard' ? 'active' : '' %>">
-          <span class="nav-icon"><svg viewBox="0 0 24 24"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1V9.5z"/></svg></span>
-          Dashboard
-        </a>
-        <a href="/network" class="nav-link">
-          <span class="nav-icon"><svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></span>
-          Live network
-        </a>
-        <a href="/reports" class="nav-link">
-          <span class="nav-icon"><svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 14l4-4 4 4 5-7"/></svg></span>
-          Reports
-        </a>
-      </div>
-
-      <div class="nav-section">
-        <div class="nav-section-title">Quick actions</div>
-        <a href="/subscribers/new" class="nav-link">
-          <span class="nav-icon"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span>
-          Add subscriber
-        </a>
-        <a href="/routers/new" class="nav-link">
-          <span class="nav-icon"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span>
-          Link router
-        </a>
-      </div>
-    <% } %>
-
-    <% if (section === 'network') { %>
-      <div class="nav-section">
-        <div class="nav-section-title">Network</div>
-        <a href="/network" class="nav-link <%= currentPath === '/network' ? 'active' : '' %>">
-          <span class="nav-icon"><svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></span>
-          Live overview
-        </a>
-        <a href="/network/active" class="nav-link <%= currentPath === '/network/active' ? 'active' : '' %>">
-          <span class="nav-icon"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></span>
-          Active sessions
-        </a>
-        <a href="/network/history" class="nav-link <%= currentPath === '/network/history' ? 'active' : '' %>">
-          <span class="nav-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></span>
-          History
-        </a>
-        <a href="/routers" class="nav-link <%= currentPath.startsWith('/routers') ? 'active' : '' %>">
-          <span class="nav-icon"><svg viewBox="0 0 24 24"><rect x="2" y="14" width="20" height="8" rx="2"/><path d="M12 2v6"/></svg></span>
-          NAS / Routers
-        </a>
-      </div>
-    <% } %>
-
-    <% if (section === 'subscribers') { %>
-      <div class="nav-section">
-        <div class="nav-section-title">Customers</div>
-        <a href="/subscribers" class="nav-link <%= currentPath === '/subscribers' ? 'active' : '' %>">
-          <span class="nav-icon"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></span>
-          All subscribers
-        </a>
-        <a href="/subscribers/new" class="nav-link <%= currentPath === '/subscribers/new' ? 'active' : '' %>">
-          <span class="nav-icon"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span>
-          Add subscriber
-        </a>
-      </div>
-    <% } %>
-
-    <% if (section === 'plans') { %>
-      <div class="nav-section">
-        <div class="nav-section-title">Packages</div>
-        <a href="/plans" class="nav-link <%= currentPath === '/plans' ? 'active' : '' %>">
-          <span class="nav-icon"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></span>
-          All packages
-        </a>
-        <a href="/plans/new" class="nav-link <%= currentPath === '/plans/new' ? 'active' : '' %>">
-          <span class="nav-icon"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span>
-          New package
-        </a>
-      </div>
-    <% } %>
-
-    <% if (section === 'routers') { %>
-      <div class="nav-section">
-        <div class="nav-section-title">Devices</div>
-        <a href="/routers" class="nav-link <%= currentPath === '/routers' ? 'active' : '' %>">
-          <span class="nav-icon"><svg viewBox="0 0 24 24"><rect x="2" y="14" width="20" height="8" rx="2"/><path d="M12 2v6"/></svg></span>
-          All routers
-        </a>
-        <a href="/routers/new" class="nav-link <%= currentPath === '/routers/new' ? 'active' : '' %>">
-          <span class="nav-icon"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span>
-          Link router
-        </a>
-      </div>
-    <% } %>
-
-    <% if (section === 'payments') { %>
-      <div class="nav-section">
-        <div class="nav-section-title">Billing</div>
-        <a href="/payments" class="nav-link <%= currentPath === '/payments' ? 'active' : '' %>">
-          <span class="nav-icon"><svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg></span>
-          All payments
-        </a>
-        <a href="/reports/revenue" class="nav-link <%= currentPath === '/reports/revenue' ? 'active' : '' %>">
-          <span class="nav-icon"><svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 14l4-4 4 4 5-7"/></svg></span>
-          Revenue
-        </a>
-      </div>
-    <% } %>
-
-    <% if (section === 'reports') { %>
-      <div class="nav-section">
-        <div class="nav-section-title">Insights</div>
-        <a href="/reports" class="nav-link <%= currentPath === '/reports' ? 'active' : '' %>">
-          <span class="nav-icon"><svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 14l4-4 4 4 5-7"/></svg></span>
-          Overview
-        </a>
-        <a href="/reports/revenue" class="nav-link <%= currentPath === '/reports/revenue' ? 'active' : '' %>">
-          <span class="nav-icon"><svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/></svg></span>
-          Revenue
-        </a>
-        <a href="/reports/subscribers" class="nav-link <%= currentPath === '/reports/subscribers' ? 'active' : '' %>">
-          <span class="nav-icon"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></span>
-          Subscribers
-        </a>
-      </div>
-    <% } %>
-
-    <% if (section === 'tickets') { %>
-      <div class="nav-section">
-        <div class="nav-section-title">Support</div>
-        <a href="/tickets" class="nav-link <%= currentPath === '/tickets' ? 'active' : '' %>">
-          <span class="nav-icon"><svg viewBox="0 0 24 24"><path d="M2 9a3 3 0 0 1 3-3h14a3 3 0 0 1 3 3v1a2 2 0 0 0 0 4v1a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3v-1a2 2 0 0 0 0-4V9z"/></svg></span>
-          All tickets
-        </a>
-        <a href="/tickets/new" class="nav-link <%= currentPath === '/tickets/new' ? 'active' : '' %>">
-          <span class="nav-icon"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span>
-          New ticket
-        </a>
-      </div>
-    <% } %>
-
-    <% if (section === 'leads') { %>
-      <div class="nav-section">
-        <div class="nav-section-title">Growth</div>
-        <a href="/leads" class="nav-link <%= currentPath === '/leads' ? 'active' : '' %>">
-          <span class="nav-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 2"/></svg></span>
-          All leads
-        </a>
-        <a href="/leads/new" class="nav-link <%= currentPath === '/leads/new' ? 'active' : '' %>">
-          <span class="nav-icon"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span>
-          New lead
-        </a>
-      </div>
-    <% } %>
-
-    <% if (section === 'tenants') { %>
-      <div class="nav-section">
-        <div class="nav-section-title">Platform</div>
-        <a href="/tenants" class="nav-link <%= currentPath === '/tenants' ? 'active' : '' %>">
-          <span class="nav-icon"><svg viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/></svg></span>
-          Tenants
-        </a>
-        <a href="/tenants/new" class="nav-link <%= currentPath === '/tenants/new' ? 'active' : '' %>">
-          <span class="nav-icon"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span>
-          Add tenant
-        </a>
-        <a href="/users" class="nav-link <%= currentPath.startsWith('/users') ? 'active' : '' %>">
-          <span class="nav-icon"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
-          All users
-        </a>
-      </div>
-    <% } %>
-
-    <% if (section === 'users') { %>
-      <div class="nav-section">
-        <div class="nav-section-title">Team</div>
-        <a href="/users" class="nav-link <%= currentPath === '/users' ? 'active' : '' %>">
-          <span class="nav-icon"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
-          All users
-        </a>
-        <a href="/users/new" class="nav-link <%= currentPath === '/users/new' ? 'active' : '' %>">
-          <span class="nav-icon"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span>
-          Invite user
-        </a>
-      </div>
-    <% } %>
-
-    <% if (section === 'settings') { %>
-      <div class="nav-section">
-        <div class="nav-section-title">Network</div>
-        <a href="/settings#general" class="nav-link">PPPoE</a>
-        <a href="/settings#general" class="nav-link">Hotspot</a>
-      </div>
-      <div class="nav-section">
-        <div class="nav-section-title">Billing &amp; messaging</div>
-        <a href="/settings#payment" class="nav-link <%= currentPath.indexOf('#payment') >= 0 ? 'active' : '' %>">Payments</a>
-        <a href="/settings#sms" class="nav-link">Communications</a>
-        <a href="/settings#general" class="nav-link">Message templates</a>
-      </div>
-      <div class="nav-section">
-        <div class="nav-section-title">Notifications</div>
-        <a href="/settings#general" class="nav-link">Operator alerts</a>
-      </div>
+      <a href="/dashboard" class="nav-link">Overview</a>
+      <a href="/network" class="nav-link">Live network</a>
+      <a href="/reports" class="nav-link">Reports</a>
+    <% } else if (section === 'network') { %>
+      <a href="/network" class="nav-link">Live overview</a>
+      <a href="/network/active" class="nav-link">Active sessions</a>
+      <a href="/network/history" class="nav-link">History</a>
+      <a href="/routers" class="nav-link">Routers</a>
+    <% } else if (section === 'subscribers') { %>
+      <a href="/subscribers" class="nav-link">All subscribers</a>
+      <a href="/subscribers/new" class="nav-link">Add subscriber</a>
+    <% } else if (section === 'plans') { %>
+      <a href="/plans" class="nav-link">All packages</a>
+      <a href="/plans/new" class="nav-link">New package</a>
+    <% } else if (section === 'routers') { %>
+      <a href="/routers" class="nav-link">All routers</a>
+      <a href="/routers/new" class="nav-link">Link router</a>
+    <% } else if (section === 'payments') { %>
+      <a href="/payments" class="nav-link">All payments</a>
+      <a href="/reports/revenue" class="nav-link">Revenue</a>
+    <% } else if (section === 'reports') { %>
+      <a href="/reports" class="nav-link">Overview</a>
+      <a href="/reports/revenue" class="nav-link">Revenue</a>
+      <a href="/reports/subscribers" class="nav-link">Subscribers</a>
+    <% } else if (section === 'tickets') { %>
+      <a href="/tickets" class="nav-link">All tickets</a>
+      <a href="/tickets/new" class="nav-link">New ticket</a>
+    <% } else if (section === 'leads') { %>
+      <a href="/leads" class="nav-link">All leads</a>
+      <a href="/leads/new" class="nav-link">New lead</a>
+    <% } else if (section === 'tenants') { %>
+      <a href="/tenants" class="nav-link">All tenants</a>
+      <a href="/tenants/new" class="nav-link">Add tenant</a>
+      <a href="/users" class="nav-link">Users</a>
+    <% } else if (section === 'users') { %>
+      <a href="/users" class="nav-link">All users</a>
+      <a href="/users/new" class="nav-link">Invite user</a>
+    <% } else if (section === 'settings') { %>
+      <a href="/settings" class="nav-link">General</a>
+      <a href="/settings#payment" class="nav-link">Payments</a>
+      <a href="/settings#sms" class="nav-link">Communications</a>
+      <a href="/settings#password" class="nav-link">Password</a>
     <% } %>
   </nav>
 
