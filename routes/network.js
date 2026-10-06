@@ -242,6 +242,60 @@ router.post('/network/disconnect', async (req, res) => {
   res.redirect('/network/active');
 });
 
+// ─── Bulk disconnect (multiple sessions) ───
+router.post('/network/disconnect-bulk', async (req, res) => {
+  const user = req.session.user;
+  const raw = req.body.sessions || '';
+  const items = Array.isArray(raw) ? raw : String(raw).split('\n').filter(Boolean);
+
+  if (!items.length) {
+    req.flash('error', 'No sessions selected.');
+    return res.redirect('/network/active');
+  }
+
+  let ok = 0, fail = 0;
+
+  for (const line of items) {
+    const [router_id, session_id, kind] = String(line).split('|');
+    if (!router_id || !session_id) { fail++; continue; }
+
+    try {
+      const t = tenantFilter(user);
+      const [routers] = await req.db.query(
+        `SELECT * FROM routers ${t.clause ? t.clause + ' AND' : 'WHERE'} id = ?`,
+        [...t.params, router_id]
+      );
+      if (!routers.length) { fail++; continue; }
+
+      const r = routers[0];
+      let result;
+
+      if (kind === 'pppoe') {
+        result = await (async () => {
+          const conn = await mikrotik.connect(r);
+          try {
+            await conn.write('/ppp/active/remove', ['=.id=' + session_id]);
+            return { ok: true };
+          } finally {
+            conn.close();
+          }
+        })().catch(e => ({ ok: false, error: e.message }));
+      } else {
+        result = await mikrotik.disconnectActiveSession(r, session_id);
+      }
+
+      if (result.ok) ok++;
+      else { fail++; }
+    } catch (e) {
+      fail++;
+    }
+  }
+
+  if (ok > 0) req.flash('success', 'Disconnected ' + ok + ' session(s).');
+  if (fail > 0) req.flash('error', fail + ' session(s) failed.');
+  res.redirect('/network/active');
+});
+
 // ─── Session history (from portal_sessions + subscriber_events) ───
 router.get('/network/history', async (req, res) => {
   const user = req.session.user;

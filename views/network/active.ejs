@@ -16,51 +16,109 @@
     <a href="/network" class="btn btn-primary">Back to Network</a>
   </div>
 <% } else { %>
-  <div class="session-summary">
-    <strong><%= sessions.length %></strong> connected session<%= sessions.length === 1 ? '' : 's' %>
+  <div class="session-summary" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+    <span><strong><%= sessions.length %></strong> connected session<%= sessions.length === 1 ? '' : 's' %></span>
+    <button type="button" class="btn btn-sm" id="bulk-disconnect-btn" disabled
+            style="color:#c0392b;border-color:#c0392b;">
+      Disconnect selected (<span id="bulk-count">0</span>)
+    </button>
   </div>
 
-  <div class="table-wrap">
-    <table class="data-table">
-      <thead>
-        <tr>
-          <th>User</th>
-          <th>IP</th>
-          <th>MAC</th>
-          <th>Router</th>
-          <th>Uptime</th>
-          <th>Bytes In / Out</th>
-          <th class="actions-col">Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% sessions.forEach(function(item) { %>
+  <form method="POST" action="/network/disconnect-bulk" id="bulk-form"
+        onsubmit="return confirm('Disconnect ' + document.querySelectorAll('.session-check:checked').length + ' session(s)?');">
+    <textarea name="sessions" id="bulk-payload" style="display:none;"></textarea>
+
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
           <tr>
-            <td data-label="User">
-              <strong><%= item.session.user || item.session.name || 'unknown' %></strong>
-              <div class="text-muted" style="font-size:11px;">
-                <span class="badge badge-<%= item.kind === 'pppoe' ? 'role' : 'muted' %>" style="font-size:10px;"><%= item.kind %></span>
-              </div>
-            </td>
-            <td data-label="IP"><code><%= item.session.address || item.session['remote-address'] || '—' %></code></td>
-            <td data-label="MAC"><code style="font-size:11px;"><%= item.session['mac-address'] || '—' %></code></td>
-            <td data-label="Router"><%= item.router_name %></td>
-            <td data-label="Uptime" class="text-muted"><%= item.session.uptime || '—' %></td>
-            <td data-label="Bytes" class="text-muted">
-              <%= item.session['bytes-in'] ? Math.round(item.session['bytes-in']/1024/1024) + ' / ' + Math.round((item.session['bytes-out'] || 0)/1024/1024) + ' MB' : '—' %>
-            </td>
-            <td class="actions-col">
-              <form method="POST" action="/network/disconnect" class="inline-form"
-                    onsubmit="return confirm('Disconnect this user from <%= item.router_name %>?');">
-                <input type="hidden" name="router_id" value="<%= item.router_id %>">
-                <input type="hidden" name="session_id" value="<%= item.session['.id'] %>">
-                <input type="hidden" name="kind" value="<%= item.kind %>">
-                <button type="submit" class="btn btn-sm" style="color:#c0392b;border-color:#c0392b;">Disconnect</button>
-              </form>
-            </td>
+            <th style="width:36px;">
+              <input type="checkbox" id="check-all" aria-label="Select all">
+            </th>
+            <th>User</th>
+            <th>IP</th>
+            <th>MAC</th>
+            <th>Router</th>
+            <th>Uptime</th>
+            <th>Bytes In / Out</th>
+            <th class="actions-col">Actions</th>
           </tr>
-        <% }); %>
-      </tbody>
-    </table>
-  </div>
+        </thead>
+        <tbody>
+          <% sessions.forEach(function(item) { %>
+            <tr>
+              <td>
+                <input type="checkbox" class="session-check"
+                       data-router="<%= item.router_id %>"
+                       data-session="<%= item.session['.id'] %>"
+                       data-kind="<%= item.kind %>">
+              </td>
+              <td data-label="User">
+                <strong><%= item.session.user || item.session.name || 'unknown' %></strong>
+                <div class="text-muted" style="font-size:11px;">
+                  <span class="badge badge-<%= item.kind === 'pppoe' ? 'role' : 'muted' %>" style="font-size:10px;"><%= item.kind %></span>
+                </div>
+              </td>
+              <td data-label="IP"><code><%= item.session.address || item.session['remote-address'] || '—' %></code></td>
+              <td data-label="MAC"><code style="font-size:11px;"><%= item.session['mac-address'] || '—' %></code></td>
+              <td data-label="Router"><%= item.router_name %></td>
+              <td data-label="Uptime" class="text-muted"><%= item.session.uptime || '—' %></td>
+              <td data-label="Bytes" class="text-muted">
+                <%= item.session['bytes-in'] ? Math.round(item.session['bytes-in']/1024/1024) + ' / ' + Math.round((item.session['bytes-out'] || 0)/1024/1024) + ' MB' : '—' %>
+              </td>
+              <td class="actions-col">
+                <form method="POST" action="/network/disconnect" class="inline-form"
+                      onsubmit="return confirm('Disconnect this user from <%= item.router_name %>?');">
+                  <input type="hidden" name="router_id" value="<%= item.router_id %>">
+                  <input type="hidden" name="session_id" value="<%= item.session['.id'] %>">
+                  <input type="hidden" name="kind" value="<%= item.kind %>">
+                  <button type="submit" class="btn btn-sm" style="color:#c0392b;border-color:#c0392b;">Disconnect</button>
+                </form>
+              </td>
+            </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    </div>
+  </form>
+
+  <script>
+    (function () {
+      var checkAll = document.getElementById('check-all');
+      var boxes = document.querySelectorAll('.session-check');
+      var btn = document.getElementById('bulk-disconnect-btn');
+      var countEl = document.getElementById('bulk-count');
+      var payload = document.getElementById('bulk-payload');
+      var form = document.getElementById('bulk-form');
+
+      function refresh() {
+        var sel = document.querySelectorAll('.session-check:checked');
+        countEl.textContent = sel.length;
+        btn.disabled = sel.length === 0;
+        if (checkAll) {
+          checkAll.checked = sel.length > 0 && sel.length === boxes.length;
+          checkAll.indeterminate = sel.length > 0 && sel.length < boxes.length;
+        }
+      }
+
+      if (checkAll) {
+        checkAll.addEventListener('change', function () {
+          boxes.forEach(function (b) { b.checked = checkAll.checked; });
+          refresh();
+        });
+      }
+      boxes.forEach(function (b) { b.addEventListener('change', refresh); });
+
+      btn.addEventListener('click', function () {
+        var lines = [];
+        document.querySelectorAll('.session-check:checked').forEach(function (b) {
+          lines.push(b.dataset.router + '|' + b.dataset.session + '|' + b.dataset.kind);
+        });
+        payload.value = lines.join('\n');
+        form.submit();
+      });
+
+      refresh();
+    })();
+  </script>
 <% } %>
