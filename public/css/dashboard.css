@@ -1079,8 +1079,6 @@ code {
 
 .cmdk-backdrop.open { display: flex; }
 
-.cmdk-dialog {
-}
 
 /* ═══════════════════════════════════════════════════════════════
    PAGE HEADER
@@ -2233,87 +2231,5 @@ body.flyout-open .abs-sidebar {
     background: rgba(0,0,0,0.5);
     z-index: 150;
     backdrop-filter: blur(2px);
-  }
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   FINAL OVERRIDE — sidebar must use opacity, never display
-   ═══════════════════════════════════════════════════════════════ */
-
-html body .abs-sidebar {
-  display: flex !important;
-  position: fixed !important;
-  top: 0 !important;
-  left: var(--rail-w) !important;
-  bottom: 0 !important;
-  width: 260px !important;
-  background: var(--surface) !important;
-  border-right: 1px solid var(--border) !important;
-  box-shadow: var(--shadow-lg) !important;
-  flex-direction: column !important;
-  z-index: 210 !important;
-  opacity: 0 !important;
-  transform: translateX(-12px) !important;
-  pointer-events: none !important;
-  transition: transform 160ms var(--ease), opacity 160ms var(--ease) !important;
-}
-
-html body.flyout-open .abs-sidebar {
-  opacity: 1 !important;
-  transform: translateX(0) !important;
-  pointer-events: auto !important;
-}
-
-@media (max-width: 768px) {
-  html body .abs-sidebar {
-    left: 0 !important;
-    width: calc(100vw - var(--rail-w)) !important;
-    max-width: 320px !important;
-    transform: translateX(-100%) !important;
-    opacity: 1 !important;
-    pointer-events: auto !important;
-  }
-  html body.nav-open .abs-sidebar {
-    transform: translateX(0) !important;
-  }
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   FORCE OPACITY — sidebar invisible unless .flyout-open
-   ═══════════════════════════════════════════════════════════════ */
-
-/* Default: HIDDEN. Highest specificity we can write without @layer. */
-html body .abs-sidebar,
-html body .abs-sidebar[class],
-html body aside.abs-sidebar {
-  display: flex !important;
-  opacity: 0 !important;
-  transform: translateX(-12px) !important;
-  pointer-events: none !important;
-  visibility: visible !important;
-}
-
-/* Open: VISIBLE */
-html body.flyout-open .abs-sidebar,
-html body.flyout-open .abs-sidebar[class],
-html body.flyout-open aside.abs-sidebar {
-  opacity: 1 !important;
-  transform: translateX(0) !important;
-  pointer-events: auto !important;
-}
-
-/* Mobile drawer */
-@media (max-width: 768px) {
-  html body .abs-sidebar,
-  html body .abs-sidebar[class],
-  html body aside.abs-sidebar {
-    transform: translateX(-100%) !important;
-    opacity: 1 !important;
-    pointer-events: auto !important;
-  }
-  html body.nav-open .abs-sidebar,
-  html body.nav-open .abs-sidebar[class],
-  html body.nav-open aside.abs-sidebar {
-    transform: translateX(0) !important;
   }
 }
