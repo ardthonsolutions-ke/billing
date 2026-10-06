@@ -3,12 +3,14 @@
   'use strict';
 
   var POLL_MS = 15000;
-  var badge = null;
+  var badges = [];
 
   function setState(state) {
-    if (!badge) return;
-    if (badge.getAttribute('data-health') === state) return;
-    badge.setAttribute('data-health', state);
+    for (var i = 0; i < badges.length; i++) {
+      if (badges[i].getAttribute('data-health') !== state) {
+        badges[i].setAttribute('data-health', state);
+      }
+    }
   }
 
   function computeState(data) {
@@ -32,8 +34,8 @@
   }
 
   function setup() {
-    badge = document.querySelector('.rail-badge');
-    if (!badge) { setTimeout(setup, 200); return; }
+    badges = Array.prototype.slice.call(document.querySelectorAll('.rail-badge'));
+    if (!badges.length) { setTimeout(setup, 200); return; }
     poll();
     setInterval(poll, POLL_MS);
   }

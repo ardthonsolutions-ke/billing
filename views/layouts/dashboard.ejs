@@ -49,6 +49,7 @@
     </a>
     <a href="/network" class="mobile-nav-item <%= currentPath.startsWith('/network') ? 'active' : '' %>">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+      <span class="rail-badge" data-health="unknown" aria-hidden="true"></span>
       <span>Network</span>
     </a>
     <a href="/subscribers" class="mobile-nav-item <%= currentPath.startsWith('/subscribers') ? 'active' : '' %>">
@@ -69,6 +70,7 @@
 
   <script src="/js/command-palette.js"></script>
   <script src="/js/rail.js"></script>
+  <script src="/js/rail-health.js"></script>
   <script src="/js/mini-chart.js"></script>
   <script src="/js/theme.js"></script>
   <script src="/js/pwa.js"></script>

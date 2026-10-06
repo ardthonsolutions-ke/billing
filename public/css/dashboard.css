@@ -2260,3 +2260,10 @@ body.flyout-open .abs-sidebar {
   0%, 100% { opacity: 1; }
   50%      { opacity: 0.4; }
 }
+
+/* Rail badge inside the mobile bottom nav */
+.mobile-nav-item { position: relative; }
+.mobile-nav-item .rail-badge {
+  top: 8px;
+  right: calc(50% - 18px);
+}
