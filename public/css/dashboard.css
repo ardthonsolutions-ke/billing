@@ -1080,6 +1080,7 @@ code {
 .cmdk-backdrop.open { display: flex; }
 
 .cmdk-dialog {
+}
 
 /* ═══════════════════════════════════════════════════════════════
    PAGE HEADER
@@ -1795,5 +1796,524 @@ code {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
+  }
+}
+
+/* Table action buttons — horizontal, compact */
+.actions-col .btn {
+  margin-left: 4px;
+}
+
+.actions-col .inline-form {
+  display: inline-block;
+  margin: 0;
+}
+
+.actions-col .inline-form .btn {
+  margin-left: 4px;
+}
+
+/* Tighten action column */
+.data-table td.actions-col {
+  padding: 8px 12px;
+}
+
+@media (max-width: 1024px) {
+  .data-table td.actions-col {
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+}
+
+/* Sidebar head — slightly larger title */
+.sidebar-head-title {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.sidebar-head-sub {
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   LARGE DESKTOP (1440px+)
+   ═══════════════════════════════════════════════════════════════ */
+
+@media (min-width: 1440px) {
+  .app-main {
+    max-width: 1360px;
+    margin: 0 auto;
+    padding: 32px 40px;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TABLET PORTRAIT (768px – 1024px) — keep sidebar visible but compact
+   ═══════════════════════════════════════════════════════════════ */
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  :root {
+    --sidebar-w: 200px;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   PRINT
+   ═══════════════════════════════════════════════════════════════ */
+
+@media print {
+  .abs-rail,
+  .abs-sidebar,
+  .abs-topbar,
+  .mobile-bottom-nav,
+  .pwa-install-banner,
+  .flash-container,
+  .btn {
+    display: none !important;
+  }
+
+  .app-content {
+    margin-left: 0 !important;
+  }
+
+  body {
+    background: white;
+    color: black;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   FLYOUT NAVIGATION (Design 1)
+   Icon rail + hover-activated flyout panel
+   ═══════════════════════════════════════════════════════════════ */
+
+/* App content no longer offset by sidebar — only by rail */
+.app-content {
+  margin-left: var(--rail-w);
+}
+
+/* Hide the always-visible sidebar entirely */
+.abs-sidebar {
+  position: fixed;
+  top: 0;
+  left: var(--rail-w);
+  bottom: 0;
+  width: 260px;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  z-index: 210;
+  transform: translateX(-8px);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 180ms var(--ease), opacity 180ms var(--ease);
+  box-shadow: var(--shadow-lg);
+}
+
+body.flyout-open .abs-sidebar {
+  transform: translateX(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Sidebar head adjustments (used in flyout) */
+.sidebar-head {
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+}
+
+.sidebar-head-title {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-subtle);
+}
+
+.sidebar-head-sub {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.01em;
+  margin-top: 2px;
+}
+
+/* Rail — larger visual hit area for hover detection */
+.abs-rail {
+  z-index: 250;
+}
+
+.rail-item {
+  position: relative;
+}
+
+/* Sidebar footer (user area) now lives in the rail flyout */
+.sidebar-foot {
+  padding: 12px 14px;
+  border-top: 1px solid var(--border);
+}
+
+.sidebar-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px;
+  border-radius: var(--radius-sm);
+}
+
+/* ─── On hover of a rail item, expand the sidebar to show that section ─── */
+
+/* Desktop: content has more room now */
+@media (min-width: 769px) {
+  .app-main {
+    max-width: 1400px;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   MOBILE — full-screen drawer
+   ═══════════════════════════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+  .abs-rail {
+    transform: translateX(-100%);
+    transition: transform 220ms var(--ease);
+    width: var(--rail-w);
+  }
+
+  body.nav-open .abs-rail {
+    transform: translateX(0);
+  }
+
+  /* On mobile the sidebar becomes a full-page overlay drawer */
+  .abs-sidebar {
+    left: var(--rail-w);
+    width: calc(100vw - var(--rail-w));
+    max-width: 320px;
+    transform: translateX(-100%);
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  body.nav-open .abs-sidebar {
+    transform: translateX(0);
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  body.nav-open::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 150;
+    backdrop-filter: blur(2px);
+  }
+
+  .app-content {
+    margin-left: 0;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TABLET PORTRAIT (768–1024) — sidebar as overlay
+   ═══════════════════════════════════════════════════════════════ */
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .app-content {
+    margin-left: var(--rail-w);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SIDEBAR USER at bottom of flyout
+   ═══════════════════════════════════════════════════════════════ */
+
+.sidebar-foot .user-avatar {
+  width: 34px;
+  height: 34px;
+  font-size: 12px;
+}
+
+.sidebar-foot .user-name {
+  font-size: 13px;
+}
+
+.sidebar-foot .user-role {
+  font-size: 11px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   NAV SECTION SPACING (tighter in flyout)
+   ═══════════════════════════════════════════════════════════════ */
+
+.abs-sidebar .sidebar-nav {
+  padding: 10px 8px;
+}
+
+.abs-sidebar .nav-section {
+  margin-bottom: 16px;
+}
+
+.abs-sidebar .nav-link {
+  padding: 7px 10px;
+  font-size: 13px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SECTION-SPECIFIC SIDEBARS (client-side toggle)
+   ═══════════════════════════════════════════════════════════════ */
+
+.abs-sidebar {
+  display: none;
+}
+
+body.flyout-open .abs-sidebar {
+  display: flex;
+}
+
+/* Only show the sidebar matching the open section */
+.abs-sidebar[data-section]:not([data-section=""]) {
+  display: none;
+}
+
+body.flyout-open .abs-sidebar[data-section="dashboard"],
+body.flyout-open .abs-sidebar[data-section="network"],
+body.flyout-open .abs-sidebar[data-section="subscribers"],
+body.flyout-open .abs-sidebar[data-section="plans"],
+body.flyout-open .abs-sidebar[data-section="routers"],
+body.flyout-open .abs-sidebar[data-section="payments"],
+body.flyout-open .abs-sidebar[data-section="reports"],
+body.flyout-open .abs-sidebar[data-section="tickets"],
+body.flyout-open .abs-sidebar[data-section="leads"],
+body.flyout-open .abs-sidebar[data-section="tenants"],
+body.flyout-open .abs-sidebar[data-section="users"],
+body.flyout-open .abs-sidebar[data-section="settings"] {
+  /* These are the ones that CAN be shown */
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SECTION-SPECIFIC SIDEBAR PANELS
+   Only one visible at a time, controlled by JS
+   ═══════════════════════════════════════════════════════════════ */
+
+.abs-sidebar .sidebar-panel {
+  display: none;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.abs-sidebar .sidebar-panel.active {
+  display: flex;
+}
+
+/* Wrap the existing sidebar-nav + sidebar-foot inside panels */
+.sidebar-panel .sidebar-nav {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.sidebar-panel .sidebar-foot {
+  flex-shrink: 0;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SIDEBAR PANEL SWITCHING — force one visible at a time
+   ═══════════════════════════════════════════════════════════════ */
+
+/* All panels hidden by default */
+.abs-sidebar .sidebar-panel {
+  display: none !important;
+}
+
+/* Only the active panel shows */
+.abs-sidebar .sidebar-panel.active {
+  display: flex !important;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+/* Sidebar nav scrolls within panel */
+.sidebar-panel .sidebar-nav {
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* Sidebar footer pinned to bottom of the sidebar */
+.abs-sidebar .sidebar-foot {
+  flex-shrink: 0;
+}
+
+/* Sidebar head pinned to top */
+.abs-sidebar .sidebar-head {
+  flex-shrink: 0;
+}
+
+/* ─── Final definitive rule: hide any panel without .active ─── */
+.abs-sidebar .sidebar-panel:not(.active) {
+  display: none !important;
+}
+.abs-sidebar .sidebar-panel.active {
+  display: flex !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   HOVER FLYOUT — sidebar hidden by default, appears on hover
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Base state: hidden with slide + fade */
+.abs-sidebar {
+  display: flex;
+  transform: translateX(-12px);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 160ms var(--ease), opacity 160ms var(--ease);
+}
+
+body.flyout-open .abs-sidebar {
+  transform: translateX(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Sidebar head takes the full width nicely */
+.abs-sidebar .sidebar-head {
+  padding: 16px 18px;
+}
+
+/* Nav links tighter in flyout */
+.abs-sidebar .sidebar-nav {
+  padding: 10px 10px;
+}
+
+.abs-sidebar .nav-link {
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 13.5px;
+  margin: 1px 0;
+}
+
+.abs-sidebar .nav-link:hover {
+  background: var(--accent-subtle);
+  color: var(--accent);
+}
+
+/* ─── Mobile: sidebar becomes a slide-in drawer ─── */
+@media (max-width: 768px) {
+  .abs-sidebar {
+    display: flex;
+    transform: translateX(-100%);
+    opacity: 1;
+    pointer-events: auto;
+    width: calc(100vw - var(--rail-w));
+    max-width: 320px;
+    left: var(--rail-w);
+  }
+
+  body.nav-open .abs-sidebar {
+    transform: translateX(0);
+  }
+
+  body.nav-open::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 150;
+    backdrop-filter: blur(2px);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   FINAL OVERRIDE — sidebar must use opacity, never display
+   ═══════════════════════════════════════════════════════════════ */
+
+html body .abs-sidebar {
+  display: flex !important;
+  position: fixed !important;
+  top: 0 !important;
+  left: var(--rail-w) !important;
+  bottom: 0 !important;
+  width: 260px !important;
+  background: var(--surface) !important;
+  border-right: 1px solid var(--border) !important;
+  box-shadow: var(--shadow-lg) !important;
+  flex-direction: column !important;
+  z-index: 210 !important;
+  opacity: 0 !important;
+  transform: translateX(-12px) !important;
+  pointer-events: none !important;
+  transition: transform 160ms var(--ease), opacity 160ms var(--ease) !important;
+}
+
+html body.flyout-open .abs-sidebar {
+  opacity: 1 !important;
+  transform: translateX(0) !important;
+  pointer-events: auto !important;
+}
+
+@media (max-width: 768px) {
+  html body .abs-sidebar {
+    left: 0 !important;
+    width: calc(100vw - var(--rail-w)) !important;
+    max-width: 320px !important;
+    transform: translateX(-100%) !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+  }
+  html body.nav-open .abs-sidebar {
+    transform: translateX(0) !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   FORCE OPACITY — sidebar invisible unless .flyout-open
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Default: HIDDEN. Highest specificity we can write without @layer. */
+html body .abs-sidebar,
+html body .abs-sidebar[class],
+html body aside.abs-sidebar {
+  display: flex !important;
+  opacity: 0 !important;
+  transform: translateX(-12px) !important;
+  pointer-events: none !important;
+  visibility: visible !important;
+}
+
+/* Open: VISIBLE */
+html body.flyout-open .abs-sidebar,
+html body.flyout-open .abs-sidebar[class],
+html body.flyout-open aside.abs-sidebar {
+  opacity: 1 !important;
+  transform: translateX(0) !important;
+  pointer-events: auto !important;
+}
+
+/* Mobile drawer */
+@media (max-width: 768px) {
+  html body .abs-sidebar,
+  html body .abs-sidebar[class],
+  html body aside.abs-sidebar {
+    transform: translateX(-100%) !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+  }
+  html body.nav-open .abs-sidebar,
+  html body.nav-open .abs-sidebar[class],
+  html body.nav-open aside.abs-sidebar {
+    transform: translateX(0) !important;
   }
 }
